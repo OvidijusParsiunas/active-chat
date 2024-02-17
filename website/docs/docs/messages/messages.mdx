@@ -1,0 +1,765 @@
+---
+sidebar_position: 6
+---
+
+# Messages
+
+Properties related to messages.
+
+### `history` {#history}
+
+- Type: [`MessageContent[]`](#MessageContent)
+
+Messages that are pre-populated when the chat loads up. <br />
+
+import ComponentContainer from '@site/src/components/table/componentContainer';
+import DeepChatBrowser from '@site/src/components/table/deepChatBrowser';
+import LineBreak from '@site/src/components/markdown/lineBreak';
+import BrowserOnly from '@docusaurus/BrowserOnly';
+import TabItem from '@theme/TabItem';
+import Tabs from '@theme/Tabs';
+
+<BrowserOnly>{() => require('@site/src/components/nav/autoNavToggle').readdAutoNavShadowToggle()}</BrowserOnly>
+<BrowserOnly>{() => require('@site/src/components/externalModules/externalModules').importHighlight()}</BrowserOnly>
+
+#### Example
+
+<ComponentContainer>
+  <DeepChatBrowser
+    demo={true}
+    history={[
+      {text: 'Show me a modern city', role: 'user'},
+      {files: [{src: '/img/city.jpeg', type: 'image'}], role: 'ai'},
+      {text: 'Whats on your mind?', role: 'user'},
+      {text: 'Peace and tranquility', role: 'ai'},
+    ]}
+    style={{height: '370px', borderRadius: '8px'}}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat
+  history='[
+    {"text": "Show me a modern city", "role": "user"},
+    {"files": [{"src": "path-to-file.jpeg", "type": "image"}], "role": "ai"},
+    {"text": "Whats on your mind?", "role": "user"},
+    {"text": "Peace and tranquility", "role": "ai"}
+  ]'
+></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  history='[
+    {"text": "Show me a modern city", "role": "user"},
+    {"files": [{"src": "path-to-file.jpeg", "type": "image"}], "role": "ai"},
+    {"text": "Whats on your mind?", "role": "user"},
+    {"text": "Peace and tranquility", "role": "ai"}
+  ]'
+  style="height: 370px; border-radius: 8px"
+  demo="true"
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `introMessage` {#introMessage}
+
+- Type: {`text?: string`, `html?: string`}
+
+Initial `ai` message that is displayed when the chat is loaded. It is different to [`history`](#history) as it will not trigger
+the [`onNewMessage`](/docs/events#onNewMessage) listener, will not be part of the returned messages when [`getMessages`](/docs/methods#getMessages) is called and
+is not taken into consideration when calculating [`requestBodyLimits`](/docs/connect#requestBodyLimits). <br />
+`html` is used to render [custom code](/docs/messages/HTML) and can be coupled with a [`deep-chat-temporary-message`](/docs/messages/HTML#deepChatClasses)
+class to make this message disappear after a new one is added.
+
+#### Example
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    introMessage={{text: 'Hi I am your assistant, ask me anything!'}}
+    demo={true}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat introMessage='{"text": "Hi I am your assistant, ask me anything!"}'></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  introMessage='{"text": "Hi I am your assistant, ask me anything!"}'
+  demo="true"
+  style="border-radius: 8px"
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `avatars` {#avatars}
+
+- Type: `true` | {[`default?: Avatar`](#Avatar), [`ai?: Avatar`](#Avatar), [`user?: Avatar`](#Avatar), [`[custom]?: Avatar`](#Avatar)}
+
+Add avatars beside messages. You can enable this by setting the value to _true_
+or by defining an object with [`Avatar`](#Avatar) properties. The `default` property is applied to all roles.
+`custom` roles (e.g. `"bob"`) use `ai` styling by default. <br />
+
+#### Example
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    history={[
+      {text: 'Hey, how are you?', role: 'user'},
+      {text: 'I am doing great, how about you?', role: 'ai'},
+      {text: 'What is the meaning of life?', role: 'user'},
+      {
+        text: 'This ultimately depends on the person, but it could be the pursuit of happiness or fulfillment.',
+        role: 'ai',
+      },
+    ]}
+    demo={true}
+    avatars={true}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat avatars="true"></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  avatars="true"
+  history='[
+    {"text": "Hey, how are you?", "role": "user"},
+    {"text": "I am doing great, how about you?", "role": "ai"},
+    {"text": "What is the meaning of life?", "role": "user"},
+    {
+      "text": "This ultimately depends on the person, but it could be the pursuit of happiness or fulfillment.",
+      "role": "ai"
+    }
+  ]'
+  style="border-radius: 8px"
+  demo="true"
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+#### `Avatar` {#Avatar}
+
+- Type: {<br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `src?: string`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `styles?: {` <br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [`avatar?: CustomStyle`](/docs/styles#CustomStyle), <br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [`container?: CustomStyle`](/docs/styles#CustomStyle) <br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `position?: "left" | "right"` <br />
+  }}
+
+This object is used to configure avatars that are displayed beside messages. <br />
+`src` is the path to an avatar image file. <br />
+`avatar` property is used to configure the avatar element's styling. <br />
+`container` is used to style the element that encapsulates the avatar element. <br />
+`position` defines which side of the message the avatar is going to be displayed on.
+
+#### Example
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    history={[
+      {text: 'What is the meaning of life?', role: 'user'},
+      {
+        text: 'This ultimately depends on the person, but it could be the pursuit of happiness or fulfillment.',
+        role: 'ai',
+      },
+      {
+        text: 'We dont laugh because we feel good, we feel good because we laugh.',
+        role: 'bob',
+      },
+    ]}
+    avatars={{
+      default: {styles: {avatar: {height: '30px', width: '30px'}, container: {marginTop: '8px'}}},
+      ai: {src: '/img/ai-brain.svg', styles: {avatar: {marginLeft: '-3px'}}},
+      bob: {
+        src: '/img/bob.png',
+        styles: {avatar: {borderRadius: '15px', filter: 'brightness(1.3)'}},
+      },
+    }}
+    demo={true}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat
+  avatars='{
+    "default": {"styles": {"avatar": {"height": "30px", "width": "30px"}, "container": {"marginTop": "8px"}}},
+    "ai": {"src": "path-to-file.svg", "styles": {"avatar": {"marginLeft": "-3px"}}},
+    "bob": {"src": "path-to-file.png", "styles": {"avatar": {"borderRadius": "15px"}}}
+  }'
+></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  avatars='{
+    "default": {"styles": {"avatar": {"height": "30px", "width": "30px"}, "container": {"marginTop": "8px"}}},
+    "ai": {"src": "path-to-file.svg", "styles": {"avatar": {"marginLeft": "-3px"}}},
+    "bob": {"src": "path-to-file.png", "styles": {"avatar": {"borderRadius": "15px"}}}
+  }'
+  history='[
+    {"text": "What is the meaning of life?", "role": "user"},
+    {
+      "text": "This ultimately depends on the person, but it could be the pursuit of happiness or fulfillment.",
+      "role": "ai"
+    },
+    {
+      "text": "We dont laugh because we feel good, we feel good because we laugh.",
+      "role": "bob"
+    }
+  ]'
+  style="border-radius: 8px"
+  demo="true"
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `names` {#names}
+
+- Type: `true` | {[`default?: Name`](#Name), [`ai?: Name`](#Name), [`user?: Name`](#Name), [`[custom]?: Name`](#Name)}
+
+Add names beside messages. You can enable this by setting the value to _true_
+or by defining an object with [`Name`](#Name) properties. The `default` property is applied to all roles.
+`custom` roles (e.g. `"bob"`) use `ai` styling by default. <br />
+
+#### Example
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    history={[
+      {text: 'Hey, how are you?', role: 'user'},
+      {text: 'I am doing great!', role: 'ai'},
+      {text: 'Motivate me', role: 'user'},
+      {
+        text: 'Talent is a pursued interest. Anything you’re willing to practice, you can do.',
+        role: 'Bob',
+      },
+    ]}
+    demo={true}
+    names={true}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat names="true"></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  names="true"
+  history='[
+    {"text": "Hey, how are you?", "role": "user"},
+    {"text": "I am doing great!", "role": "ai"},
+    {"text": "Motivate me", "role": "user"},
+    {
+      "text": "Talent is a pursued interest. Anything you’re willing to practice, you can do.",
+      "role": "Bob"
+    }
+  ]'
+  style="border-radius: 8px"
+  demo="true"
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+#### `Name` {#Name}
+
+- Type: {<br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `text?: string`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; [`style?: CustomStyle`](/docs/styles#CustomStyle), <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `position?: "left" | "right"` <br />
+  }
+
+This object is used to configure names that are displayed beside messages. <br />
+`text` is the string used for the name. <br />
+`style` is used to define the style of the name element. <br />
+`position` defines which side of the message the name is going to be displayed.
+
+#### Example
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    history={[
+      {text: 'Hey, how are you?', role: 'user'},
+      {text: 'I am doing great!', role: 'ai'},
+      {text: 'Motivate me', role: 'user'},
+      {
+        text: 'Talent is a pursued interest. Anything you’re willing to practice, you can do.',
+        role: 'Bob',
+      },
+    ]}
+    demo={true}
+    names={{
+      default: {style: {fontSize: '18px', marginTop: '14px', width: '32px'}},
+      ai: {text: 'You'},
+      user: {text: 'Me'},
+      Bob: {style: {color: 'green'}},
+    }}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat
+  names='{
+    "default": {"style": {"fontSize": "18px", "marginTop": "14px", "width": "32px"}},
+    "ai": {"text": "You"},
+    "user": {"text": "Me"},
+    "Bob": {"style": {"color": "green"}}}'
+></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  names='{
+    "default": {"style": {"fontSize": "18px", "marginTop": "14px", "width": "32px"}},
+    "ai": {"text": "You"},
+    "user": {"text": "Me"},
+    "Bob": {"style": {"color": "green"}}}'
+  history='[
+    {"text": "Hey, how are you?", "role": "user"},
+    {"text": "I am doing great!", "role": "ai"},
+    {"text": "Motivate me", "role": "user"},
+    {
+      "text": "Talent is a pursued interest. Anything you’re willing to practice, you can do.",
+      "role": "Bob"
+    }
+  ]'
+  style="border-radius: 8px"
+  demo="true"
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `displayLoadingBubble` {#displayLoadingBubble}
+
+- Type: `boolean`
+
+Toggle whether the loading bubble should be displayed when waiting for a message response. If set to _false_ - the [submit button](/docs/styles/#submitButtonStyles)
+will automatically have a loading animation.
+
+#### Example
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    introMessage={{text: 'Send a new message to observe a response with no loading bubble.'}}
+    displayLoadingBubble={false}
+    demo={true}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat displayLoadingBubble="false"></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  displayLoadingBubble="false"
+  introMessage='{"text": "Send a new message to observe a response with no loading bubble."}'
+  style="border-radius: 8px"
+  demo="true"
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `errorMessages` {#errorMessages}
+
+- Type: {<br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `displayServiceErrorMessages?: boolean`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `overrides?:` { <br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `default?: string`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `service?: string`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `speechToText?: string` <br />
+  }}
+
+- Default: _{ displayServiceErrorMessages: false, overrides: {default: "Error, please try again." }}_
+
+Deep Chat automatically displays an error message when something goes wrong. This object is used to control what the message will contain. <br />
+`displayServiceErrorMessages` is used to display the full error message that has been returned from the service. <br />
+`overrides` is used to overwrite the error message text based on what has caused it: `default` is used for any kind of error, `service`
+is for communication with the target service and `speechToText` is when there is a problem using the [`speechToText`](/docs/speech#speechToText) functionality. <br />
+
+#### Example
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    demo={{displayErrors: {default: true, service: true, speechToText: true}}}
+    errorMessages={{
+      overrides: {
+        default: 'Default error :(',
+        service: 'Target service error!',
+        speechToText: 'Speech to text microphone error!',
+      },
+    }}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat
+  errorMessages='{
+    "overrides": {
+      "default": "Default error :(",
+      "service": "Target service error!",
+      "speechToText": "Speech to text microphone error!"
+    }
+  }'
+></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  errorMessages='{
+    "overrides": {
+      "default": "Default error :(",
+      "service": "Target service error!",
+      "speechToText": "Speech to text microphone error!"
+    }
+  }'
+  style="border-radius: 8px"
+  demo='{"displayErrors": {"default": true, "service": true, "speechToText": true}}'
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+## Types
+
+Shared object property types related to messages:
+
+### `MessageContent` {#MessageContent}
+
+- Type: {[`role?: MessageRole`](#MessageRole), `text?: string`, [`files?: MessageFile[]`](#MessageFile), [`html?: string`](/docs/messages/HTML)}
+
+Object format used to encapsulate a message within the chat. <br />
+`role` defines the message sender. If not set it is automatically regarded as _"ai"_. <br />
+`text` is string content for a textual message. It uses [Markdown](https://www.markdownguide.org/basic-syntax/) syntax to render the message accordingly which is useful for displaying code snippets,
+paragraphs and more. See this [playground](https://jonschlinkert.github.io/remarkable/demo/) for reference. <br />
+`files` is an array that encapsulates details on the response files. <br />
+`html` is a string that defines the markup for [custom elements](/docs/messages/HTML). <br />
+
+#### Example
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    history={[
+      {files: [{src: '/img/bird-2.jpeg', type: 'image'}], role: 'user'},
+      {
+        text: 'This is a nice image of a yellow bird on a branch.',
+        role: 'ai',
+      },
+    ]}
+    demo={true}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat
+  history='[
+    {"files": [{"src": "path-to-image.jpeg", "type": "image"}], "role": "user"},
+    {"text": "This is a nice image of a yellow bird on a branch.", "role": "ai"}
+  ]'
+></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  history='[
+    {"files": [{"src": "path-to-image.jpeg", "type": "image"}], "role": "user"},
+    {"text": "This is a nice image of a yellow bird on a branch.", "role": "ai"}
+  ]'
+  style="border-radius: 8px"
+  demo="true"
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `MessageRole` {#MessageRole}
+
+- Type: `"ai"` | `"user"` | `[custom]`
+
+Message sender. <br />
+`"user"` represents messages sent out from the chat and `"ai"` are messages received from a service. <br />
+You can also use _custom_ roles which represent other entities such as agents (`"ai-1"`/`"ai-2"`)
+or users in a group chat (`"bob"`/`"ross"`). You can style them using [`messageStyles`](/docs/messages/styles#messageStyles),
+[`avatars`](/docs/messages/#avatars) and [`names`](/docs/messages/#names) properties.
+
+<LineBreak></LineBreak>
+
+### `MessageFile` {#MessageFile}
+
+- Type: {`name?: string`, `src?: string`, [`type?: MessageFileType`](#MessageFileType), [`ref?: File`](https://developer.mozilla.org/en-US/docs/Web/API/File)} <br />
+- Default: _{name: "file", type: "any"}_
+
+Format that defines the details of a file. <br />
+`name` is used to display the file name inside the message bubble (if not image/gif/audio). <br />
+`src` is either the _url_ path to the file location or the base64 encoding as a string (make sure to use the correct type prefix e.g: _"data:(type);base64,"_).<br />
+The component will automatically try to infer the file type from the `src` property so that it can render its media correctly,
+however you can help it by setting the `type`. <br />
+`ref` is the actual file's reference. It is only included in [`onNewMessage`](/docs/events#onNewMessage) events. <br />
+
+#### Example
+
+<ComponentContainer minHeight={535}>
+  <DeepChatBrowser
+    style={{borderRadius: '8px', height: '480px'}}
+    history={[
+      {
+        role: 'user',
+        files: [
+          {src: '/img/city.jpeg', type: 'image'},
+          {src: '/img/example-gif-1.gif', type: 'image'},
+          {src: '/audio/cantinaBand.wav', type: 'audio'},
+          {name: 'placeholder.exe'},
+          {src: '/text/text.txt', name: 'hello-world.txt', type: 'file'},
+        ],
+      },
+    ]}
+    demo={true}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat
+  history='[
+    {"role": "user", "files": [
+        {"src": "path-to-file.jpeg", "type": "image"},
+        {"src": "data:image/gif;base64,R0lGODlh4A...", "type": "image"},
+        {"src": "path-to-file.wav", "type": "audio"},
+        {"name": "placeholder.exe"},
+        {"src": "path-to-file", "name": "hello-world.txt", "type": "file"}
+  ]}]'
+></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  history='[
+    {"role": "user", "files": [
+        {"src": "path-to-file.jpeg", "type": "image"},
+        {"src": "data:image/gif;base64,R0lGODlh4A...", "type": "image"},
+        {"src": "path-to-file.wav", "type": "audio"},
+        {"name": "placeholder.exe"},
+        {"src": "path-to-file", "name": "hello-world.txt", "type": "file"}
+  ]}]'
+  style="height: 370px; border-radius: 8px"
+  demo="true"
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+:::info
+Files with _"image"_ or _"any"_ types that contain a `src` property as a url will have their bubble set as a hyperlink.
+:::
+
+<LineBreak></LineBreak>
+
+### `MessageFileType` {#MessageFileType}
+
+- Type: `"image"` | `"audio"` | `"any"`
+
+Type of a file stored inside a message. _"any"_ is the default type.
+
+<LineBreak></LineBreak>
+
+## Code messages
+
+By default, `text` messages containing code will be rendered with white text in a dark background.
+In order to highlight the code, you will need to add an external module called [`highligt.js`](https://www.npmjs.com/package/highlight.js?activeTab=readme).
+Check out external module [EXAMPLES](/examples/externalModules) to find multiple ways of how you can add it to your project.
+
+#### Example
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    history={[
+      {
+        text: '```java\nwhile (i < 5) {\n console.log("hi");\n i+= 1;\n}\n```',
+        role: 'ai',
+      },
+    ]}
+    messageStyles={{
+      default: {
+        shared: {
+          bubble: {maxWidth: '270px'},
+        },
+      },
+    }}
+    demo={true}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+````html
+<deep-chat
+  history='[
+    {
+      "text": "```java\nwhile (i < 5) {\n console.log(\"hi\");\n i+= 1;\n}\n```",
+      "role": "ai"
+    }
+  ]'
+></deep-chat>
+````
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+````html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  history='[
+    {
+      "text": "```java\nwhile (i < 5) {\n console.log(\"hi\");\n i+= 1;\n}\n```",
+      "role": "ai"
+    }
+  ]'
+  messageStyles='{
+    "default": {
+      "shared": {
+        "bubble": {"maxWidth": "270px"}
+      }
+    }
+  }'
+  style="border-radius: 8px"
+  demo="true"
+></deep-chat>
+````
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>

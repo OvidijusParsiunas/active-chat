@@ -1,0 +1,90 @@
+.not-displayed {
+  display: none;
+}
+
+.displayed {
+  display: block !important;
+}
+
+/* need to use !important as it is on an anchor (a) element  */
+.homepage-button {
+  border: unset;
+  border-radius: 3px !important;
+  transition: 0.1s !important;
+  text-decoration: none !important;
+  user-select: none;
+}
+
+.header-font {
+  font-family: 'inter_webfont', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+}
+
+/* REF-39 - fade in */
+
+/* use class instead of a selector when we the required element reference is available from the very start */
+.invisible-component {
+  opacity: 0;
+}
+
+/* using selector for homepage as the navbar needs to have opacity: 0 from the very start and not when the element is found */
+.homepage > body > #__docusaurus > nav {
+  opacity: 0;
+}
+
+.fade-in {
+  animation: fadeIn 1.8s !important;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 1250px) {
+  #start-panel-right-table {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 945px) {
+  #features-container {
+    display: none;
+  }
+
+  #start-panel {
+    height: calc(100vh - 98px);
+    border-bottom-left-radius: unset;
+    border-bottom-right-radius: unset;
+  }
+
+  #footer {
+    background-color: var(--homepage-background);
+    text-align: center;
+  }
+
+  #explore-button-container {
+    display: none !important;
+  }
+}
+
+@media (max-width: 314px) {
+  #start-buttons {
+    text-align: center;
+    display: grid;
+  }
+
+  .start-button {
+    margin-left: auto;
+    margin-right: auto !important;
+  }
+
+  .start-button:nth-child(2) {
+    margin-top: 10px;
+  }
+}

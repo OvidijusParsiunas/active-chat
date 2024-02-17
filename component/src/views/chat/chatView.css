@@ -1,0 +1,25 @@
+@import url('./introPanel/introPanel.css');
+@import url('./messages/messages.css');
+@import url('./messages/avatar.css');
+@import url('./messages/name.css');
+@import url('./input/input.css');
+
+#chat-view {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 100%;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #d0d0d0;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f2f2f2;
+}

@@ -1,0 +1,191 @@
+---
+sidebar_position: 3
+---
+
+# Direct Connection
+
+Deep Chat is preconfigured to connect to popular AI APIs right out of the box. <br /> Depending on the service you choose component assets
+such as buttons and intro panel will automatically be changed to suit the chosen service. Their configuration can still be overwitten manually. <br />
+
+<a href="https://youtu.be/ySU7Tj99mbA?si=DDDIvf1s_5WBr9Pc">
+  <img src={YoutubeLogo} className={'youtube-icon'} />
+  Video demo
+</a>
+
+<div style={{marginTop: '26px'}}></div>
+
+:::caution
+The [`directConnection`](#directConnection) and [`key`](#APIKey) properties are intended to be used for **prototyping purposes ONLY** and should not be
+deployed to a public website as their values can be accessed in the browser. Before going live, switch to using the [`connect`](/docs/connect/#connect-1)
+property to connect to your server. Read more about this in [`Connect`](../connect) and check [examples](https://deepchat.dev/examples/servers).
+:::
+
+### `directConnection` {#directConnection}
+
+- Type: {<br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `openAI?:` {[`OpenAI`](openAI#openAI), [`APIKey`](#APIKey)}, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `huggingFace?:` {[`HuggingFace`](huggingFace#huggingFace), [`APIKey`](#APIKey)}, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `azure?:` {[`Azure`](azure#azure), [`APIKey`](#APIKey)}, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `cohere?:` {[`Cohere`](cohere#cohere), [`APIKey`](#APIKey)}, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `assemblyAI?:` {[`AssemblyAI`](assemblyAI#assemblyAI), [`APIKey`](#APIKey)}
+  }
+
+import ContainersKeyToggle from '@site/src/components/table/containersKeyToggle';
+import ComponentContainer from '@site/src/components/table/componentContainer';
+import DeepChatBrowser from '@site/src/components/table/deepChatBrowser';
+import LineBreak from '@site/src/components/markdown/lineBreak';
+import BrowserOnly from '@docusaurus/BrowserOnly';
+import YoutubeLogo from '/img/youtube.png';
+import TabItem from '@theme/TabItem';
+import Tabs from '@theme/Tabs';
+
+<BrowserOnly>{() => require('@site/src/components/nav/autoNavToggle').readdAutoNavShadowToggle()}</BrowserOnly>
+
+## Types
+
+Shared types for the `directConnection` property.
+
+### `APIKey` {#APIKey}
+
+- Type: {`key?: string`, `validateKeyProperty?: boolean`}
+
+These object properties are used to load up the chat view without the user having to insert the API key. <br />
+`key` is the target service's API key required for authentication. <br />
+`validateKeyProperty` is used to validate the value that is set for the `key` property. This will render a loading circle before the chat view
+is loaded up during the validation period.
+
+:::caution
+This object is intended to be used for **prototyping purposes ONLY** and should not be deployed to an environment as it can be accessed in the browser.
+Before going live, use the [`connect`](/docs/connect/#connect-1) property in combination with your own service to safely use your key there.
+Read more about this in [`Connect`](../connect) and check [examples](https://deepchat.dev/examples/servers).
+:::
+
+<LineBreak></LineBreak>
+
+#### Key Example
+
+<ContainersKeyToggle>
+  <ComponentContainer>
+    <DeepChatBrowser
+      style={{borderRadius: '8px'}}
+      directConnection={{
+        openAI: {
+          key: 'placeholder key',
+          chat: {system_prompt: 'Assist me with anything you can'},
+        },
+      }}
+    ></DeepChatBrowser>
+  </ComponentContainer>
+  <ComponentContainer>
+    <DeepChatBrowser
+      style={{borderRadius: '8px'}}
+      directConnection={{
+        openAI: {
+          chat: {system_prompt: 'Assist me with anything you can'},
+        },
+      }}
+    ></DeepChatBrowser>
+  </ComponentContainer>
+</ContainersKeyToggle>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat
+  directConnection='{
+    "openAI": {
+      "key": "placeholder key",
+      "chat": {"system_prompt": "Assist me with anything you can"}
+    }
+  }'
+></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  directConnection='{
+    "openAI": {
+      "key": "placeholder key",
+      "chat": {"system_prompt": "Assist me with anything you can"}
+    }
+  }'
+  style="border-radius: 8px"
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+#### Validation Example
+
+<ContainersKeyToggle>
+  <ComponentContainer>
+    <DeepChatBrowser
+      style={{borderRadius: '8px'}}
+      directConnection={{
+        openAI: {
+          key: 'placeholder key',
+          validateKeyProperty: true,
+          chat: {system_prompt: 'Assist me with anything you can'},
+        },
+      }}
+    ></DeepChatBrowser>
+  </ComponentContainer>
+  <ComponentContainer>
+    <DeepChatBrowser
+      style={{borderRadius: '8px'}}
+      directConnection={{
+        openAI: {
+          validateKeyProperty: true,
+          chat: {system_prompt: 'Assist me with anything you can'},
+        },
+      }}
+    ></DeepChatBrowser>
+  </ComponentContainer>
+</ContainersKeyToggle>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat
+  directConnection='{
+    "openAI": {
+      "key": "placeholder key",
+      "validateKeyProperty": true,
+      "chat": {"system_prompt": "Assist me with anything you can"}
+    }
+  }'
+></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  directConnection='{
+    "openAI": {
+      "key": "placeholder key",
+      "validateKeyProperty": true,
+      "chat": {"system_prompt": "Assist me with anything you can"}
+    }
+  }'
+  style="border-radius: 8px"
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>

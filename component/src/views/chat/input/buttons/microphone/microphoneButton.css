@@ -1,0 +1,35 @@
+#microphone-button {
+  padding-top: 0.5px;
+}
+
+.outer-button-container > #microphone-button {
+  padding-bottom: 1px;
+}
+
+#microphone-icon {
+  position: absolute;
+  pointer-events: none;
+  width: 1.21em;
+  height: 1.21em;
+  left: 0.25em;
+  bottom: 0.25em;
+}
+
+.default-microphone-icon {
+  filter: brightness(0) saturate(100%) invert(32%) sepia(0%) saturate(924%) hue-rotate(46deg) brightness(95%) contrast(99%);
+}
+
+.active-microphone-icon {
+  filter: brightness(0) saturate(100%) invert(10%) sepia(97%) saturate(7495%) hue-rotate(0deg) brightness(101%)
+    contrast(107%);
+  border-radius: 10px;
+}
+
+.command-microphone-icon {
+  filter: brightness(0) saturate(100%) invert(42%) sepia(96%) saturate(1067%) hue-rotate(77deg) brightness(99%)
+    contrast(102%);
+}
+
+.unsupported-microphone {
+  display: none;
+}

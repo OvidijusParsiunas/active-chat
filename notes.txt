@@ -1,0 +1,8 @@
+Updating package version Checklist:
+
+Run npm run build:bundle
+Update React wrapper
+Update Installation
+Update CDN references - in doc Live VanillaJS Example sections and External Modules
+Update UI, SvelteKit and NextJS examples for servers
+Update package in GitHub

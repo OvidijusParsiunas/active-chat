@@ -1,0 +1,19 @@
+@import url('./views/validateKeyProperty/validateKeyPropertyView.css');
+@import url('./views/insertKey/insertKeyView.css');
+@import url('./views/error/errorView.css');
+@import url('./views/chat/chatView.css');
+
+:host {
+  /* this property prevents outside styles from affecting this component */
+  all: initial;
+  /* keeps child absolute elements in place and wraps component dimensions on it */
+  /* inline css causes padding at the bottom of component, see in the website */
+  display: table-cell;
+}
+
+#container {
+  height: inherit;
+  /* this is required for text input container not to go beyond its boundaries when typing a long word */
+  width: inherit;
+  overflow: hidden;
+}

@@ -1,0 +1,140 @@
+#insert-key-view {
+  height: 100%;
+  position: relative;
+}
+
+#insert-key-contents {
+  text-align: center;
+  position: absolute;
+  top: 44%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 82%;
+  display: flex;
+  max-width: 700px;
+}
+
+#insert-key-title {
+  margin-bottom: 15px;
+}
+
+#insert-key-input-container {
+  margin-right: 2.7em;
+  width: calc(100% - 80px);
+}
+
+#insert-key-input {
+  padding: 0.3em 1.7em 0.3em 0.3em;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 3px;
+  width: 100%;
+  font-size: inherit;
+}
+
+.insert-key-input-valid {
+  border-color: grey;
+}
+
+.insert-key-input-invalid {
+  border-color: red;
+}
+
+#visibility-icon-container {
+  position: relative;
+  float: right;
+  cursor: pointer;
+  user-select: none;
+}
+
+.visibility-icon {
+  filter: brightness(0) saturate(100%) invert(63%) sepia(1%) saturate(9%) hue-rotate(43deg) brightness(98%) contrast(92%);
+  position: absolute;
+  right: -1.7em;
+  top: -1.43em;
+}
+
+#visible-icon {
+  top: -1.4em;
+}
+
+.visibility-icon:hover {
+  filter: unset;
+}
+
+.visibility-icon > * {
+  pointer-events: none;
+}
+
+#start-button {
+  border: 1px solid grey;
+  color: rgb(69, 69, 69);
+  border-radius: 4px;
+  width: 3em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.28em 0.3em;
+  user-select: none;
+  background-color: white;
+}
+
+#start-button:hover {
+  background-color: #f2f2f2;
+}
+
+#start-button:active {
+  background-color: #d2d2d2;
+}
+
+#insert-key-help-text-container {
+  width: 100%;
+  position: absolute;
+  margin-top: 32px;
+  margin-bottom: 20px;
+}
+
+#insert-key-help-text-contents {
+  width: 100%;
+  position: absolute;
+}
+
+#insert-key-input-invalid-text {
+  display: block;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  color: red;
+}
+
+.insert-key-input-help-text {
+  display: block;
+  margin-top: 16px;
+}
+
+#loading-ring {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+}
+
+#loading-ring:after {
+  content: ' ';
+  display: block;
+  width: 11px;
+  height: 11px;
+  margin: 1px;
+  border-radius: 50%;
+  border: 2px solid #0084ff;
+  border-color: #0084ff transparent #0084ff transparent;
+  animation: loading-ring 1.2s linear infinite;
+}
+
+@keyframes loading-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

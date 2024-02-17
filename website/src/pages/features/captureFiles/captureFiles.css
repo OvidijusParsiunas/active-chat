@@ -1,0 +1,122 @@
+#capture-files-sub-header {
+  margin-top: 350px;
+  margin-bottom: 60px;
+}
+
+#capture-files-panels {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+#capture-files-panels > * {
+  width: 100%;
+}
+
+#capture-files-left-panel {
+  float: left;
+  justify-content: center;
+  display: flex;
+  padding-left: 40px;
+  padding-right: 30px;
+}
+
+#capture-files-right-panel {
+  float: right;
+  padding-right: 23px;
+}
+
+.capture-files-text {
+  text-align: center;
+  font-size: 20px;
+  width: 80%;
+  max-width: 585px;
+  margin-top: 100px;
+}
+
+.capture-panels-distributed #capture-files-left-panel deep-chat {
+  margin-left: auto;
+  margin-right: 260px;
+}
+
+.capture-panels-distributed #capture-files-right-panel .capture-files-text {
+  margin-left: 165px;
+}
+
+.capture-panels-close #capture-files-left-panel deep-chat {
+  transition: all 1s;
+  margin-left: auto;
+  margin-right: 128px;
+}
+
+.capture-panels-close #capture-files-right-panel .capture-files-text {
+  margin-left: -20px;
+  transition: all 1s;
+}
+
+@media (max-width: 1478px) {
+  .capture-panels-distributed #capture-files-left-panel deep-chat {
+    margin-right: 200px;
+  }
+  .capture-panels-distributed #capture-files-right-panel .capture-files-text {
+    margin-left: 132px;
+  }
+}
+
+@media (max-width: 1320px) {
+  .capture-panels-distributed #capture-files-left-panel deep-chat {
+    margin-right: 170px;
+  }
+  .capture-panels-distributed #capture-files-right-panel .capture-files-text {
+    margin-left: 102px;
+  }
+
+  .capture-panels-close #capture-files-left-panel deep-chat {
+    margin-right: 118px;
+  }
+  .capture-panels-close #capture-files-right-panel .capture-files-text {
+    margin-left: -30px;
+  }
+}
+
+@media (max-width: 1160px) {
+  .capture-panels-distributed #capture-files-left-panel deep-chat {
+    margin-right: 140px;
+  }
+  .capture-panels-distributed #capture-files-right-panel .capture-files-text {
+    margin-left: 72px;
+  }
+
+  .capture-panels-close #capture-files-left-panel deep-chat {
+    margin-right: 90px;
+  }
+  .capture-panels-close #capture-files-right-panel .capture-files-text {
+    margin-left: -10px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .capture-panels-close #capture-files-left-panel deep-chat {
+    margin-right: 75px;
+  }
+  .capture-panels-close #capture-files-right-panel .capture-files-text {
+    margin-left: -10px;
+    min-width: 440px;
+  }
+}
+
+@media (max-width: 1050px) {
+  .capture-panels-distributed #capture-files-left-panel deep-chat {
+    margin-right: 65px;
+  }
+  .capture-panels-distributed #capture-files-right-panel .capture-files-text {
+    margin-left: 28px;
+  }
+
+  .capture-panels-close #capture-files-left-panel deep-chat {
+    margin-right: 40px;
+  }
+  .capture-panels-close #capture-files-right-panel .capture-files-text {
+    margin-left: -15px;
+  }
+}

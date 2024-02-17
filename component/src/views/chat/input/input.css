@@ -1,0 +1,21 @@
+@import url('./fileAttachments/fileAttachments.css');
+@import url('./fileAttachments/modal/modal.css');
+/* cameraModal needs to be imported after modal */
+@import url('./fileAttachments/modal/cameraModal.css');
+/* buttonContainers needs to be imported after modal */
+@import url('./buttonContainers/buttonContainers.css');
+/* inputButton needs to be after buttonContainers */
+@import url('./buttons/inputButton.css');
+@import url('./textInput/textInput.css');
+@import url('./dropup/dropup.css');
+
+#input {
+  width: 100%;
+  display: inline-flex;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: auto;
+  position: relative;
+  justify-content: center;
+}

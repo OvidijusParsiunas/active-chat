@@ -1,0 +1,8 @@
+#playground-information-icon {
+  width: 21px;
+  filter: var(--playground-information-filter);
+}
+
+.playground-header-button:hover > a > #playground-information-icon {
+  filter: var(--playground-information-filter-hover);
+}

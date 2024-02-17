@@ -1,0 +1,32 @@
+.input-button-container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Using absolute in order to not move the button element when the input el height increases */
+
+/* Input element padding will need to be changed accordingly */
+.inside-right {
+  position: absolute;
+  right: calc(10% + 0.35em);
+  bottom: 0.85em;
+}
+
+.inside-left {
+  position: absolute;
+  left: calc(10% + 0.35em);
+  bottom: 0.85em;
+}
+
+/* Input container element padding will need to be changed accordingly */
+.outside-left {
+  position: absolute;
+  right: calc(11px - 0.55em);
+  bottom: 0.88em;
+}
+
+.outside-right {
+  position: absolute;
+  left: calc(11px - 0.55em);
+  bottom: 0.88em;
+}

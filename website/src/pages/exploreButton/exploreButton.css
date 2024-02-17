@@ -1,0 +1,36 @@
+#explore-button-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 120px;
+}
+
+#explore-button {
+  color: white;
+  padding-right: 28px !important;
+  padding-left: 28px !important;
+  padding-bottom: 10px !important;
+  background-color: var(--explore-background-color-default);
+  margin-right: unset !important;
+  height: 50px !important;
+  font-size: 20px !important;
+  font-weight: 500 !important;
+  padding-top: 8px !important;
+  border-radius: 5px !important;
+}
+
+#explore-button:hover {
+  background-color: var(--explore-background-color-hover);
+}
+
+#explore-button:active {
+  background-color: var(--explore-background-color-click);
+}
+
+.explore-button-collapsed {
+  opacity: 0;
+}
+
+.explore-button-expanded {
+  transition: all 1.2s;
+  opacity: 1;
+}

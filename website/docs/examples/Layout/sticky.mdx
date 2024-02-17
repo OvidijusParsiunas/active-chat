@@ -1,0 +1,58 @@
+---
+sidebar_position: 1
+---
+
+# Sticky
+
+Example to help you stick the component to any side of the screen - furthering a chat-like experience to your users. The core method to achieve this is to
+set the [`style`](/docs/styles#style) property with _position: fixed_ and defining the side you want to component to sit on e.g. _right: 7%_.
+
+import ComponentContainer from '@site/src/components/table/componentContainer';
+import DeepChatBrowser from '@site/src/components/table/deepChatBrowser';
+import CodeToggle from '@site/src/components/toggle/codeToggle';
+import LineBreak from '@site/src/components/markdown/lineBreak';
+import BrowserOnly from '@docusaurus/BrowserOnly';
+import TabItem from '@theme/TabItem';
+import Tabs from '@theme/Tabs';
+
+<BrowserOnly>{() => require('@site/src/components/nav/autoNavToggle').readdAutoNavShadowToggle()}</BrowserOnly>
+
+<h3>Example code</h3>
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Frameworks) -->
+
+<deep-chat
+  style="border-radius: 10px; position: fixed; bottom: 0px; right: 7%; z-index: 1"
+  history='[
+    {"text": "Hey, how are you?", "role": "user"},
+    {"text": "I am doing great, thanks.", "role": "ai"},
+    {"text": "What is the meaning of life?", "role": "user"},
+    {"text": "Seeking fulfillment and personal growth.", "role": "ai"}
+  ]'
+  demo="true"
+  stream="true"
+></deep-chat>
+```
+
+<LineBreak></LineBreak>
+
+<ComponentContainer minHeight={1}>
+  <DeepChatBrowser
+    demo={true}
+    history={[
+      {text: 'Hey, how are you?', role: 'user'},
+      {text: 'I am doing great, thanks.', role: 'ai'},
+      {text: 'What is the meaning of life?', role: 'user'},
+      {text: 'Seeking fulfillment and personal growth.', role: 'ai'},
+    ]}
+    stream={true}
+    style={{
+      borderRadius: '10px',
+      position: 'fixed',
+      bottom: '0px',
+      right: '7%',
+      zIndex: 1,
+    }}
+  ></DeepChatBrowser>
+</ComponentContainer>

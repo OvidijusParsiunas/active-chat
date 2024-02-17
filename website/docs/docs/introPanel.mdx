@@ -1,0 +1,266 @@
+---
+sidebar_position: 9
+---
+
+# Intro Panel
+
+This is an initial overlay panel that is displayed in the center of the chat.
+
+### How To
+
+Insert your markup between the Deep Chat element tags and the component will render it inside the intro panel.
+
+import ComponentSuggestionButtons from '@site/src/components/table/componentSuggestionButtons';
+import ComponentContainer from '@site/src/components/table/componentContainer';
+import DeepChatBrowser from '@site/src/components/table/deepChatBrowser';
+import LineBreak from '@site/src/components/markdown/lineBreak';
+import BrowserOnly from '@docusaurus/BrowserOnly';
+import TabItem from '@theme/TabItem';
+import Tabs from '@theme/Tabs';
+
+<BrowserOnly>{() => require('@site/src/components/nav/autoNavToggle').readdAutoNavShadowToggle()}</BrowserOnly>
+
+#### Example
+
+<ComponentContainer>
+  <DeepChatBrowser style={{borderRadius: '8px'}} demo={true}>
+    <div
+      style={{
+        width: '200px',
+        backgroundColor: '#f3f3f3',
+        borderRadius: '8px',
+        padding: '12px',
+        paddingBottom: '15px',
+        display: 'none',
+      }}
+    >
+      <div>
+        <div style={{textAlign: 'center', marginBottom: '8px', fontSize: '16px'}}>
+          <b>Intro panel</b>
+        </div>
+        <div style={{fontSize: '15px', lineHeight: '20px'}}>
+          Insert a description to help your users understand how to use the component.
+        </div>
+      </div>
+    </div>
+  </DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat>
+  <div
+    style="
+      width: 200px;
+      background-color: #f3f3f3;
+      border-radius: 10px;
+      padding: 12px;
+      padding-bottom: 15px;
+      display: none;
+    "
+  >
+    <div>
+      <div style="text-align: center; margin-bottom: 8px; font-size: 16px">
+        <b>Intro panel</b>
+      </div>
+      <div style="font-size: 15px; line-height: 20px">
+        Insert a description to help your users understand how to use the component.
+      </div>
+    </div>
+  </div>
+</deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat demo="true" style="border-radius: 8px">
+  <div
+    style="
+      width: 200px;
+      background-color: #f3f3f3;
+      border-radius: 10px;
+      padding: 12px;
+      padding-bottom: 15px;
+      display: none;
+    "
+  >
+    <div>
+      <div style="text-align: center; margin-bottom: 8px; font-size: 16px">
+        <b>Intro panel</b>
+      </div>
+      <div style="font-size: 15px; line-height: 20px">
+        Insert a description to help your users understand how to use the component.
+      </div>
+    </div>
+  </div>
+</deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+:::tip
+Depending on your framework of choice - the intro panel may briefly be visibile before the component fully loads. To prevent this, you can set its `display` style
+to _"none"_ and it will automatically be set to _"block"_ once it is ready (this property needs to be set in a [`style`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/style)
+attribute/property and not in a [`class`](https://developer.mozilla.org/en-US/docs/Web/CSS/Class_selectors)).
+:::
+
+## Style and Events {#stylingAndEvents}
+
+Because Deep Chat is a [shadow element](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM) - the intro panel will not have access
+to the CSS classes and JavaScript in your app. To get around this, we recommend using the [`htmlClassUtilities`](/docs/messages/HTML#htmlClassUtilities) property
+which will allow you to define reusable styling and bind functions to your app's state.
+
+#### Example
+
+<ComponentSuggestionButtons></ComponentSuggestionButtons>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```text
+// Markup
+
+<deep-chat id="chat-element">
+  <div style="display: none">
+    <div class="custom-button">
+      <div class="custom-button-text">"Explain quantum computing"</div>
+    </div>
+    <div class="custom-button" style="margin-top: 15px">
+      <div class="custom-button-text">"Creative ideas for a birthday"</div>
+    </div>
+    <div class="custom-button" style="margin-top: 15px">
+      <div class="custom-button-text">"Hello World in JavaScript"</div>
+    </div>
+  </div>
+</deep-chat>
+
+// using JavaScript for a simplified example
+
+const chatElementRef = document.getElementById('chat-element');
+
+chatElementRef.htmlClassUtilities = {
+  ['custom-button']: {
+    events: {
+      click: (event) => {
+        const text = event.target.children[0].innerText;
+        chatElementRef.submitUserMessage(text.substring(1, text.length - 1));
+      },
+    },
+    styles: {
+      default: {backgroundColor: '#f2f2f2', borderRadius: '10px', padding: '10px', cursor: 'pointer', textAlign: 'center'},
+      hover: {backgroundColor: '#ebebeb'},
+      click: {backgroundColor: '#e4e4e4'},
+    },
+  },
+  ['custom-button-text']: {styles: {default: {pointerEvents: 'none'}}},
+};
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```text
+// Markup
+
+<deep-chat id="chat-element" style="height: 370px; border-radius: 8px">
+  <div style="display: none">
+    <div class="custom-button">
+      <div class="custom-button-text">"Explain quantum computing"</div>
+    </div>
+    <div class="custom-button" style="margin-top: 15px">
+      <div class="custom-button-text">"Creative ideas for a birthday"</div>
+    </div>
+    <div class="custom-button" style="margin-top: 15px">
+      <div class="custom-button-text">"Hello World in JavaScript"</div>
+    </div>
+  </div>
+</deep-chat>
+
+// using JavaScript for a simplified example
+
+const chatElementRef = document.getElementById('chat-element');
+
+chatElementRef.htmlClassUtilities = {
+  ['custom-button']: {
+    events: {
+      click: (event) => {
+        const text = event.target.children[0].innerText;
+        chatElementRef.submitUserMessage(text.substring(1, text.length - 1));
+      },
+    },
+    styles: {
+      default: {backgroundColor: '#f2f2f2', borderRadius: '10px', padding: '10px', cursor: 'pointer', textAlign: 'center'},
+      hover: {backgroundColor: '#ebebeb'},
+      click: {backgroundColor: '#e4e4e4'},
+    },
+  },
+  ['custom-button-text']: {styles: {default: {pointerEvents: 'none'}}},
+};
+
+chatElementRef.demo = true;
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `introPanelStyle` {#introPanelStyle}
+
+- Type: [`CustomStyle`](/docs/styles#CustomStyle)
+
+Controls the intro panel's parent-most element's style. This is most useful for changing the base styling of the automatically generated intro panels when using
+services in the [`directConnection`](/docs/directConnection) property.
+
+#### Example
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    introPanelStyle={{backgroundColor: '#fffeec'}}
+    directConnection={{openAI: {audio: true, key: 'placeholder-key'}}}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat
+  introPanelStyle='{"backgroundColor": "#fffeec"}'
+  directConnection='{"openAI": {"audio": true, "key": "placeholder-key"}}'
+></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  introPanelStyle='{"backgroundColor": "#fffeec"}'
+  style="border-radius: 8px"
+  directConnection='{"openAI": {"audio": true, "key": "placeholder-key"}}'
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+:::tip
+To remove an automatically generated panel - add empty `div` tags: `<deep-chat><div></div></deep-chat>` .
+:::
+
+<LineBreak></LineBreak>

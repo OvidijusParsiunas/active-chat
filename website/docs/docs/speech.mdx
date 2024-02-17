@@ -1,0 +1,795 @@
+---
+sidebar_position: 7
+---
+
+import azureCredentials from '/img/azure-credentials.png';
+
+# Speech
+
+<video className="documentation-video" controls>
+  <source src="https://github.com/OvidijusParsiunas/deep-chat/assets/18709577/e103a42e-b3a7-4449-b9db-73fed6d7876e" />
+</video>
+
+### `textToSpeech` {#textToSpeech}
+
+- Type: `true` | {<br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `voiceName?: string`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `lang?: string`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `pitch?: number`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `rate?: string`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `volume?: number` <br />
+  }
+
+When the chat receives a new text message - your device will automatically read it out. <br />
+`voiceName` is the name of the voice that will be used to read out the incoming message. Please note that different Operating Systems
+support different voices. Use the following code snippet to see the available voices for your device: `window.speechSynthesis.getVoices()` <br />
+`lang` is used to set the utterance language. See the following [`QA`](https://stackoverflow.com/questions/23733537/what-are-the-supported-languages-for-web-speech-api-in-html5) for the available options. <br />
+`pitch` sets the pitch at which the utterance will be spoken at. <br />
+`volume` set the volume at which the utterance will be spoken at.
+
+:::info
+Text to speech is using [`SpeechSynthesis`](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis) Web API
+which is supported differently across different devices.
+:::
+
+:::info
+Your mouse needs to be focused on the browser window for this to work.
+:::
+
+import ComponentContainer from '@site/src/components/table/componentContainer';
+import DeepChatBrowser from '@site/src/components/table/deepChatBrowser';
+import LineBreak from '@site/src/components/markdown/lineBreak';
+import BrowserOnly from '@docusaurus/BrowserOnly';
+import TabItem from '@theme/TabItem';
+import Tabs from '@theme/Tabs';
+
+<BrowserOnly>{() => require('@site/src/components/nav/autoNavToggle').readdAutoNavShadowToggle()}</BrowserOnly>
+<BrowserOnly>{() => require('@site/src/components/externalModules/speechToElement').checkWebSpeechSupport()}</BrowserOnly>
+
+#### Example
+
+<ComponentContainer>
+  <DeepChatBrowser
+    demo={true}
+    introMessage={{text: 'Send a message to hear the response.'}}
+    style={{borderRadius: '8px'}}
+    textToSpeech={{volume: 0.9}}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat textToSpeech='{"volume": 0.9}'></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  textToSpeech='{"volume": 0.9}'
+  introMessage='{"text": "Send a message to hear the response."}'
+  style="border-radius: 8px"
+  demo="true"
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `speechToText` {#speechToText}
+
+- Type: `true` | {<br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `webSpeech?:` `true` | [`WebSpeechOptions`](#WebSpeechOptions), <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; [`azure?: AzureOptions`](#AzureOptions), <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; [`textColor?: TextColor`](#TextColor), <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `displayInterimResults?: boolean`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `translations?: {[key: string]: string}`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; [`commands?: Commands`](#Commands), <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; [`button?: ButtonStyles`](#ButtonStyles) <br />
+  }
+
+- Default: _{webSpeech: true}_
+
+Transcribe your voice into text and control chat with commands.<br />
+`webSpeech` utilises [`Web Speech API`](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API/Using_the_Web_Speech_API) to transcribe your speech. <br />
+`azure` utilises [`Azure Cognitive Speech Services API`](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/speech-to-text) to transcribe your speech. <br />
+`textColor` is used to set the color of interim and final results text. <br />
+`displayInterimResults` controls whether interim results are displayed. <br />
+`translations` is a case-sensitive one-to-one mapping of words that will automatically be translated to others. <br />
+`commands` is used to set the phrases that will trigger various chat functionality. <br />
+`button` defines the styling used for the microphone button.
+
+<div className="web-speech-not-supported-error">
+  <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API/Using_the_Web_Speech_API">Web Speech API</a> is
+  not supported in this browser.
+</div>
+
+#### Example
+
+<ComponentContainer>
+  <DeepChatBrowser
+    demo={true}
+    introMessage={{text: 'Click the microphone to start transcribing your speech.'}}
+    style={{borderRadius: '8px'}}
+    speechToText={{
+      webSpeech: true,
+      translations: {hello: 'goodbye', Hello: 'Goodbye'},
+      commands: {resume: 'resume', settings: {commandMode: 'hello'}},
+      button: {position: 'outside-left'},
+    }}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat
+  speechToText='{
+    "webSpeech": true,
+    "translations": {"hello": "goodbye", "Hello": "Goodbye"},
+    "commands": {"resume": "resume", "settings": {"commandMode": "hello"}},
+    "button": {"position": "outside-left"}
+  }'
+></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  speechToText='{
+    "webSpeech": true,
+    "translations": {"hello": "goodbye", "Hello": "Goodbye"},
+    "commands": {"resume": "resume", "settings": {"commandMode": "hello"}},
+    "button": {"position": "outside-left"}
+  }'
+  introMessage='{"text": "Click the microphone to start transcribing your speech."}'
+  style="border-radius: 8px"
+  demo="true"
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+:::info
+If the [`microphone`](/docs/files#microphone) recorder is set - this will not be enabled. <br />
+:::
+
+:::info
+Speech to text functionality is provided by the [`Speech To Element`](https://github.com/OvidijusParsiunas/speech-to-element) library.
+:::
+
+:::caution
+Support for `webSpeech` varies across different browsers, please check the [`Can I use`](https://caniuse.com/?search=Web%20Speech%20API) Speech Recognition API section.
+(The yellow bars indicate that it is supported)
+:::
+
+<LineBreak></LineBreak>
+
+## Types
+
+Object types for [`speechToText`](#speechToText):
+
+### `WebSpeechOptions` {#WebSpeechOptions}
+
+- Type: {`language?: string`}
+
+`language` is used to set the recognition language. See the following [`QA`](https://stackoverflow.com/questions/23733537/what-are-the-supported-languages-for-web-speech-api-in-html5)
+for the full list.
+
+<div className="web-speech-not-supported-error">
+  <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API/Using_the_Web_Speech_API">Web Speech API</a> is
+  not supported in this browser.
+</div>
+
+#### Example
+
+<ComponentContainer>
+  <DeepChatBrowser
+    demo={true}
+    introMessage={{text: 'Click the microphone to start transcribing your speech.'}}
+    style={{borderRadius: '8px'}}
+    speechToText={{webSpeech: {language: 'en-US'}}}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat speechToText='{"webSpeech": {"language": "en-US"}}'></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  speechToText='{"webSpeech": {"language": "en-US"}}'
+  introMessage='{"text": "Click the microphone to start transcribing your speech."}'
+  style="border-radius: 8px"
+  demo="true"
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+:::note
+This service stops after a brief period of silence due to limitations in its API and not Deep Chat.
+:::
+
+<LineBreak></LineBreak>
+
+### `AzureOptions` {#AzureOptions}
+
+- Type: {<br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `region: string`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `retrieveToken?: () => Promise<string>`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `subscriptionKey?: string`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `token?: string`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `language?: string`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `stopAfterSilenceMs?: number` <br />
+  }
+
+- Default: _{stopAfterSilenceMs: 25000 (25 seconds)}_
+
+This object requires `region` and either `retrieveToken`, `subscriptionKey` or the `token` properties to be defined with it: <br />
+`region` is the location/region of your Azure speech resource. <br />
+`retrieveToken` is a function used to retrieve a new token for the Azure speech resource. It is the recommended property to use as
+it can retrieve the token from a secure server that will hide your credentials. Check out the [retrieval example](#retrieve-token-example) below
+and [starter server templates](https://github.com/OvidijusParsiunas/speech-to-element/tree/main/examples). <br />
+`subscriptionKey` is the subscription key for the Azure speech resource. <br />
+`token` is a temporary token for the Azure speech resource. <br />
+`language` is a BCP-47 string value to denote the recognition language. You can find the full
+list [here](https://docs.microsoft.com/azure/cognitive-services/speech-service/supported-languages). <br />
+`stopAfterSilenceMs` is the milliseconds of silence required for the microphone to automatically turn off. <br />
+
+:::info
+To use the Azure Speech To Text service - please add the [`Speech SDK`](https://www.npmjs.com/package/microsoft-cognitiveservices-speech-sdk) to your project.
+See [EXAMPLES](/examples/externalModules).
+:::
+
+#### Example
+
+<ComponentContainer>
+  <DeepChatBrowser
+    demo={true}
+    introMessage={{text: "Azure Speech To Text can't be used in this website as you need to set your credentials."}}
+    style={{borderRadius: '8px'}}
+    errorMessages={{
+      overrides: {
+        speechToText: 'Azure Speech To Text can not be used in this website as you need to set your credentials.',
+      },
+    }}
+    speechToText={{
+      azure: {
+        subscriptionKey: 'key',
+        region: 'region',
+        language: 'en-US',
+        stopAfterSilenceMs: 5000,
+      },
+    }}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat
+  speechToText='{
+    "azure": {
+      "subscriptionKey": "resource-key",
+      "region": "resource-region",
+      "language": "en-US",
+      "stopAfterSilenceMs": 5000
+    }
+  }'
+></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  speechToText='{
+    "azure": {
+      "subscriptionKey": "resource-key",
+      "region": "resource-region",
+      "language": "en-US",
+      "stopAfterSilenceMs": 5000
+    }
+  }'
+  errorMessages='{
+    "overrides": {"speechToText": "Azure Speech To Text can not be used in this website as you need to set your credentials."}
+  }'
+  introMessage='{"text": "Azure Speech To Text can't be used in this website as you need to set your credentials."}'
+  style="border-radius: 8px"
+  demo="true"
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+Location of speech service credentials in Azure Portal:
+
+<LineBreak></LineBreak>
+
+<img src={azureCredentials} />
+
+<LineBreak></LineBreak>
+
+:::caution
+The `subscriptionKey` and `token` properties should only be used for local/prototyping/demo purposes ONLY. When you are ready to deploy your application,
+please switch to using the `retrieveToken` property. Check out the example below and [starter server templates](https://github.com/OvidijusParsiunas/speech-to-element/tree/main/examples).
+
+:::
+
+<LineBreak></LineBreak>
+
+#### Retrieve token example
+
+<ComponentContainer>
+  <DeepChatBrowser
+    demo={true}
+    introMessage={{text: "Azure Speech To Text can't be used in this website as you need to set your region."}}
+    errorMessages={{
+      overrides: {
+        speechToText: 'Azure Speech To Text can not be used in this website as you need to set your region.',
+      },
+    }}
+    style={{borderRadius: '8px'}}
+    speechToText={{
+      azure: {
+        region: 'resource-region',
+        retrieveToken: async () => {
+          return fetch('http://localhost:8080/token')
+            .then((res) => res.text())
+            .then((token) => token)
+            .catch((error) => console.error('error'));
+        },
+      },
+    }}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Code">
+
+```javascript
+speechToText.speechToText = {
+  region: 'resource-region',
+  retrieveToken: async () => {
+    return fetch('http://localhost:8080/token')
+      .then((res) => res.text())
+      .then((token) => token);
+  },
+};
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `TextColor` {#TextColor}
+
+- Type: {`interim?: string`, `final?: string`}
+
+This object is used to set the color of `interim` and `final` results text. <br />
+
+#### Example
+
+<ComponentContainer>
+  <DeepChatBrowser
+    demo={true}
+    introMessage={{text: 'Send a message to hear the response.'}}
+    style={{borderRadius: '8px'}}
+    speechToText={{textColor: {interim: 'green', final: 'blue'}}}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat speechToText='{"textColor": {"interim": "green", "final": "blue"}}'></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  speechToText='{"textColor": {"interim": "green", "final": "blue"}}'
+  introMessage='{"text": "Send a message to hear the response."}'
+  style="border-radius: 8px"
+  demo="true"
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `Commands` {#Commands}
+
+- Type: {<br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `stop?: string`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `pause?: string`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `resume?: string`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `removeAllText?: string`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `submit?: string`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `commandMode?: string`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `settings?:` {`substrings?: boolean`, `caseSensitive?: boolean`} <br />
+  }
+
+- Default: _{settings: {substrings: true, caseSensitive: false}}_
+
+This object is used to set the phrases which will control chat functionality via speech. <br />
+`stop` is used to stop the speech service. <br />
+`pause` will temporarily stop the transcription and will re-enable it after the phrase for `resume` is spoken. <br />
+`removeAllText` is used to remove all input text. <br />
+`submit` will send the current input text. <br />
+`commandMode` is a phrase that is used to activate the command mode which will not transcribe any text and will wait for a command to be executed. To leave
+the command mode - you can use the phrase for the `resume` command. <br />
+`substrings` is used to toggle whether command phrases can be part of spoken words or if they are whole words. E.g. when this is set to _true_ and your command phrase is _"stop"_ -
+when you say "stopping" the command will be executed. However if it is set to _false_ - the command will only be executed if you say "stop". <br />
+`caseSensitive` is used to toggle if command phrases are case sensitive. E.g. if this is set to _true_ and your command phrase is _"stop"_ - when the service recognizes
+your speech as "Stop" it will not execute your command. On the other hand if it is set to _false_ it will execute.
+
+#### Example
+
+<ComponentContainer>
+  <DeepChatBrowser
+    demo={true}
+    introMessage={{
+      text: 'Click the microphone to start transcribing your speech. Command mode activation phrase is `command`.',
+    }}
+    style={{borderRadius: '8px'}}
+    speechToText={{
+      commands: {
+        stop: 'stop',
+        pause: 'pause',
+        resume: 'resume',
+        removeAllText: 'remove text',
+        submit: 'submit',
+        commandMode: 'command',
+        settings: {
+          substrings: true,
+          caseSensitive: false,
+        },
+      },
+    }}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat
+  speechToText='{
+    "commands": {
+      "stop": "stop",
+      "pause": "pause",
+      "resume": "resume",
+      "removeAllText": "remove text",
+      "submit": "submit",
+      "commandMode": "command",
+      "settings": {
+        "substrings": true,
+        "caseSensitive": false
+  }}}'
+></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  speechToText='{
+    "commands": {
+      "stop": "stop",
+      "pause": "pause",
+      "resume": "resume",
+      "removeAllText": "remove text",
+      "submit": "submit",
+      "commandMode": "command",
+      "settings": {
+        "substrings": true,
+        "caseSensitive": false
+  }}}'
+  introMessage='{"text": "Click the microphone to start transcribing your speech. Command mode activation phrase is `command`."}'
+  style="border-radius: 8px"
+  demo="true"
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `ButtonStyles` {#ButtonStyles}
+
+- Type: {[`commandMode?: ButtonStyles`](/docs/styles/#ButtonStyles), [`MicrophoneStyles`](/docs/styles/#MicrophoneStyles)}
+
+This object is used to define the styling for the microphone button. <br />
+It contains the same properties as the [`MicrophoneStyles`](/docs/styles/#MicrophoneStyles) object
+and an additional `commandMode` property which sets the button styling when the [`command mode`](#Commands) is activated. <br />
+
+#### Example
+
+<ComponentContainer>
+  <DeepChatBrowser
+    demo={true}
+    introMessage={{
+      text: 'Click the microphone to start transcribing your speech. Command mode activation phrase is `command`.',
+    }}
+    style={{borderRadius: '8px'}}
+    speechToText={{
+      button: {
+        commandMode: {
+          svg: {
+            styles: {
+              default: {
+                filter:
+                  'brightness(0) saturate(100%) invert(70%) sepia(70%) saturate(4438%) hue-rotate(170deg) brightness(92%) contrast(98%)',
+              },
+            },
+          },
+        },
+        active: {
+          svg: {
+            styles: {
+              default: {
+                filter:
+                  'brightness(0) saturate(100%) invert(10%) sepia(97%) saturate(7495%) hue-rotate(0deg) brightness(101%) contrast(107%)',
+              },
+            },
+          },
+        },
+        default: {
+          svg: {
+            styles: {
+              default: {
+                filter:
+                  'brightness(0) saturate(100%) invert(77%) sepia(9%) saturate(7093%) hue-rotate(32deg) brightness(99%) contrast(83%)',
+              },
+            },
+          },
+        },
+      },
+      commands: {
+        removeAllText: 'remove text',
+        commandMode: 'command',
+      },
+    }}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat
+  speechToText='{
+    "button": {
+      "commandMode": {
+        "svg": {
+          "styles": {
+            "default": {
+              "filter":
+                "brightness(0) saturate(100%) invert(70%) sepia(70%) saturate(4438%) hue-rotate(170deg) brightness(92%) contrast(98%)"
+      }}}},
+      "active": {
+        "svg": {
+          "styles": {
+            "default": {
+              "filter":
+                "brightness(0) saturate(100%) invert(10%) sepia(97%) saturate(7495%) hue-rotate(0deg) brightness(101%) contrast(107%))"
+      }}}},
+      "default": {
+        "svg": {
+          "styles": {
+            "default": {
+              "filter":
+                "brightness(0) saturate(100%) invert(77%) sepia(9%) saturate(7093%) hue-rotate(32deg) brightness(99%) contrast(83%)"
+    }}}}},
+    "commands": {
+      "removeAllText": "remove text",
+      "commandMode": "command"
+    }
+  }'
+></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  speechToText='{
+    "button": {
+      "commandMode": {
+        "svg": {
+          "styles": {
+            "default": {
+              "filter":
+                "brightness(0) saturate(100%) invert(70%) sepia(70%) saturate(4438%) hue-rotate(170deg) brightness(92%) contrast(98%)"
+      }}}},
+      "active": {
+        "svg": {
+          "styles": {
+            "default": {
+              "filter":
+                "brightness(0) saturate(100%) invert(10%) sepia(97%) saturate(7495%) hue-rotate(0deg) brightness(101%) contrast(107%)"
+      }}}},
+      "default": {
+        "svg": {
+          "styles": {
+            "default": {
+              "filter":
+                "brightness(0) saturate(100%) invert(77%) sepia(9%) saturate(7093%) hue-rotate(32deg) brightness(99%) contrast(83%)"
+    }}}}},
+    "commands": {
+      "removeAllText": "remove text",
+      "commandMode": "command"
+    }
+  }'
+  introMessage='{"text": "Click the microphone to start transcribing your speech. Command mode activation phrase is `command`."}'
+  style="border-radius: 8px"
+  demo="true"
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+:::tip
+You can use the [`CSSFilterConverter`](https://cssfilterconverter.com/) tool to generate filter values for the icon color.
+:::
+
+<LineBreak></LineBreak>
+
+## Demo
+
+This is the example used in the [demo video](https://github.com/OvidijusParsiunas/deep-chat/assets/18709577/e103a42e-b3a7-4449-b9db-73fed6d7876e). When replicating - make sure
+to add the Speech SDK to your project and add your resource properties.
+
+<ComponentContainer innerDisplay={'flex'}>
+  <DeepChatBrowser
+    demo={true}
+    style={{marginRight: '30px'}}
+    textToSpeech={true}
+    speechToText={{
+      azure: {
+        subscriptionKey: 'resource-key',
+        region: 'resource-region',
+      },
+      commands: {
+        submit: 'submit',
+        stop: 'stop',
+        removeAllText: 'remove all text',
+        pause: 'pause',
+        resume: 'continue',
+      },
+    }}
+    errorMessages={{
+      overrides: {
+        speechToText: 'Azure Speech To Text can not be used in this website as you need to set your region.',
+      },
+    }}
+  ></DeepChatBrowser>
+  <DeepChatBrowser
+    demo={true}
+    textToSpeech={true}
+    speechToText={{
+      azure: {
+        subscriptionKey: 'resource-key',
+        region: 'resource-region',
+      },
+      commands: {
+        submit: 'submit',
+        stop: 'stop',
+        removeAllText: 'remove',
+        pause: 'pause',
+        resume: 'continue',
+        commandMode: 'belfast',
+      },
+    }}
+    errorMessages={{
+      overrides: {
+        speechToText: 'Azure Speech To Text can not be used in this website as you need to set your region.',
+      },
+    }}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<div style="display: flex">
+  <deep-chat
+    speechToText='{
+      "azure": {
+        "subscriptionKey": "resource-key",
+        "region": "resource-region"
+      },
+      "commands": {
+        "stop": "stop",
+        "pause": "pause",
+        "resume": "resume",
+        "removeAllText": "remove text",
+        "submit": "submit",
+        "commandMode": "command"
+    }}'
+    errorMessages='{
+      "overrides": {"speechToText": "Azure Speech To Text can not be used in this website as you need to set your credentials."}
+    }'
+    style="margin-right: 30px"
+    demo="true"
+  ></deep-chat>
+  <deep-chat
+    speechToText='{
+      "commands": {
+        "azure": {
+          "subscriptionKey": "resource-key",
+          "region": "resource-region"
+        },
+        "stop": "stop",
+        "pause": "pause",
+        "resume": "resume",
+        "removeAllText": "remove text",
+        "submit": "submit",
+        "commandMode": "command"
+    }}'
+    errorMessages='{
+      "overrides": {"speechToText": "Azure Speech To Text can not be used in this website as you need to set your credentials."}
+    }'
+    demo="true"
+  ></deep-chat>
+</div>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>

@@ -1,0 +1,86 @@
+---
+sidebar_position: 1
+---
+
+# Frameworks
+
+The following are links to live UI frameworks/libraries that can be used to implement Deep Chat.
+
+import reactLogo from '/img/reactLogo.png';
+import vueLogo from '/img/vueLogo.png';
+import svelteLogo from '/img/svelteLogo.png';
+import angularLogo from '/img/angularLogo.png';
+import solidLogo from '/img/solidLogo.png';
+import nextLogo from '/img/nextLogo.png';
+import vanillaJSLogo from '/img/vanillaJSLogo.png';
+
+<img src={reactLogo} width="30" style={{float: 'left', marginRight: '10px', marginTop: '26px'}} />
+
+## React
+
+Make sure to use the `deep-chat-react` package and define the element tag as `DeepChat`.
+
+[Click for Live Example](https://stackblitz.com/edit/deep-chat-react?file=src%2FApp.tsx) <br />
+[Click for GitHub](https://github.com/OvidijusParsiunas/deep-chat/tree/main/example-servers/ui)
+
+<img src={vueLogo} width="28" style={{float: 'left', marginRight: '10px', marginTop: '27px'}} />
+
+## Vue
+
+Depending on your configuration, you may notice a _"Failed to resolve component..."_ warning in the console. This can be fixed by following
+the simple steps outlined [here](https://vuejs.org/guide/extras/web-components.html#using-custom-elements-in-vue).
+
+[Click for Live Example - Vue 3](https://stackblitz.com/edit/deep-chat-vue3?file=src%2FApp.vue) <br />
+[Click for Live Example - Vue 2](https://codesandbox.io/s/deep-chat-vue2-cdqpt2?file=/src/App.vue)
+
+<img src={svelteLogo} width="23" style={{float: 'left', marginRight: '13px', marginTop: '25px'}} />
+
+## Svelte
+
+The Svelte browser app should work right out of the box. The SvelteKit implementation requires the component to be imported using `onMount` and
+`deep-chat` to be rendered when it has loaded.
+
+[Click for Live Example - Svelte](https://stackblitz.com/edit/deep-chat-svelte?file=src%2FApp.svelte) <br />
+[Click for Live Example - SvelteKit](https://stackblitz.com/edit/deep-chat-sveltekit?file=src%2Froutes%2F%2Bpage.svelte)
+
+<img src={angularLogo} width="36" style={{float: 'left', marginRight: '9px', marginTop: '22px'}} />
+
+## Angular
+
+Please add the `CUSTOM_ELEMENTS_SCHEMA` into your module's `schemas` array and import the component
+as `import 'deep-chat';`. See this [blog](https://www.thisdot.co/blog/how-to-integrate-web-components-using-lit-in-angular) for more information.
+
+[Click for Live Example](https://stackblitz.com/edit/deep-chat-angular?file=src%2Fapp%2Fapp.component.ts)
+
+<img src={solidLogo} width="28" style={{float: 'left', marginRight: '12px', marginTop: '25px'}} />
+
+## Solid
+
+Make sure to declare a `solid-js` module when working with TypeScript and use hyphen-case syntax for properties that are accessed directly through markup.
+
+[Click for Live Example](https://stackblitz.com/edit/deep-chat-solid?file=src%2FApp.tsx)
+
+<img src={nextLogo} width="28" style={{float: 'left', marginRight: '12px', marginTop: '25px'}} />
+
+## Next
+
+Use the `deep-chat-react` package and lazy load it using Next's `dynamic` extension.
+
+[Click for Live Example](https://stackblitz.com/edit/deep-chat-nextjs?file=pages%2Findex.tsx) <br />
+[Click for GitHub](https://github.com/OvidijusParsiunas/deep-chat/tree/main/example-servers/nextjs)
+
+<img src={vanillaJSLogo} width="28" style={{float: 'left', marginRight: '12px', marginTop: '25px'}} />
+
+## Vanilla JS
+
+The Live Example demonstrates how to set values via properties (recommended) and attributes, which should also be used as a
+fallback approach for other frameworks. This example also demonstrates how to import the component via a CDN.
+
+[Click for Live Example](https://codesandbox.io/s/deep-chat-vanillajs-v2ywnv?file=/index.html)
+
+## Troubleshooting
+
+If your platform has not been listed and Vanilla JS approach does not work as fallback, or if you are having issues with any of
+the existing examples; please see [**github issues**](https://github.com/OvidijusParsiunas/deep-chat/issues) or create
+a [**new issue ticket**](https://github.com/OvidijusParsiunas/deep-chat/issues/new) and we will look into
+it as soon as possible.

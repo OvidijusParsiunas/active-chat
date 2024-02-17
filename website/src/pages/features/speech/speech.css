@@ -1,0 +1,76 @@
+#speech {
+  margin-top: 120px;
+  margin-bottom: 90px;
+  background: linear-gradient(120deg, var(--speech-gradient-start-color) 0%, var(--speech-gradient-end-color) 100%);
+}
+
+#speech-sub-header {
+  padding-top: 40px;
+}
+
+#speech-content {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+  padding-bottom: 40px;
+}
+
+#speech-left-panel {
+  justify-content: center;
+  display: flex;
+}
+
+#speech-right-panel deep-chat {
+  margin-left: 150px;
+}
+
+#speech-text {
+  text-align: center;
+  font-size: 20px;
+  width: 75%;
+  max-width: 570px;
+  min-width: 433px;
+  margin-top: 100px;
+  margin-right: 14px;
+  margin-left: auto;
+}
+
+#speech-right-panel {
+  display: flex;
+}
+
+.speech-panels-hidden {
+  opacity: 0;
+}
+
+.speech-panels-visible {
+  opacity: 1;
+  transition: all 1.5s;
+}
+
+@media (max-width: 1160px) {
+  #speech-text {
+    margin-right: 14px;
+  }
+  #speech-right-panel deep-chat {
+    margin-left: 110px;
+  }
+}
+
+@media (max-width: 1100px) {
+  #speech-text {
+    margin-right: 10px;
+  }
+  #speech-right-panel deep-chat {
+    margin-left: 100px;
+  }
+}
+
+@media (max-width: 1050px) {
+  #speech-text {
+    margin-right: -20px;
+  }
+  #speech-right-panel deep-chat {
+    margin-left: 70px;
+  }
+}

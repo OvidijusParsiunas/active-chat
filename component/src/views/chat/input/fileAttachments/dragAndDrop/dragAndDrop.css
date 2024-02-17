@@ -1,0 +1,9 @@
+#drag-and-drop {
+  position: absolute;
+  display: none;
+  z-index: 10;
+  height: calc(100% - 10px);
+  width: calc(100% - 10px);
+  background-color: #70c6ff4d;
+  border: 5px dashed #6dafff;
+}

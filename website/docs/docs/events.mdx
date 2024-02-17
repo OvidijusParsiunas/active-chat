@@ -1,0 +1,169 @@
+---
+sidebar_position: 11
+---
+
+# Events
+
+Events can be observed in two ways, either by assigning a function to a property or by listening to custom events fired from the component element.
+
+### `onNewMessage` {#onNewMessage}
+
+- Function: (`newMessage: Body`) => `void`
+- Event: `new-message`
+- `Body`: {[`message: MessageContent`](/docs/messages#MessageContent), `isInitial: boolean`}
+
+Triggered when a message is sent from the user and recieved from the target service. <br />
+`message` encompasses all of the message contents. <br />
+`isInitial` is used to determine whether if the message is from the prepopulated [`history`](/docs/messages#history) property.
+
+#### Example
+
+import ComponentContainerMethods from '@site/src/components/table/componentContainerMethods';
+import ComponentContainerEvents from '@site/src/components/table/componentContainerEvents';
+import ComponentContainer from '@site/src/components/table/componentContainer';
+import DeepChatBrowser from '@site/src/components/table/deepChatBrowser';
+import LineBreak from '@site/src/components/markdown/lineBreak';
+import BrowserOnly from '@docusaurus/BrowserOnly';
+import TabItem from '@theme/TabItem';
+import Tabs from '@theme/Tabs';
+
+<BrowserOnly>{() => require('@site/src/components/nav/autoNavToggle').readdAutoNavShadowToggle()}</BrowserOnly>
+
+<ComponentContainerEvents propertyName={'onNewMessage'}>
+  <DeepChatBrowser style={{borderRadius: '8px'}} demo={true}></DeepChatBrowser>
+</ComponentContainerEvents>
+
+<Tabs>
+<TabItem value="js" label="Function">
+
+```html
+chatElementRef.onNewMessage = (message) => { console.log(message); };
+```
+
+</TabItem>
+<TabItem value="py" label="Event">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+chatElementRef.addEventListener('new-message', (event) => { console.log(event.detail); });
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `onClearMessages` {#onClearMessages}
+
+- Function: () => `void`
+- Event: `clear-messages`
+
+Triggered when the [`clearMessages`](/docs/methods#clearMessages) method has been executed. The core purpose of this is to help track messages state.
+
+#### Example
+
+<ComponentContainerEvents propertyName={'onClearMessages'} withMethod={true}>
+  <ComponentContainerMethods propertyName={'clearMessages'} displayResults={false} withEvent={true}>
+    <DeepChatBrowser
+      style={{borderRadius: '8px'}}
+      demo={true}
+      history={[
+        {text: 'What is 2 + 2?', role: 'user'},
+        {text: 'The result of 2 + 2 is 4.', role: 'ai'},
+        {text: 'Wrong, it is 5.', role: 'user'},
+        {text: 'You are correct, the result of 2 + 2 is 5.', role: 'ai'},
+      ]}
+    ></DeepChatBrowser>
+  </ComponentContainerMethods>
+</ComponentContainerEvents>
+
+<Tabs>
+<TabItem value="js" label="Function">
+
+```html
+chatElementRef.onClearMessages = () => { console.log("Messages cleared"); };
+```
+
+</TabItem>
+<TabItem value="py" label="Event">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+chatElementRef.addEventListener('messages-cleared', () => { console.log("Messages cleared"); });
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `onComponentRender` {#onComponentRender}
+
+- Function: (`chatElementRef: DeepChat`) => `void`
+- Event: `render`
+
+Triggered when the component has finished rendering on the browser's window.
+
+#### Example
+
+<Tabs>
+<TabItem value="js" label="Function">
+
+```html
+chatElementRef.onComponentRender = () => { console.log("Finished rendering"); };
+```
+
+</TabItem>
+<TabItem value="py" label="Event">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+chatElementRef.addEventListener('render', () => { console.log("Finished rendering"); });
+```
+
+</TabItem>
+</Tabs>
+
+:::note
+Setting a property's value on the DeepChat element when this event is triggered can cause infinite recursion
+as the component will re-render every time a property value is set. Use a flag variable to prevent this - [example](https://github.com/OvidijusParsiunas/deep-chat/issues/99#issuecomment-1899202984).
+:::
+
+<LineBreak></LineBreak>
+
+### `onError` {#onError}
+
+- Function: (error: string) => `void`
+- Event: `error`
+
+Triggered when an error message appears in the chat.
+
+#### Example
+
+<ComponentContainerEvents propertyName={'onError'}>
+  <DeepChatBrowser style={{borderRadius: '8px'}} demo={{response: {error: 'custom error'}}}></DeepChatBrowser>
+</ComponentContainerEvents>
+
+<Tabs>
+<TabItem value="js" label="Function">
+
+```html
+chatElementRef.onError = (error) => { console.log(error); };
+```
+
+</TabItem>
+<TabItem value="py" label="Event">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+chatElementRef.addEventListener('error', (event) => { console.log(event.detail); });
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>

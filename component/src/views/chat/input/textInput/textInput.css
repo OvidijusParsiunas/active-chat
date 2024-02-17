@@ -1,0 +1,74 @@
+#text-input-container {
+  background-color: white;
+  width: 80%;
+  display: flex;
+  border: 1px solid #0000001a;
+  border-radius: 5px;
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 1px 12px;
+  overflow-y: auto;
+  max-height: 200px;
+  position: relative;
+}
+
+.text-input-container-left-adjustment {
+  margin-left: 1.5em;
+}
+
+.text-input-container-right-adjustment {
+  margin-right: 1.5em;
+}
+
+.text-input-container-left-small-adjustment {
+  margin-left: 1.1em;
+}
+
+.text-input-container-left-small-adjustment > .outside-left {
+  right: calc(14px - 0.55em);
+}
+
+.text-input-container-right-small-adjustment {
+  margin-right: 1.1em;
+}
+
+.text-input-container-right-small-adjustment > .outside-right {
+  left: calc(14px - 0.55em);
+}
+
+#text-input {
+  text-align: left;
+  outline: none;
+  word-wrap: break-word;
+  /* test in Safari using following text - seduijasiudj iasojd iasdjas oijdioa joisaj doij */
+  line-break: auto;
+  /* Use these properties to inline all of the text  */
+  /* white-space: nowrap;
+  overflow: hidden; */
+}
+
+/* the motivation behind using the class is to allow the adjustments to change it */
+/* need to use width to allow the mouse to select element when there is no text and not to have horizontal overflow */
+.text-input-styling {
+  padding: 0.4em 0.5em 0.4em 0.5em;
+  /* the combination of these two properties is used to automatically set the text width to the padding */
+  overflow: overlay;
+  width: 100%;
+}
+
+.text-input-inner-left-adjustment {
+  padding-left: 2.2em;
+}
+
+.text-input-inner-right-adjustment {
+  padding-right: 2em;
+}
+
+.text-input-disabled {
+  pointer-events: none;
+  user-select: none;
+}
+
+.text-input-placeholder {
+  color: grey;
+}

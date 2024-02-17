@@ -1,0 +1,43 @@
+@import url('./uploadFile/uploadFileButtonIcon.css');
+@import url('./microphone/transcriptionText.css');
+@import url('./microphone/microphoneButton.css');
+@import url('./submit/submitButton.css');
+@import url('./submit/loadingIcon.css');
+
+.input-button {
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 0.2em;
+  user-select: none;
+}
+
+.input-button-svg {
+  width: 1.65em;
+  height: 1.65em;
+}
+
+.input-button:hover {
+  background-color: #9c9c9c2e;
+}
+
+.input-button:active {
+  background-color: #9c9c9c5e;
+}
+
+.loading-button {
+  cursor: auto;
+}
+
+.loading-button:hover {
+  background-color: unset;
+}
+
+.text-button {
+  filter: unset !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 4px;
+  margin-right: 4px;
+  height: 1.6em;
+}

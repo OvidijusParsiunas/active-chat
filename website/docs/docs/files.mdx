@@ -1,0 +1,842 @@
+---
+sidebar_position: 8
+---
+
+# Files
+
+Properties used for sending files.
+
+:::info
+When any of these properties are used, [`dragAndDrop`](#dragAndDrop) is enabled automatically.
+:::
+
+<LineBreak></LineBreak>
+
+import ComponentContainer from '@site/src/components/table/componentContainer';
+import DeepChatBrowser from '@site/src/components/table/deepChatBrowser';
+import LineBreak from '@site/src/components/markdown/lineBreak';
+import BrowserOnly from '@docusaurus/BrowserOnly';
+import TabItem from '@theme/TabItem';
+import Tabs from '@theme/Tabs';
+
+<BrowserOnly>{() => require('@site/src/components/nav/autoNavToggle').readdAutoNavShadowToggle()}</BrowserOnly>
+
+### `images` {#images}
+
+- Type: `true` | [`FilesServiceConfig`](#FilesServiceConfig)
+
+Creates a button that allows the user to upload images. <br />
+This property can be set with a boolean _true_ or configured with a [`FilesServiceConfig`](#FilesServiceConfig) object.
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    introMessage={{text: 'Use the image button or drop a file to attach it to the next outgoing message.'}}
+    history={[{files: [{src: '/img/city.jpeg', type: 'image'}], role: 'user'}]}
+    demo={true}
+    images={true}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat images="true"></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  images="true"
+  demo="true"
+  style="border-radius: 8px"
+  introMessage='{"text": "Use the image button or drop a file to attach it to the next outgoing message."}'
+  history='[{"files": [{"src": "path-to-file.jpeg", "type": "image"}], "role": "user"}]'
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `gifs` {#gifs}
+
+- Type: `true` | [`FilesServiceConfig`](#FilesServiceConfig)
+
+Creates a button that allows the user to upload GIFs. <br />
+This property can be set with a boolean _true_ or configured with a [`FilesServiceConfig`](#FilesServiceConfig) object.
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    introMessage={{text: 'Use the GIF button or drop a file to attach it to the next outgoing message.'}}
+    history={[{files: [{src: '/img/example-gif.gif', type: 'image'}], role: 'user'}]}
+    demo={true}
+    gifs={true}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat gifs="true"></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  gifs="true"
+  demo="true"
+  style="border-radius: 8px"
+  introMessage='{"text": "Use the GIF button or drop a file to attach it to the next outgoing message."}'
+  history='[{"files": [{"src": "path-to-file.gif", "type": "image"}], "role": "user"}]'
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `camera` {#camera}
+
+- Type: `true` | [`CameraFilesServiceConfig`](#CameraFilesServiceConfig)
+
+Creates a button that allows the user to capture images using a web camera. <br />
+This property can be set with a boolean _true_ or configured with a [`CameraFilesServiceConfig`](#CameraFilesServiceConfig) object.
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    introMessage={{text: 'Use the camera button to open up a modal for capturing photos.'}}
+    history={[{files: [{src: '/img/cat.jpg', type: 'image'}], role: 'user'}]}
+    demo={true}
+    camera={true}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat camera="true"></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  camera="true"
+  demo="true"
+  style="border-radius: 8px"
+  introMessage='{"text": "Use the camera button to open up a modal for capturing photos."}'
+  history='[{"files": [{"src": "path-to-file.jpeg", "type": "image"}], "role": "user"}]'
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `audio` {#audio}
+
+- Type: `true` | [`FilesServiceConfig`](#FilesServiceConfig)
+
+Creates a button that allows the user to upload audio files. <br />
+This property can be set with a boolean _true_ or configured with a [`FilesServiceConfig`](#FilesServiceConfig) object.
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    introMessage={{text: 'Use the audio button or drop a file to attach it to the next outgoing message.'}}
+    history={[{files: [{src: '/audio/cantinaBand.wav', type: 'audio'}], role: 'user'}]}
+    demo={true}
+    audio={true}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat audio="true"></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  audio="true"
+  demo="true"
+  style="border-radius: 8px"
+  introMessage='{"text": "Use the audio button or drop a file to attach it to the next outgoing message."}'
+  history='[{"files": [{"src": "path-to-file.wav", "type": "audio"}], "role": "user"}]'
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `microphone` {#microphone}
+
+- Type: `true` | [`MicrophoneFilesServiceConfig`](#MicrophoneFilesServiceConfig)
+
+Creates a button that allows the user to record audio files using the microphone. <br />
+This property can be set with a boolean _true_ or configured with a [`MicrophoneFilesServiceConfig`](#MicrophoneFilesServiceConfig) object.
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    introMessage={{text: 'Use the microphone button or drop a file to attach it to the next outgoing message.'}}
+    history={[{files: [{src: '/audio/jeff.mp3', type: 'audio'}], role: 'user'}]}
+    demo={true}
+    microphone={true}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat microphone="true"></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  microphone="true"
+  demo="true"
+  style="border-radius: 8px"
+  introMessage='{"text": "Use the microphone button or drop a file to attach it to the next outgoing message."}'
+  history='[{"files": [{"src": "path-to-file.wav", "type": "audio"}], "role": "user"}]'
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `mixedFiles` {#mixedFiles}
+
+- Type: `true` | [`FilesServiceConfig`](#FilesServiceConfig)
+
+Creates a button that allows the user to upload any kind of files. <br />
+This property can be set with a boolean _true_ or configured with a [`FilesServiceConfig`](#FilesServiceConfig) object.
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    introMessage={{text: 'Use the file button or drop a file to attach it to the next outgoing message.'}}
+    history={[{files: [{src: '/text/text.txt', name: 'text-file.txt', type: 'file'}], role: 'user'}]}
+    demo={true}
+    mixedFiles={true}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat mixedFiles="true"></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  mixedFiles="true"
+  demo="true"
+  style="border-radius: 8px"
+  introMessage='{"text": "Use the file button or drop a file to attach it to the next outgoing message."}'
+  history='[{"files": [{"src": "path-to-file.txt", "name": "text-file.txt", "type": "file"}], "role": "user"}]'
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `dragAndDrop` {#dragAndDrop}
+
+- Type: `boolean` | [`CustomStyle`](/docs/styles#CustomStyle)
+- Default: _false_
+
+Configuration for the drag and drop functionality. If any of the above properties are defined or you have defined a service in the [`directConnection`](/docs/directConnection) property which allows file uploads -
+this will automatically be defaulted to _true_. Once the user drops a file, it will only be accepted if any of the above properties allow it via their default or custom [`acceptedFormats`](#FileAttachments) property's value. For example if
+_".png,.jpg"_ in [`images`](/docs/files#images) are the only file types allowed, a dropped _.txt_ file will not be accepted.
+
+#### Example
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    introMessage={{text: 'Drag and drop a file to observe the result.'}}
+    dragAndDrop={{backgroundColor: '#80ff704d', border: '5px dashed #52c360'}}
+    mixedFiles={true}
+    demo={true}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat dragAndDrop='{"backgroundColor": "#80ff704d", "border": "5px dashed #52c360"}'></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  dragAndDrop='{"backgroundColor": "#80ff704d", "border": "5px dashed #52c360"}'
+  mixedFiles="true"
+  demo="true"
+  style="border-radius: 8px"
+  introMessage='{"text": "Drag and drop a file to observe the result."}'
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+## Types
+
+Types shared by files properties:
+
+### `FilesServiceConfig` {#FilesServiceConfig}
+
+- Type: {[`connect?: Connect`](/docs/connect#connect-1), [`files?: FileAttachments`](#FileAttachments), [`button?: Button`](/docs/styles#Button)}
+
+Object used to configure the ability for the component to send files. <br />
+`connect` object is used to override the default service connection settings when sending a file. <br />
+`files` controls what files can be uploaded to the component. <br />
+`button` is used to customize the the button element that enables the files to be uploaded. <br />
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    introMessage={{text: 'Use the audio button or drop a file to attach it to the next outgoing message.'}}
+    demo={true}
+    audio={{
+      connect: {url: 'https://customapi.com/audio'},
+      files: {acceptedFormats: '.mp3,.wav'},
+      button: {position: 'outside-left'},
+    }}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat
+  audio='{
+    "connect": {"url": "https://customapi.com/audio"},
+    "files": {"acceptedFormats": ".mp3,.wav"},
+    "button": {"position": "outside-left"}
+  }'
+></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  audio='{
+    "connect": {"url": "https://customapi.com/audio"},
+    "files": {"acceptedFormats": ".mp3,.wav"},
+    "button": {"position": "outside-left"}
+  }'
+  demo="true"
+  style="border-radius: 8px"
+  introMessage='{"text": "Use the audio button or drop a file to attach it to the next outgoing message."}'
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `FileAttachments` {#FileAttachments}
+
+- Type: {<br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `maxNumberOfFiles?: number`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `acceptedFormats?: string`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; [`infoModal?: InfoModal`](#InfoModal) <br />
+  }
+
+- Default: _{<br />
+  &nbsp;&nbsp;&nbsp;&nbsp; acceptedFormats: <br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for images: ".png,.jpg", <br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for audio: ".4a,.mp3,.webm,.mp4,.mpga,.wav,.mpeg,.m4a", <br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for gifs: ".gif" <br />
+  }_
+
+Used to configure what files the component can accept. <br />
+`maxNumberOfFiles` controls the maximum number of files that can be sent within one message. <br />
+`acceptedFormats` is used to define the accepted file formats. This is a string that uses the same syntax
+as the [accept](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/accept) attributes
+in [input elements](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file). The [`dragAndDrop`](#dragAndDrop) feature will also
+use this value to verify the dropped files. <br />
+`infoModal` is used to display noteworthy information when the user clicks the button to browse for a file. <br />
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    introMessage={{text: 'Use the image button or drop a file to attach it to the next outgoing message.'}}
+    demo={true}
+    images={{
+      files: {
+        maxNumberOfFiles: 2,
+        acceptedFormats: '.jpg,.png',
+      },
+    }}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat images='{"files": {"maxNumberOfFiles": 2, "acceptedFormats": ".jpg,.png"}}'></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  images='{"files": {"maxNumberOfFiles": 2, "acceptedFormats": ".jpg,.png"}}'
+  demo="true"
+  style="border-radius: 8px"
+  introMessage='{"text": "Use the image button or drop a file to attach it to the next outgoing message."}'
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `InfoModal` {#InfoModal}
+
+- Type: {`textMarkDown: string`, `openModalOnce?: boolean`, [`containerStyle?: CustomStyle`](/docs/styles#CustomStyle)}
+- Default: _{openModalOnce: false}_
+
+A modal that is triggered when a user clicks on a button to upload a file. It is useful for scenarios when a user needs some
+clarification of how their data will be handled or other noteworty information. <br />
+`textMarkDown` is a string that uses [Markdown](https://www.markdownguide.org/basic-syntax/) syntax to generate the modal content.
+Use this [Playground](https://jonschlinkert.github.io/remarkable/demo/) to help customize your content. <br />
+`openModalOnce` controls whether the modal is opened when the user clicks a button once or every time. <br />
+`containerStyle` is used to augment the basic styling of the modal element.
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    introMessage={{text: 'Click the image button to open up the modal.'}}
+    demo={true}
+    images={{
+      files: {
+        infoModal: {
+          textMarkDown:
+            'Please note our terms of service for sending files: [link](https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley).',
+          openModalOnce: true,
+          containerStyle: {borderRadius: '5px'},
+        },
+      },
+    }}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat
+  images='{
+    "files": {
+      "infoModal": {
+        "textMarkDown":
+          "Please note our terms of service for sending files: [link](https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley).",
+        "openModalOnce": true,
+        "containerStyle": {"borderRadius": "5px"}
+      }
+    }
+  }'
+></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  images='{
+    "files": {
+      "infoModal": {
+        "textMarkDown":
+          "Please note our terms of service for sending files: [link](https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley).",
+        "openModalOnce": true,
+        "containerStyle": {"borderRadius": "5px"}
+      }
+    }
+  }'
+  demo="true"
+  style="border-radius: 8px"
+  introMessage='{"text": "Click the image button to open up the modal."}'
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `CameraFilesServiceConfig` {#CameraFilesServiceConfig}
+
+- Type: {<br />
+  &nbsp;&nbsp;&nbsp;&nbsp; [`connect?: Connect`](/docs/connect#connect-1), <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; [`files?: CameraFiles`](#CameraFiles), <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; [`button?: Button`](/docs/styles#Button), <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; [`modalContainerStyle?: CustomStyle`](/docs/styles#CustomStyle) <br />
+  }
+
+Configuration for capturing images using a web camera and handling the resultant files. <br />
+`connect` is used to override the default connection settings when sending image files. <br />
+`files` is used to configure the files that are captured by the camera. <br />
+`button` is used to customize the button element used for the camera. <br />
+`modalContainerStyle` is used to customize the modal used to display the camera. <br />
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    introMessage={{text: 'Use the camera button to open up a modal for capturing photos.'}}
+    demo={true}
+    camera={{
+      connect: {url: 'https://customapi.com/image-from-camera'},
+      files: {format: 'png'},
+      button: {position: 'outside-left'},
+      modalContainerStyle: {borderRadius: '5px'},
+    }}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat
+  camera='{
+    "connect": {"url": "https://customapi.com/image-from-camera"},
+    "files": {"format": "png"},
+    "button": {"position": "outside-left"},
+    "modalContainerStyle": {"borderRadius": "5px"}
+  }'
+></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  camera='{
+    "connect": {"url": "https://customapi.com/image-from-camera"},
+    "files": {"format": "png"},
+    "button": {"position": "outside-left"},
+    "modalContainerStyle": {"borderRadius": "5px"}
+  }'
+  demo="true"
+  style="border-radius: 8px"
+  introMessage='{"text": "Use the camera button to open up a modal for capturing photos."}'
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `CameraFiles` {#CameraFiles}
+
+- Type: {<br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `format?:` `"png"` | `"jpeg"`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `dimensions?:` {`width?: number`, `height?: number`} <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `maxNumberOfFiles?: number`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `acceptedFormats?: string` <br />
+  }
+
+- Default: _{<br />
+  &nbsp;&nbsp;&nbsp;&nbsp; format: "png", <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; acceptedFormats: "image/\*" <br />
+  }_
+
+Configuration for the captured files by the camera. <br />
+`format` is the resultant format of the image file that is produced by capturing a photograph. <br />
+`dimensions` are used to set the pixel area of the photograph. Please note that this is largely controlled by the [`mediaDevice`](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia)
+of the user's browser, so if the dimensions you have provided skew the photograph in a particular way they may be overriden.<br />
+`maxNumberOfFiles` is the limit to the number of images that can be captured for one message. <br />
+`acceptedFormats` is used to limit the allowed files that can be dropped via the [`dragAndDrop`](#dragAndDrop) functionality as this feature will enable it automatically.
+It uses the same syntax as the [accept](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/accept) attributes
+in [input elements](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file). If the configuration in [`images`](#images) also uses
+the `acceptedFormats` property, it will override this one.<br />
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    introMessage={{text: 'Use the camera button to open up a modal for capturing photos.'}}
+    demo={true}
+    camera={{
+      files: {
+        format: 'png',
+        dimensions: {width: 450, height: 600},
+        maxNumberOfFiles: 2,
+        acceptedFormats: '.jpg,.png',
+      },
+    }}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat
+  camera='{
+    "files": {
+      "format": "png",
+      "dimensions": {"width": 450, "height": 600},
+      "maxNumberOfFiles": 2,
+      "acceptedFormats": ".jpg,.png"
+    }
+  }'
+></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  camera='{
+    "files": {
+      "format": "png",
+      "dimensions": {"width": 450, "height": 600},
+      "maxNumberOfFiles": 2,
+      "acceptedFormats": ".jpg,.png"
+    }
+  }'
+  demo="true"
+  style="border-radius: 8px"
+  introMessage='{"text": "Use the camera button to open up a modal for capturing photos."}'
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `MicrophoneFilesServiceConfig` {#MicrophoneFilesServiceConfig}
+
+- Type: {<br />
+  &nbsp;&nbsp;&nbsp;&nbsp; [`connect?: Connect`](/docs/connect#connect-1), <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; [`files?: AudioRecordingFiles`](#AudioRecordingFiles), <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; [`button?: MicrophoneStyles`](/docs/styles#MicrophoneStyles) <br />
+  }
+
+Configuration for recording audio using a microphone and handling the resultant files. <br />
+`connect` is used to override the default connection settings when sending audio files. <br />
+`files` is used to configure the resultant files that are recorded by the microphone. <br />
+`button` is the styling used for the microphone button element. <br />
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    introMessage={{text: 'Use the microphone button to record audio.'}}
+    demo={true}
+    microphone={{
+      connect: {url: 'https://customapi.com/audio-from-microphone'},
+      files: {format: 'mp3'},
+      button: {position: 'outside-left'},
+    }}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat
+  microphone='{
+    "connect": {"url": "https://customapi.com/audio-from-microphone"},
+    "files": {"format": "mp3"},
+    "button": {"position": "outside-left"}
+  }'
+></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  microphone='{
+    "connect": {"url": "https://customapi.com/audio-from-microphone"},
+    "files": {"format": "mp3"},
+    "button": {"position": "outside-left"}
+  }'
+  demo="true"
+  style="border-radius: 8px"
+  introMessage='{"text": "Use the microphone button to record audio."}'
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `AudioRecordingFiles` {#AudioRecordingFiles}
+
+- Type: {<br />
+  &nbsp;&nbsp;&nbsp;&nbsp; [`format?: AudioFormat`](#AudioFormat), <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `maxDurationSeconds?: number`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `maxNumberOfFiles?: number`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `acceptedFormats?: string` <br />
+  }
+
+- Default: _{<br />
+  &nbsp;&nbsp;&nbsp;&nbsp; format: "mp3", <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; maxDurationSeconds: 5999, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; acceptedFormats: "audio/\*" <br />
+  }_
+
+Configuration for the recorded microphone files. <br />
+`format` is the resultant audio file format. <br />
+`maxDurationSeconds` is the maximum length of time one audio file can be recorded.<br />
+`maxNumberOfFiles` is the limit to the number of files that can be recorded for one message. <br />
+`acceptedFormats` is used to limit the allowed files that can be dropped via the [`dragAndDrop`](#dragAndDrop) functionality as this feature will enable it automatically.
+It uses the same syntax as the [accept](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/accept) attributes
+in [input elements](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file). If the configuration in [`audio`](#audio) also uses
+the `acceptedFormats` property, it will override this one.<br />
+
+<ComponentContainer>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    introMessage={{text: 'Use the microphone button to record audio.'}}
+    demo={true}
+    microphone={{
+      files: {
+        format: 'mp3',
+        maxDurationSeconds: 10,
+        maxNumberOfFiles: 2,
+        acceptedFormats: '.mp3,.wav',
+      },
+    }}
+  ></DeepChatBrowser>
+</ComponentContainer>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat
+  microphone='{
+    "files": {
+      "format": "mp3",
+      "maxDurationSeconds": 10,
+      "maxNumberOfFiles": 2,
+      "acceptedFormats": ".mp3,.wav"
+    }
+  }'
+></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  microphone='{
+    "files": {
+      "format": "mp3",
+      "maxDurationSeconds": 10,
+      "maxNumberOfFiles": 2,
+      "acceptedFormats": ".mp3,.wav"
+    }
+  }'
+  demo="true"
+  style="border-radius: 8px"
+  introMessage='{"text": "Use the microphone button to record audio."}'
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+:::info
+The use of this object will automatically disable the [`speechToText`](/docs/speech#speechToText) functionality.
+:::
+
+<LineBreak></LineBreak>
+
+### `AudioFormat` {#AudioFormat}
+
+- Type: `"mp3"` | `"4a"` | `"webm"` | `"mp4"` | `"mpga"` | `"wav"` | `"mpeg"` | `"m4a"`
+
+Allowed audio file formats.
+
+<LineBreak></LineBreak>

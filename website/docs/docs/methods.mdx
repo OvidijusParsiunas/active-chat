@@ -1,0 +1,304 @@
+---
+sidebar_position: 10
+---
+
+# Methods
+
+Method properties that can be called directly on the Deep Chat element.
+
+:::info
+Make sure the Deep Chat component has been fully rendered on the DOM before using these.
+:::
+
+### `getMessages` {#getMessages}
+
+- Type: [`() => MessageContent[]`](/docs/messages#MessageContent)
+
+Returns details of messages inside the chat.
+
+#### Example
+
+import ComponentContainerHighlightMethod from '@site/src/components/table/componentContainerHighlightMethod';
+import ComponentContainerMethods from '@site/src/components/table/componentContainerMethods';
+import ComponentContainer from '@site/src/components/table/componentContainer';
+import DeepChatBrowser from '@site/src/components/table/deepChatBrowser';
+import LineBreak from '@site/src/components/markdown/lineBreak';
+import BrowserOnly from '@docusaurus/BrowserOnly';
+import TabItem from '@theme/TabItem';
+import Tabs from '@theme/Tabs';
+
+<BrowserOnly>{() => require('@site/src/components/nav/autoNavToggle').readdAutoNavShadowToggle()}</BrowserOnly>
+
+<ComponentContainerMethods propertyName={'getMessages'}>
+  <DeepChatBrowser style={{borderRadius: '8px'}} demo={true}></DeepChatBrowser>
+</ComponentContainerMethods>
+
+<Tabs>
+<TabItem value="js" label="Code">
+
+```html
+chatElementRef.getMessages();
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `clearMessages` {#clearMessages}
+
+- Type: (`isReset?: boolean`) => `void`
+
+Clear all messages in the chat. By default - [`introPanel`](/docs/introPanel) and [`introMessage`](/docs/messages#introMessage) are displayed again, however you can pass
+a _false_ argument to prevent this.
+
+#### Example
+
+<ComponentContainerMethods propertyName={'clearMessages'} displayResults={false}>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    demo={true}
+    history={[
+      {text: 'What is 2 + 2?', role: 'user'},
+      {text: 'The result of 2 + 2 is 4.', role: 'ai'},
+      {text: 'Wrong, it is 5.', role: 'user'},
+      {text: 'You are correct, the result of 2 + 2 is 5.', role: 'ai'},
+    ]}
+  ></DeepChatBrowser>
+</ComponentContainerMethods>
+
+<Tabs>
+<TabItem value="js" label="Code">
+
+```html
+chatElementRef.clearMessages();
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `submitUserMessage` {#submitUserMessage}
+
+- Type: ([`message: UserMessage`](#UserMessage)) => `void`
+
+Send a new user message.
+
+#### Example
+
+<ComponentContainerMethods propertyName={'submitUserMessage'} displayResults={false} argument={{text: 'User message'}}>
+  <DeepChatBrowser style={{borderRadius: '8px'}} demo={true}></DeepChatBrowser>
+</ComponentContainerMethods>
+
+<Tabs>
+<TabItem value="js" label="Code">
+
+```html
+chatElementRef.submitUserMessage({text: "User message"});
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+#### `UserMessage` {#UserMessage}
+
+- Type: {`text?: string`, [`files?: File[] | FileList`](https://developer.mozilla.org/en-US/docs/Web/API/FileList)}
+
+`text` is the text content of the outgoing message. <br />
+`files` is an array containing files that are going to be part of the outgoing message. This can either be an array
+of [`File`](https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications) objects or a [`FileList`](https://developer.mozilla.org/en-US/docs/Web/API/FileList)
+object which typically comes from a [file input](https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications). <br />
+
+#### Files Example
+
+<Tabs>
+<TabItem value="js" label="Code">
+
+```text
+// html
+<input type="file" id="files-input" accept="image/png, image/jpeg" />
+
+// javascript
+const filesInput = document.getElementById('files-input');
+filesInput.onchange = (event) => {
+  chatElement.submitUserMessage({files: event.target.files});
+};
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `addMessage` {#addMessage}
+
+- Type: ([`message: Response`](/docs/connect#Response), `isUpdate?: boolean`) => `void`
+
+Add a message to the chat. <br />
+`message` is an object containing message details. <br />
+`isUpdate` identifies whether the message should be treated as new - e.g. should [`onNewMessage`](/docs/events#onNewMessage) event
+and [`textToSpeech`](/docs/speech#textToSpeech) be triggered.
+
+#### Example
+
+<ComponentContainerMethods
+  propertyName={'_addMessage'}
+  displayResults={false}
+  argument={{
+    html: `<button class="deep-chat-button deep-chat-suggestion-button deep-chat-temporary-message">What is your name?</button>`,
+    role: 'user',
+  }}
+>
+  <DeepChatBrowser style={{borderRadius: '8px'}} demo={true}></DeepChatBrowser>
+</ComponentContainerMethods>
+
+<Tabs>
+<TabItem value="js" label="Code">
+
+```javascript
+chatElementRef.addMessage({
+  html: `<button class="deep-chat-button deep-chat-suggestion-button deep-chat-temporary-message">What is your name?</button>`,
+  role: 'user',
+});
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+:::tip
+This can be used to add [suggestion buttons](/docs/messages/HTML#moreExamples) after message.
+:::
+
+<LineBreak></LineBreak>
+
+### `scrollToBottom` {#scrollToBottom}
+
+- Type: `() => void`
+
+Moves the chat's scrollbar to the bottom.
+
+#### Example
+
+<ComponentContainerMethods propertyName={'scrollToBottom'} displayResults={false}>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    history={[
+      {
+        role: 'user',
+        text: 'So close it has no boundaries. A blinking cursor pulses in the electric darkness like a heart coursing with phosphorous light, burning beneath the derma of black-neon glass. A PHONE begins to RING, we hear it as though we were making the call.  The cursor continues to throb, relentlessly patient, until... Hello? Data now slashes across the screen, information flashing faster than we read.',
+      },
+      {
+        role: 'ai',
+        text: "Scroll to the top and click the 'Call Method' button below the chat.",
+      },
+    ]}
+    demo={true}
+  ></DeepChatBrowser>
+</ComponentContainerMethods>
+
+<Tabs>
+<TabItem value="js" label="Code">
+
+```html
+chatElementRef.scrollToBottom();
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `focusInput` {#focusInput}
+
+- Type: `() => void`
+
+Focuses the cursor on the text input.
+
+#### Example
+
+<ComponentContainerMethods propertyName={'focusInput'} displayResults={false}>
+  <DeepChatBrowser style={{borderRadius: '8px'}} demo={true}></DeepChatBrowser>
+</ComponentContainerMethods>
+
+<Tabs>
+<TabItem value="js" label="Code">
+
+```html
+chatElementRef.focusInput();
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `disableSubmitButton` {#disableSubmitButton}
+
+- Type: (`override?: boolean`) => `void`
+
+Disables the submit button. To re-enable automatic state handling - call this method again with a boolean argument of _false_.
+
+#### Example
+
+<ComponentContainerMethods propertyName={'disableSubmitButton'} displayResults={false}>
+  <DeepChatBrowser style={{borderRadius: '8px'}} demo={true}></DeepChatBrowser>
+</ComponentContainerMethods>
+
+<Tabs>
+<TabItem value="js" label="Code">
+
+```html
+chatElementRef.disableSubmitButton();
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+### `refreshMessages` {#refreshMessages}
+
+- Type: `() => void`
+
+If your `text` messages contain [Code](/docs/messages/#code-messages) and you are using the [`higlight.js`](https://www.npmjs.com/package/highlight.js?activeTab=readme) module to highlight them
+(as per [external module](/examples/externalModules) guidelines), sometimes the module may load after the messages have been rendered, leaving the code without a highlight. In such instances, you can use this
+method to highlight the code with the loaded module.
+
+#### Example
+
+<ComponentContainerHighlightMethod displayResults={false}>
+  <DeepChatBrowser
+    style={{borderRadius: '8px'}}
+    history={[
+      {
+        text: '```java\nwhile (i < 5) {\n console.log("hi");\n i+= 1;\n}\n```',
+        role: 'ai',
+      },
+    ]}
+    messageStyles={{
+      default: {
+        shared: {
+          bubble: {maxWidth: '270px'},
+        },
+      },
+    }}
+    demo={true}
+  ></DeepChatBrowser>
+</ComponentContainerHighlightMethod>
+
+<Tabs>
+<TabItem value="js" label="Code">
+
+```html
+chatElementRef.refreshMessages();
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
