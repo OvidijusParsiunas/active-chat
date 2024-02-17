@@ -5,7 +5,7 @@ import {Websocket} from '../../../../utils/HTTP/websocket';
 import {ServiceIO} from '../../../../services/serviceIO';
 import {Legacy} from '../../../../utils/legacy/legacy';
 import {TextInputEl} from '../textInput/textInput';
-import {DeepChat} from '../../../../deepChat';
+import {ActiveChat} from '../../../../activeChat';
 
 type ValidateFunc = (text?: string, files?: File[], isProgrammatic?: boolean) => boolean;
 
@@ -49,7 +49,7 @@ export class ValidationHandler {
   }
 
   // prettier-ignore
-  public static attach(deepChat: DeepChat, serviceIO: ServiceIO, textInput: TextInputEl,
+  public static attach(deepChat: ActiveChat, serviceIO: ServiceIO, textInput: TextInputEl,
       fileAttachments: FileAttachments, submitButton: SubmitButton) {
     const validateInput = deepChat.validateInput || Legacy.processValidateInput(deepChat);
     deepChat._validationHandler = async (programmatic?: UserContentI) => {

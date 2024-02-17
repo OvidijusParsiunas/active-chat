@@ -8,7 +8,7 @@ import {HTTPRequest} from '../../utils/HTTP/HTTPRequest';
 import {MessageFiles} from '../../types/messageFile';
 import {StabilityAIIO} from './stabilityAIIO';
 import {Response} from '../../types/response';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 export class StabilityAITextToImageIO extends StabilityAIIO {
   url = 'https://api.stability.ai/v1/generation/stable-diffusion-v1-6/text-to-image';
@@ -19,7 +19,7 @@ export class StabilityAITextToImageIO extends StabilityAIIO {
     <p>Insert text to generate an image.</p>
     <p>Click <a href="https://platform.stability.ai/">here</a> for more info.</p>`;
 
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const directConnectionCopy = JSON.parse(JSON.stringify(deepChat.directConnection));
     const apiKey = directConnectionCopy.stabilityAI;
     super(deepChat, StabilityAIUtils.buildKeyVerificationDetails(), StabilityAIUtils.buildHeaders, apiKey);

@@ -8,7 +8,7 @@ import {Response} from '../types/response';
 import {Connect} from '../types/connect';
 import {Signals} from '../types/handler';
 import {Stream} from '../types/stream';
-import {DeepChat} from '../deepChat';
+import {ActiveChat} from '../activeChat';
 import {Demo} from '../types/demo';
 
 export interface RequestContents {
@@ -102,7 +102,7 @@ export interface ServiceIO {
 
   stream?: Stream;
 
-  deepChat: DeepChat;
+  deepChat: ActiveChat;
 
   isDirectConnection(): boolean;
 

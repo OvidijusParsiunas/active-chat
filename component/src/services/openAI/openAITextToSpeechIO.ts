@@ -7,7 +7,7 @@ import {DirectServiceIO} from '../utils/directServiceIO';
 import {HTTPRequest} from '../../utils/HTTP/HTTPRequest';
 import {OpenAIUtils} from './utils/openAIUtils';
 import {Response} from '../../types/response';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 export class OpenAITextToSpeechIO extends DirectServiceIO {
   override insertKeyPlaceholderText = 'OpenAI API Key';
@@ -23,7 +23,7 @@ export class OpenAITextToSpeechIO extends DirectServiceIO {
     <p>Generate an audio file based on your text input.</p>
     <p>Click <a href="https://platform.openai.com/docs/guides/text-to-speech">here</a> for more information.</p>`;
 
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const directConnectionCopy = JSON.parse(JSON.stringify(deepChat.directConnection)) as DirectConnection;
     const apiKey = directConnectionCopy?.openAI;
     super(deepChat, OpenAIUtils.buildKeyVerificationDetails(), OpenAIUtils.buildHeaders, apiKey);

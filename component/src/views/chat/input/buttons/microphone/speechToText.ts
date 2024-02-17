@@ -3,7 +3,7 @@ import {OnPreResult} from 'speech-to-element/dist/types/options';
 import {TextInputEl} from '../../textInput/textInput';
 import {Messages} from '../../../messages/messages';
 import {MicrophoneButton} from './microphoneButton';
-import {DeepChat} from '../../../../../deepChat';
+import {ActiveChat} from '../../../../../activeChat';
 import SpeechToElement from 'speech-to-element';
 
 type ProcessedConfig = SpeechToTextConfig & {onPreResult?: OnPreResult};
@@ -13,7 +13,7 @@ export type AddErrorMessage = Messages['addNewErrorMessage'];
 export class SpeechToText extends MicrophoneButton {
   private readonly _addErrorMessage: AddErrorMessage;
 
-  constructor(deepChat: DeepChat, textInput: TextInputEl, addErrorMessage: AddErrorMessage) {
+  constructor(deepChat: ActiveChat, textInput: TextInputEl, addErrorMessage: AddErrorMessage) {
     super(typeof deepChat.speechToText === 'object' ? deepChat.speechToText?.button : {});
     const {serviceName, processedConfig} = SpeechToText.processConfiguration(textInput, deepChat.speechToText);
     this._addErrorMessage = addErrorMessage;

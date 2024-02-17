@@ -28,9 +28,9 @@ import {ChatView} from './views/chat/chatView';
 import {ServiceIO} from './services/serviceIO';
 import {Legacy} from './utils/legacy/legacy';
 import {TextInput} from './types/textInput';
-import {Response} from './types/response';
+import style from './activeChat.css?inline';
 import {CustomStyle} from './types/styles';
-import style from './deepChat.css?inline';
+import {Response} from './types/response';
 import {Connect} from './types/connect';
 import {Avatars} from './types/avatars';
 import {Names} from './types/names';
@@ -38,7 +38,7 @@ import {Demo} from './types/demo';
 
 // TO-DO - ability to export files
 // TO-DO - perhaps chat bubbles should start at the bottom which would allow nice slide up animation (optional)
-export class DeepChat extends InternalHTML {
+export class ActiveChat extends InternalHTML {
   @Property('object')
   connect?: Connect;
 
@@ -160,7 +160,7 @@ export class DeepChat extends InternalHTML {
   onClearMessages?: () => void;
 
   @Property('function')
-  onComponentRender?: (ref: DeepChat) => void;
+  onComponentRender?: (ref: ActiveChat) => void;
 
   @Property('function')
   onError?: OnError;
@@ -234,11 +234,11 @@ export class DeepChat extends InternalHTML {
   }
 }
 
-customElements.define('deep-chat', DeepChat);
+customElements.define('active-chat', ActiveChat);
 
 // The following type makes it easier for other projects to use this component with TypeScript
 declare global {
   interface HTMLElementTagNameMap {
-    'deep-chat': DeepChat;
+    'active-chat': ActiveChat;
   }
 }

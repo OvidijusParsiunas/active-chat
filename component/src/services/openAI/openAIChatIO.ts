@@ -12,7 +12,7 @@ import {HTTPRequest} from '../../utils/HTTP/HTTPRequest';
 import {DirectServiceIO} from '../utils/directServiceIO';
 import {OpenAIUtils} from './utils/openAIUtils';
 import {Stream} from '../../utils/HTTP/stream';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 type ImageContent = {type: string; image_url?: {url?: string}; text?: string}[];
 
@@ -27,7 +27,7 @@ export class OpenAIChatIO extends DirectServiceIO {
   private readonly _systemMessage: SystemMessageInternal =
     OpenAIChatIO.generateSystemMessage('You are a helpful assistant.');
 
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const directConnectionCopy = JSON.parse(JSON.stringify(deepChat.directConnection)) as DirectConnection;
     const apiKey = directConnectionCopy.openAI;
     super(deepChat, OpenAIUtils.buildKeyVerificationDetails(), OpenAIUtils.buildHeaders, apiKey);

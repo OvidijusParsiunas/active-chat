@@ -3,10 +3,10 @@ import {HuggingFaceQuestionAnswerConfig} from '../../types/huggingFace';
 import {MessageContentI} from '../../types/messagesInternal';
 import {HuggingFaceIO} from './huggingFaceIO';
 import {Response} from '../../types/response';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 export class HuggingFaceConversationIO extends HuggingFaceIO {
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     // config can be undefined as this is the default method
     const config = deepChat.directConnection?.huggingFace?.conversation;
     const apiKey = deepChat.directConnection?.huggingFace;

@@ -4,9 +4,9 @@ import summary from 'rollup-plugin-summary';
 import {terser} from 'rollup-plugin-terser';
 
 export default {
-  input: 'dist/deepChat.js',
+  input: 'dist/activeChat.js',
   output: {
-    file: 'dist/deepChat.bundle.js',
+    file: 'dist/activeChat.bundle.js',
     format: 'esm',
   },
   onwarn(warning) {

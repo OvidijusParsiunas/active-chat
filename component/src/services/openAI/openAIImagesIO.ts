@@ -9,7 +9,7 @@ import {OpenAI, OpenAIImages} from '../../types/openAI';
 import {MessageFiles} from '../../types/messageFile';
 import {OpenAIUtils} from './utils/openAIUtils';
 import {Response} from '../../types/response';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 export class OpenAIImagesIO extends DirectServiceIO {
   override insertKeyPlaceholderText = 'OpenAI API Key';
@@ -29,7 +29,7 @@ export class OpenAIImagesIO extends DirectServiceIO {
   url = ''; // set dynamically
   permittedErrorPrefixes = ['Incorrect', 'Invalid input image'];
 
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const {directConnection} = deepChat;
     const apiKey = directConnection?.openAI;
     const defaultFile = {images: {files: {acceptedFormats: '.png', maxNumberOfFiles: 2}}};

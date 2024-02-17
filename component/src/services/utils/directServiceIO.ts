@@ -5,7 +5,7 @@ import {BuildHeadersFunc} from '../../types/headers';
 import {BaseServiceIO} from './baseServiceIO';
 import {Connect} from '../../types/connect';
 import {APIKey} from '../../types/APIKey';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 export class DirectServiceIO extends BaseServiceIO {
   key?: string;
@@ -16,7 +16,7 @@ export class DirectServiceIO extends BaseServiceIO {
   private readonly buildHeadersFunc: BuildHeadersFunc;
 
   // prettier-ignore
-  constructor(deepChat: DeepChat, keyVerificationDetails: KeyVerificationDetails,
+  constructor(deepChat: ActiveChat, keyVerificationDetails: KeyVerificationDetails,
       buildHeadersFunc: BuildHeadersFunc, apiKey?: APIKey, existingFileTypes?: ServiceFileTypes) {
     super(deepChat, existingFileTypes);
     Object.assign(this.rawBody, deepChat.connect?.additionalBodyProps);

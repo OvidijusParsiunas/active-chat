@@ -4,7 +4,7 @@ import {AudioFileAttachmentType} from './fileAttachmentTypes/audioFileAttachment
 import {FileAttachmentsType} from './fileAttachmentTypes/fileAttachmentsType';
 import {ServiceFileTypes} from '../../../../services/serviceIO';
 import {CustomStyle} from '../../../../types/styles';
-import {DeepChat} from '../../../../deepChat';
+import {ActiveChat} from '../../../../activeChat';
 import {Demo} from '../../../../types/demo';
 
 export class FileAttachments {
@@ -20,7 +20,7 @@ export class FileAttachments {
   }
 
   // prettier-ignore
-  addType(deepChat: DeepChat, files: FileAttachmentsT, type: keyof ServiceFileTypes) {
+  addType(deepChat: ActiveChat, files: FileAttachmentsT, type: keyof ServiceFileTypes) {
     const fileAttachmentsType = FileAttachmentTypeFactory.create(
       deepChat, files, this.toggleContainerDisplay.bind(this), this.elementRef, type);
     this._fileAttachmentsTypes.push(fileAttachmentsType);

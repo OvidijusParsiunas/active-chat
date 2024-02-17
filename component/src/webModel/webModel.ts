@@ -14,7 +14,7 @@ import {RequestUtils} from '../utils/HTTP/requestUtils';
 import {ResponseI} from '../types/responseInternal';
 // import * as WebLLM2 from 'deep-chat-web-llm';
 import config from './webModelConfig';
-import {DeepChat} from '../deepChat';
+import {ActiveChat} from '../activeChat';
 
 declare global {
   interface Window {
@@ -41,7 +41,7 @@ export class WebModel extends BaseServiceIO {
   private _removeIntro?: () => void;
   private _messages?: Messages;
 
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     super(deepChat);
     // window.webLLM = WebLLM2 as unknown as typeof WebLLM;
     if (typeof deepChat.webModel === 'object') this._webModel = deepChat.webModel;
@@ -72,7 +72,7 @@ export class WebModel extends BaseServiceIO {
     });
   }
 
-  private findModelInWindow(deepChat: DeepChat, seconds = 0) {
+  private findModelInWindow(deepChat: ActiveChat, seconds = 0) {
     if (window.webLLM) {
       this.configureInit(this.shouldAddIntroMessage(deepChat.introMessage));
     } else if (seconds > WebModel.MODULE_SEARCH_LIMIT_S) {
@@ -281,7 +281,7 @@ export class WebModel extends BaseServiceIO {
     return !!this._isModelLoaded;
   }
 
-  private static async processResponse(deepChat: DeepChat, messages: Messages, output: ResponseI) {
+  private static async processResponse(deepChat: ActiveChat, messages: Messages, output: ResponseI) {
     const result: ResponseI = (await deepChat.responseInterceptor?.(output)) || output;
     if (result.error) {
       RequestUtils.displayError(messages, new Error(result.error));

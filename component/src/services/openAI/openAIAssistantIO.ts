@@ -9,7 +9,7 @@ import {Response as ResponseI} from '../../types/response';
 import {HTTPRequest} from '../../utils/HTTP/HTTPRequest';
 import {DirectServiceIO} from '../utils/directServiceIO';
 import {OpenAIUtils} from './utils/openAIUtils';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 import {PollResult} from '../serviceIO';
 import {
   OpenAIAssistantMessagesResult,
@@ -36,7 +36,7 @@ export class OpenAIAssistantIO extends DirectServiceIO {
   private readonly shouldFetchHistory: boolean = false;
   fetchHistory?: () => Promise<ResponseI[]>;
 
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const directConnectionCopy = JSON.parse(JSON.stringify(deepChat.directConnection)) as DirectConnection;
     const apiKey = directConnectionCopy.openAI;
     super(deepChat, OpenAIUtils.buildKeyVerificationDetails(), OpenAIUtils.buildHeaders, apiKey);

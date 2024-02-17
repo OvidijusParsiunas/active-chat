@@ -4,11 +4,11 @@ import {MessageContentI} from '../../types/messagesInternal';
 import {Messages} from '../../views/chat/messages/messages';
 import {HTTPRequest} from '../../utils/HTTP/HTTPRequest';
 import {Response} from '../../types/response';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 import {CohereIO} from './cohereIO';
 
 export class CohereSummarizationIO extends CohereIO {
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const config = deepChat.directConnection?.cohere?.summarization as Cohere['summarization'];
     const apiKey = deepChat.directConnection?.cohere;
     super(deepChat, 'https://api.cohere.ai/v1/summarize', 'Insert text to summarize', config, apiKey);

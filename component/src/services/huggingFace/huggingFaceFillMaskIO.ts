@@ -2,7 +2,7 @@ import {HuggingFaceFillMaskResult} from '../../types/huggingFaceResult';
 import {HuggingFace} from '../../types/huggingFace';
 import {HuggingFaceIO} from './huggingFaceIO';
 import {Response} from '../../types/response';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 export class HuggingFaceFillMaskIO extends HuggingFaceIO {
   override introPanelMarkUp = `
@@ -12,7 +12,7 @@ export class HuggingFaceFillMaskIO extends HuggingFaceIO {
 
   override permittedErrorPrefixes = ['Authorization header', 'No mask_token'];
 
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const config = deepChat.directConnection?.huggingFace?.fillMask as NonNullable<HuggingFace['fillMask']>;
     const apiKey = deepChat.directConnection?.huggingFace;
     super(deepChat, 'The goal of life is [MASK].', 'bert-base-uncased', config, apiKey);

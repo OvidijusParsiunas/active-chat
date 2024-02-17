@@ -11,7 +11,7 @@ import {IntroPanel} from '../introPanel/introPanel';
 import {Response} from '../../../types/response';
 import {Avatars} from '../../../types/avatars';
 import {MessageUtils} from './messageUtils';
-import {DeepChat} from '../../../deepChat';
+import {ActiveChat} from '../../../activeChat';
 import {Names} from '../../../types/names';
 import {MessageElements} from './messages';
 import {Remarkable} from 'remarkable';
@@ -31,7 +31,7 @@ export class MessagesBase {
   private _remarkable: Remarkable;
   private readonly _onNewMessage?: (message: MessageContentI, isInitial: boolean) => void;
 
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     this.elementRef = MessagesBase.createContainerElement();
     this.messageStyles = deepChat.messageStyles;
     this._remarkable = RemarkableConfig.createNew();

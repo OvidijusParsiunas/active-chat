@@ -5,14 +5,14 @@ import {HuggingFaceModel} from '../../types/huggingFace';
 import {ServiceFileTypes} from '../serviceIO';
 import {HuggingFaceIO} from './huggingFaceIO';
 import {APIKey} from '../../types/APIKey';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 // can sometimes get a (Service Unavailable) error which can be ignored when polling as another request will be made
 export class HuggingFaceFileIO extends HuggingFaceIO {
   isTextInputDisabled = true;
 
   // prettier-ignore
-  constructor(deepChat: DeepChat, placeholderText: string, defaultModel: string,
+  constructor(deepChat: ActiveChat, placeholderText: string, defaultModel: string,
       config: true | (HuggingFaceModel), apiKey?: APIKey, existingFileTypes?: ServiceFileTypes) {
     super(deepChat, placeholderText, defaultModel, config, apiKey, existingFileTypes);
     this.canSendMessage = HuggingFaceFileIO.canSendFile;

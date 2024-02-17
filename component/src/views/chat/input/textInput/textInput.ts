@@ -5,7 +5,7 @@ import {ServiceIO} from '../../../../services/serviceIO';
 import {TextInput} from '../../../../types/textInput';
 import {CustomStyle} from '../../../../types/styles';
 import {TextInputEvents} from './textInputEvents';
-import {DeepChat} from '../../../../deepChat';
+import {ActiveChat} from '../../../../activeChat';
 import {PasteUtils} from './pasteUtils';
 
 // TO-DO state for focused (like input)
@@ -16,7 +16,7 @@ export class TextInputEl {
   private readonly _config: TextInput;
   submit?: () => void;
 
-  constructor(deepChat: DeepChat, serviceIO: ServiceIO) {
+  constructor(deepChat: ActiveChat, serviceIO: ServiceIO) {
     const processedConfig = TextInputEl.processConfig(serviceIO, deepChat.textInput);
     this.elementRef = TextInputEl.createContainerElement(processedConfig?.styles?.container);
     this.inputElementRef = this.createInputElement(processedConfig);

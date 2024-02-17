@@ -5,7 +5,7 @@ import {HTTPRequest} from '../../utils/HTTP/HTTPRequest';
 import {AzureUtils} from './utils/azureUtils';
 import {AzureSpeechIO} from './azureSpeechIO';
 import {Response} from '../../types/response';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 import {Azure} from '../../types/azure';
 
 export class AzureSpeechToTextIO extends AzureSpeechIO {
@@ -23,7 +23,7 @@ export class AzureSpeechToTextIO extends AzureSpeechIO {
   isTextInputDisabled = true;
   textInputPlaceholderText = 'Upload an audio file';
 
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const config = deepChat.directConnection?.azure?.speechToText as NonNullable<Azure['speechToText']>;
     const apiKey = deepChat.directConnection?.azure;
     const defaultFile = {audio: {files: {acceptedFormats: '.wav,.ogg'}}};

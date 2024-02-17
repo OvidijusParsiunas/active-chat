@@ -5,7 +5,7 @@ import {DirectServiceIO} from '../utils/directServiceIO';
 import {HTTPRequest} from '../../utils/HTTP/HTTPRequest';
 import {AssemblyAIUtils} from './utils/assemblyAIUtils';
 import {Response} from '../../types/response';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 export class AssemblyAIAudioIO extends DirectServiceIO {
   override insertKeyPlaceholderText = 'AssemblyAI API Key';
@@ -22,7 +22,7 @@ export class AssemblyAIAudioIO extends DirectServiceIO {
   textInputPlaceholderText = 'Upload an audio file';
   permittedErrorPrefixes = ['Authentication', 'Invalid'];
 
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const apiKey = deepChat.directConnection?.assemblyAI;
     super(deepChat, AssemblyAIUtils.buildKeyVerificationDetails(), AssemblyAIUtils.buildHeaders, apiKey, {audio: {}});
     this.canSendMessage = AssemblyAIAudioIO.canFileSendMessage;

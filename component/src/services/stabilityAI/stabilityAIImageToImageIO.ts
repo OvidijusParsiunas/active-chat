@@ -9,7 +9,7 @@ import {HTTPRequest} from '../../utils/HTTP/HTTPRequest';
 import {MessageFiles} from '../../types/messageFile';
 import {StabilityAIIO} from './stabilityAIIO';
 import {Response} from '../../types/response';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 // WORK - allow appropriate responses for invalid height etc
 export class StabilityAIImageToImageIO extends StabilityAIIO {
@@ -21,7 +21,7 @@ export class StabilityAIImageToImageIO extends StabilityAIIO {
     <p>Upload an image to create a new one with the changes you have described.</p>
     <p>Click <a href="https://platform.stability.ai/">here</a> for more info.</p>`;
 
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const directConnectionCopy = JSON.parse(JSON.stringify(deepChat.directConnection));
     const apiKey = directConnectionCopy.stabilityAI;
     const defaultFile = {images: {files: {acceptedFormats: '.png', maxNumberOfFiles: 1}}};

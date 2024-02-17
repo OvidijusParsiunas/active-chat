@@ -5,7 +5,7 @@ import {DirectServiceIO} from '../utils/directServiceIO';
 import {HTTPRequest} from '../../utils/HTTP/HTTPRequest';
 import {AzureUtils} from './utils/azureUtils';
 import {Response} from '../../types/response';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 import {Azure} from '../../types/azure';
 
 export class AzureTranslationIO extends DirectServiceIO {
@@ -16,7 +16,7 @@ export class AzureTranslationIO extends DirectServiceIO {
   url = '';
 
   // prettier-ignore
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const config = deepChat.directConnection?.azure?.translation as NonNullable<Azure['translation']>;
     const apiKey = deepChat.directConnection?.azure;
     super(

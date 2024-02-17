@@ -4,11 +4,11 @@ import {Cohere, CohereChatConfig} from '../../types/cohere';
 import {CohereChatResult} from '../../types/cohereResult';
 import {HTTPRequest} from '../../utils/HTTP/HTTPRequest';
 import {Response} from '../../types/response';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 import {CohereIO} from './cohereIO';
 
 export class CohereChatIO extends CohereIO {
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const directConnectionCopy = JSON.parse(JSON.stringify(deepChat.directConnection));
     const config = directConnectionCopy.cohere?.chat as Cohere['chat'];
     const apiKey = directConnectionCopy.cohere;

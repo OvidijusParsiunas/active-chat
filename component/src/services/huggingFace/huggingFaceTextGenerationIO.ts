@@ -2,10 +2,10 @@ import {HuggingFaceTextGenerationResult} from '../../types/huggingFaceResult';
 import {HuggingFace} from '../../types/huggingFace';
 import {HuggingFaceIO} from './huggingFaceIO';
 import {Response} from '../../types/response';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 export class HuggingFaceTextGenerationIO extends HuggingFaceIO {
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const config = deepChat.directConnection?.huggingFace?.textGeneration as NonNullable<HuggingFace['textGeneration']>;
     const apiKey = deepChat.directConnection?.huggingFace;
     super(deepChat, 'Once upon a time', 'gpt2', config, apiKey);

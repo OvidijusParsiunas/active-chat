@@ -7,7 +7,7 @@ import {DirectServiceIO} from '../utils/directServiceIO';
 import {HTTPRequest} from '../../utils/HTTP/HTTPRequest';
 import {OpenAIUtils} from './utils/openAIUtils';
 import {Response} from '../../types/response';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 export class OpenAISpeechToTextIO extends DirectServiceIO {
   override insertKeyPlaceholderText = 'OpenAI API Key';
@@ -27,7 +27,7 @@ export class OpenAISpeechToTextIO extends DirectServiceIO {
   textInputPlaceholderText = 'Upload an audio file';
   private _service_url: string = OpenAISpeechToTextIO.AUDIO_TRANSCRIPTIONS_URL;
 
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const directConnectionCopy = JSON.parse(JSON.stringify(deepChat.directConnection));
     const apiKey = directConnectionCopy?.openAI;
     super(deepChat, OpenAIUtils.buildKeyVerificationDetails(), OpenAIUtils.buildHeaders, apiKey, {audio: {}});

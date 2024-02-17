@@ -3,14 +3,14 @@ import {HuggingFaceQuestionAnswerResult} from '../../types/huggingFaceResult';
 import {MessageContentI} from '../../types/messagesInternal';
 import {HuggingFaceIO} from './huggingFaceIO';
 import {Response} from '../../types/response';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 export class HuggingFaceQuestionAnswerIO extends HuggingFaceIO {
   override permittedErrorPrefixes = ['Authorization header', 'Error in'];
 
   private readonly context: string;
 
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const config = deepChat.directConnection?.huggingFace?.questionAnswer as NonNullable<HuggingFace['questionAnswer']>;
     const apiKey = deepChat.directConnection?.huggingFace;
     super(deepChat, 'Ask a question', 'bert-large-uncased-whole-word-masking-finetuned-squad', config, apiKey);

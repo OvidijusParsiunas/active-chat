@@ -15,7 +15,7 @@ import {Response} from '../../../../../types/response';
 import {TextInputEl} from '../../textInput/textInput';
 import {Signals} from '../../../../../types/handler';
 import {Messages} from '../../../messages/messages';
-import {DeepChat} from '../../../../../deepChat';
+import {ActiveChat} from '../../../../../activeChat';
 import {InputButton} from '../inputButton';
 import {
   DefinedButtonInnerElements,
@@ -42,7 +42,7 @@ export class SubmitButton extends InputButton<Styles> {
   readonly status = {requestInProgress: false, loadingActive: false};
 
   // prettier-ignore
-  constructor(deepChat: DeepChat, inputElementRef: HTMLElement, messages: Messages, serviceIO: ServiceIO,
+  constructor(deepChat: ActiveChat, inputElementRef: HTMLElement, messages: Messages, serviceIO: ServiceIO,
       fileAttachments: FileAttachments) {
     const submitButtonStyles = SubmitButtonStateStyle.process(deepChat.submitButtonStyles);
     super(SubmitButton.createButtonContainerElement(), submitButtonStyles?.position, submitButtonStyles);
@@ -106,7 +106,7 @@ export class SubmitButton extends InputButton<Styles> {
   }
 
   // prettier-ignore
-  private attemptOverwriteLoadingStyle(deepChat: DeepChat) {
+  private attemptOverwriteLoadingStyle(deepChat: ActiveChat) {
     if (this._customStyles?.submit?.svg
         || this._customStyles?.loading?.svg?.content || this._customStyles?.loading?.text?.content) return;
     if (deepChat.displayLoadingBubble === undefined || deepChat.displayLoadingBubble === true) {

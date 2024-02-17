@@ -2,11 +2,11 @@ import {HuggingFaceClassificationResult} from '../../types/huggingFaceResult';
 import {HuggingFaceFileIO} from './huggingFaceFileIO';
 import {HuggingFace} from '../../types/huggingFace';
 import {PollResult} from '../serviceIO';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 export class HuggingFaceAudioClassificationIO extends HuggingFaceFileIO {
   // prettier-ignore
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const config = deepChat.directConnection?.huggingFace?.audioClassification as NonNullable<
       HuggingFace['audioClassification']
     >;

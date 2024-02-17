@@ -4,11 +4,11 @@ import {MessageContentI} from '../../types/messagesInternal';
 import {Messages} from '../../views/chat/messages/messages';
 import {HTTPRequest} from '../../utils/HTTP/HTTPRequest';
 import {Response} from '../../types/response';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 import {CohereIO} from './cohereIO';
 
 export class CohereTextGenerationIO extends CohereIO {
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     // config can be undefined as this is the default service
     const config = deepChat.directConnection?.cohere?.textGeneration as Cohere['textGeneration'];
     const apiKey = deepChat.directConnection?.cohere;

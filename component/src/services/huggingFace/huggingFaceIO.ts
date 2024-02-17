@@ -6,7 +6,7 @@ import {HuggingFaceModel} from '../../types/huggingFace';
 import {HTTPRequest} from '../../utils/HTTP/HTTPRequest';
 import {ServiceFileTypes} from '../serviceIO';
 import {APIKey} from '../../types/APIKey';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 type HuggingFaceServiceConfigObj = {parameters?: object; options?: object; context?: string};
 
@@ -24,7 +24,7 @@ export class HuggingFaceIO extends DirectServiceIO {
   textInputPlaceholderText: string;
 
   // prettier-ignore
-  constructor(deepChat: DeepChat, textInputPlaceholderText: string, defaultModel: string,
+  constructor(deepChat: ActiveChat, textInputPlaceholderText: string, defaultModel: string,
       config?: HuggingFaceServiceConfig, apiKey?: APIKey, existingFileTypes?: ServiceFileTypes) {
     super(deepChat,
       HuggingFaceUtils.buildKeyVerificationDetails(), HuggingFaceUtils.buildHeaders, apiKey, existingFileTypes);

@@ -3,7 +3,7 @@ import {DirectServiceIO} from '../utils/directServiceIO';
 import {BuildHeadersFunc} from '../../types/headers';
 import {ServiceFileTypes} from '../serviceIO';
 import {APIKey} from '../../types/APIKey';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 export class StabilityAIIO extends DirectServiceIO {
   override insertKeyPlaceholderText = 'Stability AI API Key';
@@ -11,7 +11,7 @@ export class StabilityAIIO extends DirectServiceIO {
   permittedErrorPrefixes = ['Incorrect', 'invalid_'];
 
   // prettier-ignore
-  constructor(deepChat: DeepChat, keyVerificationDetails: KeyVerificationDetails,
+  constructor(deepChat: ActiveChat, keyVerificationDetails: KeyVerificationDetails,
       buildHeadersFunc: BuildHeadersFunc, apiKey?: APIKey, existingFileTypes?: ServiceFileTypes) {
     super(deepChat, keyVerificationDetails, buildHeadersFunc, apiKey, existingFileTypes);
   }

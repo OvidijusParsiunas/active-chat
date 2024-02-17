@@ -9,7 +9,7 @@ import {HTTPRequest} from '../../utils/HTTP/HTTPRequest';
 import {MessageFiles} from '../../types/messageFile';
 import {StabilityAIIO} from './stabilityAIIO';
 import {Response} from '../../types/response';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 export class StabilityAIImageToImageMaskingIO extends StabilityAIIO {
   url = 'https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/image-to-image/masking';
@@ -22,7 +22,7 @@ export class StabilityAIImageToImageMaskingIO extends StabilityAIIO {
     <p>Upload an image, its mask image to create a new one based on the changes you have described for the mask area.</p>
     <p>Click <a href="https://platform.stability.ai/">here</a> for more info.</p>`;
 
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const directConnectionCp = JSON.parse(JSON.stringify(deepChat.directConnection));
     const apiKey = directConnectionCp?.stabilityAI;
     const defaultFile = {images: {files: {acceptedFormats: '.png', maxNumberOfFiles: 2}}};

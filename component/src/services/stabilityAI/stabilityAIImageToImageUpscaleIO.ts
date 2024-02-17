@@ -9,7 +9,7 @@ import {HTTPRequest} from '../../utils/HTTP/HTTPRequest';
 import {MessageFiles} from '../../types/messageFile';
 import {StabilityAIIO} from './stabilityAIIO';
 import {Response} from '../../types/response';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 export class StabilityAIImageToImageUpscaleIO extends StabilityAIIO {
   url = 'https://api.stability.ai/v1/generation/esrgan-v1-x2plus/image-to-image/upscale';
@@ -20,7 +20,7 @@ export class StabilityAIImageToImageUpscaleIO extends StabilityAIIO {
     <p>Upload an image to generate a new one with higher resolution.</p>
     <p>Click <a href="https://platform.stability.ai/">here</a> for more info.</p>`;
 
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const directConnectionCp = JSON.parse(JSON.stringify(deepChat.directConnection));
     const apiKey = directConnectionCp?.stabilityAI;
     const defaultFile = {images: {files: {acceptedFormats: '.png', maxNumberOfFiles: 1}}};

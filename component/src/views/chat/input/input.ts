@@ -20,7 +20,7 @@ import {InputButton} from './buttons/inputButton';
 import {CustomStyle} from '../../../types/styles';
 import {TextInputEl} from './textInput/textInput';
 import {Messages} from '../messages/messages';
-import {DeepChat} from '../../../deepChat';
+import {ActiveChat} from '../../../activeChat';
 
 type Buttons = {
   [key in BUTTON_TYPES]?: {button: InputButton; fileType?: FileAttachmentsType};
@@ -29,7 +29,7 @@ type Buttons = {
 export class Input {
   readonly elementRef: HTMLElement;
 
-  constructor(deepChat: DeepChat, messages: Messages, serviceIO: ServiceIO, containerElement: HTMLElement) {
+  constructor(deepChat: ActiveChat, messages: Messages, serviceIO: ServiceIO, containerElement: HTMLElement) {
     this.elementRef = Input.createPanelElement(deepChat.inputAreaStyle);
     const textInput = new TextInputEl(deepChat, serviceIO);
     const buttons: Buttons = {};
@@ -54,7 +54,7 @@ export class Input {
 
   // prettier-ignore
   private createFileUploadComponents(
-      deepChat: DeepChat, serviceIO: ServiceIO, containerElement: HTMLElement, buttons: Buttons) {
+      deepChat: ActiveChat, serviceIO: ServiceIO, containerElement: HTMLElement, buttons: Buttons) {
     const fileAttachments = new FileAttachments(this.elementRef, deepChat.attachmentContainerStyle, serviceIO.demo);
     Input.createUploadButtons(deepChat, serviceIO.fileTypes || {}, fileAttachments, containerElement, buttons);
     if (serviceIO.camera?.files) {
@@ -72,7 +72,7 @@ export class Input {
   }
 
   // prettier-ignore
-  private static createUploadButtons(deepChat: DeepChat,
+  private static createUploadButtons(deepChat: ActiveChat,
       fileTypes: ServiceFileTypes, fileAtt: FileAttachments, containerEl: HTMLElement, buttons: Buttons) {
     Object.keys(fileTypes).forEach((key) => {
       const fileType = key as keyof ServiceFileTypes;

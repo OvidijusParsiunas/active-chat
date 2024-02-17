@@ -7,7 +7,7 @@ import {AzureLanguageIO} from './azureLanguageIO';
 import {GenericObject} from '../../types/object';
 import {AzureUtils} from './utils/azureUtils';
 import {PollResult} from '../serviceIO';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 type RawBody = Required<Pick<AzureSummarizationConfig, 'language'>>;
 
@@ -16,7 +16,7 @@ export class AzureSummarizationIO extends AzureLanguageIO {
   textInputPlaceholderText = 'Insert text to summarize';
   private messages?: Messages;
 
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const config = deepChat.directConnection?.azure?.summarization as NonNullable<Azure['summarization']>;
     const apiKey = deepChat.directConnection?.azure;
     super(deepChat, AzureUtils.buildSummarizationHeader, config.endpoint, apiKey);

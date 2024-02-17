@@ -1,7 +1,7 @@
 import {DirectServiceIO} from '../utils/directServiceIO';
 import {CohereUtils} from './utils/cohereUtils';
 import {APIKey} from '../../types/APIKey';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 export class CohereIO extends DirectServiceIO {
   override insertKeyPlaceholderText = 'Cohere API Key';
@@ -10,7 +10,7 @@ export class CohereIO extends DirectServiceIO {
   permittedErrorPrefixes = ['invalid'];
   url: string;
 
-  constructor(deepChat: DeepChat, url: string, inputPlaceholder: string, config?: true | Object, apiKey?: APIKey) {
+  constructor(deepChat: ActiveChat, url: string, inputPlaceholder: string, config?: true | Object, apiKey?: APIKey) {
     super(deepChat, CohereUtils.buildKeyVerificationDetails(), CohereUtils.buildHeaders, apiKey);
     this.url = url;
     this.textInputPlaceholderText = inputPlaceholder;

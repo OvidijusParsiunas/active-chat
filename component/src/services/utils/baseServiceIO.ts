@@ -14,7 +14,7 @@ import {Response} from '../../types/response';
 import {Connect} from '../../types/connect';
 import {SetFileTypes} from './setFileTypes';
 import {Demo} from '../../utils/demo/demo';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 import {
   KeyVerificationHandlers,
   CompletionsHandlers,
@@ -27,7 +27,7 @@ import {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export class BaseServiceIO implements ServiceIO {
   readonly rawBody: any = {};
-  deepChat: DeepChat;
+  deepChat: ActiveChat;
   validateConfigKey = false;
   canSendMessage: ValidateInput = BaseServiceIO.canSendMessage;
   connectSettings: Connect = {};
@@ -42,7 +42,7 @@ export class BaseServiceIO implements ServiceIO {
   completionsHandlers: CompletionsHandlers = {} as CompletionsHandlers;
   streamHandlers: StreamHandlers = {} as StreamHandlers;
 
-  constructor(deepChat: DeepChat, existingFileTypes?: ServiceFileTypes, demo?: DemoT) {
+  constructor(deepChat: ActiveChat, existingFileTypes?: ServiceFileTypes, demo?: DemoT) {
     this.deepChat = deepChat;
     this.demo = demo;
     Object.assign(this.rawBody, deepChat.connect?.additionalBodyProps);

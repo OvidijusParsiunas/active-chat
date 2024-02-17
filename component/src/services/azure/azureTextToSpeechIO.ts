@@ -6,7 +6,7 @@ import {HTTPRequest} from '../../utils/HTTP/HTTPRequest';
 import {AzureUtils} from './utils/azureUtils';
 import {AzureSpeechIO} from './azureSpeechIO';
 import {Response} from '../../types/response';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 export class AzureTextToSpeechIO extends AzureSpeechIO {
   private static readonly HELP_LINK =
@@ -22,7 +22,7 @@ export class AzureTextToSpeechIO extends AzureSpeechIO {
   url = '';
 
   // prettier-ignore
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const config = deepChat.directConnection?.azure?.textToSpeech as NonNullable<Azure['textToSpeech']>;
     const apiKey = deepChat.directConnection?.azure;
     super(deepChat,

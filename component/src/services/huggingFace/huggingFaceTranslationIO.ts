@@ -2,10 +2,10 @@ import {HuggingFaceTranslationResult} from '../../types/huggingFaceResult';
 import {HuggingFace} from '../../types/huggingFace';
 import {HuggingFaceIO} from './huggingFaceIO';
 import {Response} from '../../types/response';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 export class HuggingFaceTranslationIO extends HuggingFaceIO {
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const config = deepChat.directConnection?.huggingFace?.translation as NonNullable<HuggingFace['translation']>;
     const apiKey = deepChat.directConnection?.huggingFace;
     super(deepChat, 'Insert text to translate', 'Helsinki-NLP/opus-tatoeba-en-ja', config, apiKey);

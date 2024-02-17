@@ -22,7 +22,7 @@ import {SetupMessages} from './setupMessages';
 import {FileMessages} from './fileMessages';
 import {MessageUtils} from './messageUtils';
 import {MessagesBase} from './messagesBase';
-import {DeepChat} from '../../../deepChat';
+import {ActiveChat} from '../../../activeChat';
 import {HTMLUtils} from './html/htmlUtils';
 
 export interface MessageElements {
@@ -41,7 +41,7 @@ export class Messages extends MessagesBase {
   private _introMessage?: IntroMessage;
   customDemoResponse?: DemoResponse;
 
-  constructor(deepChat: DeepChat, serviceIO: ServiceIO, panel?: HTMLElement) {
+  constructor(deepChat: ActiveChat, serviceIO: ServiceIO, panel?: HTMLElement) {
     super(deepChat);
     const {permittedErrorPrefixes, introPanelMarkUp, demo} = serviceIO;
     this._errorMessageOverrides = deepChat.errorMessages?.overrides;
@@ -72,7 +72,7 @@ export class Messages extends MessagesBase {
     if (serviceIO.fetchHistory) this.fetchHistory(serviceIO.fetchHistory);
   }
 
-  private static getDisplayLoadingMessage(deepChat: DeepChat, serviceIO: ServiceIO) {
+  private static getDisplayLoadingMessage(deepChat: ActiveChat, serviceIO: ServiceIO) {
     if (serviceIO.websocket) return false;
     return deepChat.displayLoadingBubble ?? true;
   }
@@ -91,7 +91,7 @@ export class Messages extends MessagesBase {
     }
   }
 
-  private addSetupMessageIfNeeded(deepChat: DeepChat, serviceIO: ServiceIO) {
+  private addSetupMessageIfNeeded(deepChat: ActiveChat, serviceIO: ServiceIO) {
     const text = SetupMessages.getText(deepChat, serviceIO);
     if (text) {
       const elements = this.createAndAppendNewMessageElement(text, MessageUtils.AI_ROLE);
@@ -101,7 +101,7 @@ export class Messages extends MessagesBase {
   }
 
   // WORK - const file for deep chat classes
-  private addIntroductoryMessage(deepChat?: DeepChat, serviceIO?: ServiceIO) {
+  private addIntroductoryMessage(deepChat?: ActiveChat, serviceIO?: ServiceIO) {
     if (deepChat?.shadowRoot) this._introMessage = deepChat.introMessage;
     let introMessage = this._introMessage;
     if (serviceIO?.isWebModel()) introMessage ??= (serviceIO as WebModel).getIntroMessage(introMessage);
@@ -127,7 +127,7 @@ export class Messages extends MessagesBase {
     }
   }
 
-  private populateHistory(deepChat: DeepChat) {
+  private populateHistory(deepChat: ActiveChat) {
     const history = deepChat.history || Legacy.processHistory(deepChat);
     if (!history) return;
     history.forEach((message) => {

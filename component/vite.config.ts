@@ -5,9 +5,9 @@ import dts from 'vite-plugin-dts';
 export default defineConfig({
   build: {
     lib: {
-      entry: 'src/deepChat.ts',
+      entry: 'src/activeChat.ts',
       formats: ['es'],
-      fileName: 'deepChat',
+      fileName: 'activeChat',
     },
   },
   plugins: [

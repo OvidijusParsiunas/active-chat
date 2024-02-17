@@ -2,11 +2,11 @@ import {ElementUtils} from '../../utils/element/elementUtils';
 import {Websocket} from '../../utils/HTTP/websocket';
 import {ServiceIO} from '../../services/serviceIO';
 import {Messages} from './messages/messages';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 import {Input} from './input/input';
 
 export class ChatView {
-  private static createElements(deepChat: DeepChat, serviceIO: ServiceIO, panel?: HTMLElement) {
+  private static createElements(deepChat: ActiveChat, serviceIO: ServiceIO, panel?: HTMLElement) {
     const containerElement = document.createElement('div');
     containerElement.id = 'chat-view';
     const messages = new Messages(deepChat, serviceIO, panel);
@@ -16,7 +16,7 @@ export class ChatView {
     return containerElement;
   }
 
-  public static render(deepChat: DeepChat, containerRef: HTMLElement, serviceIO: ServiceIO, panel?: HTMLElement) {
+  public static render(deepChat: ActiveChat, containerRef: HTMLElement, serviceIO: ServiceIO, panel?: HTMLElement) {
     const containerElement = ChatView.createElements(deepChat, serviceIO, panel);
     containerRef.replaceChildren(containerElement);
   }

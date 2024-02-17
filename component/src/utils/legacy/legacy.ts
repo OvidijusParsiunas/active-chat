@@ -3,19 +3,20 @@ import {MessageContent} from '../../types/messages';
 import {MessageFile} from '../../types/messageFile';
 import {CustomStyle} from '../../types/styles';
 import {Connect} from '../../types/connect';
+import {ActiveChat} from '../../activeChat';
 import {Stream} from '../../types/stream';
-import {DeepChat} from '../../deepChat';
 
-interface LegacyDeepChat {
+interface LegacyActiveChat {
   request?: Connect;
   stream?: Stream;
   initialMessages?: MessageContent[];
   containerStyle?: CustomStyle;
+  validateMessageBeforeSending?: ValidateInput
 }
 
 export class Legacy {
-  public static checkForContainerStyles(deepChat: DeepChat, containerRef: HTMLElement) {
-    const containerStyle = (deepChat as unknown as LegacyDeepChat).containerStyle;
+  public static checkForContainerStyles(deepChat: ActiveChat, containerRef: HTMLElement) {
+    const containerStyle = (deepChat as unknown as LegacyActiveChat).containerStyle;
     if (containerStyle) {
       Object.assign(containerRef.style, containerStyle);
       console.error('The containerStyle property is deprecated since version 1.3.14.');
@@ -30,8 +31,8 @@ export class Legacy {
     return result.result;
   }
 
-  public static processHistory(deepChat: DeepChat) {
-    const initialMessages = (deepChat as unknown as LegacyDeepChat).initialMessages;
+  public static processHistory(deepChat: ActiveChat) {
+    const initialMessages = (deepChat as unknown as LegacyActiveChat).initialMessages;
     if (initialMessages) {
       console.error('The initialMessages property is deprecated since version 1.5.0.');
       console.error('Please change to using the history property instead: https://deepchat.dev/docs/messages/#history');
@@ -49,8 +50,8 @@ export class Legacy {
     }
   }
 
-  public static processValidateInput(deepChat: DeepChat) {
-    const validate = (deepChat as DeepChat & {validateMessageBeforeSending?: ValidateInput}).validateMessageBeforeSending;
+  public static processValidateInput(deepChat: ActiveChat) {
+    const validate = (deepChat as ActiveChat & LegacyActiveChat).validateMessageBeforeSending;
     if (validate) {
       console.error('The validateMessageBeforeSending property is deprecated since version 1.3.24.');
       console.error('Please change to using validateInput: https://deepchat.dev/docs/interceptors#validateInput');
@@ -72,8 +73,8 @@ export class Legacy {
     }
   }
 
-  public static processConnect(deepChat: DeepChat) {
-    const legacyDeepchat = deepChat as unknown as DeepChat & LegacyDeepChat;
+  public static processConnect(deepChat: ActiveChat) {
+    const legacyDeepchat = deepChat as unknown as ActiveChat & LegacyActiveChat;
     if (legacyDeepchat.request) {
       if (legacyDeepchat.connect) {
         Object.assign(legacyDeepchat.connect, legacyDeepchat.request);
@@ -86,8 +87,8 @@ export class Legacy {
     }
   }
 
-  public static checkForStream(deepChat: DeepChat) {
-    const stream = (deepChat as unknown as LegacyDeepChat).stream;
+  public static checkForStream(deepChat: ActiveChat) {
+    const stream = (deepChat as unknown as LegacyActiveChat).stream;
     if (stream) {
       console.error('The stream property has been moved to the connect object in version 1.5.0.');
       console.error('Please see the the connect object: https://deepchat.dev/docs/connect#connect-1');

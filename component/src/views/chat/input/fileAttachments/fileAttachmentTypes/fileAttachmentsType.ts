@@ -3,7 +3,7 @@ import {FileAttachments} from '../../../../../types/fileAttachments';
 import {AudioFileAttachmentType} from './audioFileAttachmentType';
 import {MessageFileType} from '../../../../../types/messageFile';
 import {Browser} from '../../../../../utils/browser/browser';
-import {DeepChat} from '../../../../../deepChat';
+import {ActiveChat} from '../../../../../activeChat';
 
 export interface AttachmentObject {
   file: File;
@@ -21,7 +21,7 @@ export class FileAttachmentsType {
   private _validationHandler?: ValidationHandler;
 
   // prettier-ignore
-  constructor(deepChat: DeepChat, fileAttachments: FileAttachments, toggleContainer: (display: boolean) => void,
+  constructor(deepChat: ActiveChat, fileAttachments: FileAttachments, toggleContainer: (display: boolean) => void,
       container: HTMLElement) {
     if (fileAttachments.maxNumberOfFiles) this._fileCountLimit = fileAttachments.maxNumberOfFiles;
     this._toggleContainerDisplay = toggleContainer;

@@ -2,10 +2,10 @@ import {HuggingFaceAudioRecognitionResult} from '../../types/huggingFaceResult';
 import {HuggingFaceFileIO} from './huggingFaceFileIO';
 import {HuggingFace} from '../../types/huggingFace';
 import {PollResult} from '../serviceIO';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 export class HuggingFaceAudioRecognitionIO extends HuggingFaceFileIO {
-  constructor(deepChat: DeepChat) {
+  constructor(deepChat: ActiveChat) {
     const config = deepChat.directConnection?.huggingFace?.audioSpeechRecognition as NonNullable<
       HuggingFace['audioSpeechRecognition']
     >;

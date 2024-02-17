@@ -4,7 +4,7 @@ import {RequestDetails} from '../../types/interceptors';
 import {ServiceIO} from '../../services/serviceIO';
 import {GenericObject} from '../../types/object';
 import {Connect} from '../../types/connect';
-import {DeepChat} from '../../deepChat';
+import {ActiveChat} from '../../activeChat';
 
 // this is mostly used for calling the request again for OpenAI API function calls
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -66,7 +66,7 @@ export class RequestUtils {
     return response.blob();
   }
 
-  public static async processRequestInterceptor(deepChat: DeepChat, requestDetails: RequestDetails): InterceptorResultP {
+  public static async processRequestInterceptor(deepChat: ActiveChat, requestDetails: RequestDetails): InterceptorResultP {
     const result = (await deepChat.requestInterceptor?.(requestDetails)) || requestDetails;
     const resReqDetails = result as RequestDetails;
     const resErrDetails = result as {error?: string};

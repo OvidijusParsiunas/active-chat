@@ -1,8 +1,8 @@
 import {ServiceIO} from '../../../services/serviceIO';
-import {DeepChat} from '../../../deepChat';
+import {ActiveChat} from '../../../activeChat';
 
 export class SetupMessages {
-  public static getText(deepChat: DeepChat, serviceIO: ServiceIO) {
+  public static getText(deepChat: ActiveChat, serviceIO: ServiceIO) {
     if (!deepChat.directConnection && !deepChat.connect && !deepChat.webModel && !deepChat.demo) {
       return `Connect to any API using the [connect](https://deepchat.dev/docs/connect#connect-1)
         property or a popular service via
