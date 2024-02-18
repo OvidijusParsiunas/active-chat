@@ -6,10 +6,10 @@ sidebar_position: 11
 
 Events can be observed in two ways, either by assigning a function to a property or by listening to custom events fired from the component element.
 
-### `onNewMessage` {#onNewMessage}
+### `onMessage` {#onMessage}
 
 - Function: (`newMessage: Body`) => `void`
-- Event: `new-message`
+- Event: `message`
 - `Body`: {[`message: MessageContent`](/docs/messages#MessageContent), `isHistory: boolean`}
 
 Triggered when a message is sent from the user and recieved from the target service. <br />
@@ -29,7 +29,7 @@ import Tabs from '@theme/Tabs';
 
 <BrowserOnly>{() => require('@site/src/components/nav/autoNavToggle').readdAutoNavShadowToggle()}</BrowserOnly>
 
-<ComponentContainerEvents propertyName={'onNewMessage'}>
+<ComponentContainerEvents propertyName={'onMessage'}>
   <DeepChatBrowser style={{borderRadius: '8px'}} demo={true}></DeepChatBrowser>
 </ComponentContainerEvents>
 
@@ -37,7 +37,7 @@ import Tabs from '@theme/Tabs';
 <TabItem value="js" label="Function">
 
 ```html
-chatElementRef.onNewMessage = (message) => { console.log(message); };
+chatElementRef.onMessage = (message) => { console.log(message); };
 ```
 
 </TabItem>

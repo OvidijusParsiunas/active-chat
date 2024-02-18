@@ -79,7 +79,7 @@ export default function ChatComponent({config}) {
                   style={darkContainerStyle}
                   messageStyles={darkMessageStyles}
                   history={config.messages}
-                  onNewMessage={newMessage}
+                  onMessage={newMessage}
                   onClearMessages={clearMessages}
                   textInput={darkTextInput}
                   submitButtonStyles={darkButtonStyles}
@@ -92,7 +92,7 @@ export default function ChatComponent({config}) {
                   style={darkContainerStyle}
                   messageStyles={darkMessageStyles}
                   history={config.messages}
-                  onNewMessage={newMessage}
+                  onMessage={newMessage}
                   onClearMessages={clearMessages}
                   textInput={darkTextInput}
                   submitButtonStyles={darkButtonStyles}
@@ -105,7 +105,7 @@ export default function ChatComponent({config}) {
                   style={darkContainerStyle}
                   messageStyles={darkMessageStyles}
                   history={config.messages}
-                  onNewMessage={newMessage}
+                  onMessage={newMessage}
                   onClearMessages={clearMessages}
                 ></DeepChatBrowser>
               ) : (
@@ -120,7 +120,7 @@ export default function ChatComponent({config}) {
                   style={darkContainerStyle}
                   messageStyles={darkMessageStyles}
                   history={config.messages}
-                  onNewMessage={newMessage}
+                  onMessage={newMessage}
                   onClearMessages={clearMessages}
                   textInput={darkTextInput}
                   submitButtonStyles={darkButtonStyles}
@@ -145,7 +145,7 @@ export default function ChatComponent({config}) {
                 mixedFiles={allowMixedFiles}
                 style={lightContainerStyle}
                 history={config.messages}
-                onNewMessage={newMessage}
+                onMessage={newMessage}
                 onClearMessages={clearMessages}
               ></DeepChatBrowser>
             ) : config?.connect?.demo ? (
@@ -153,7 +153,7 @@ export default function ChatComponent({config}) {
                 demo={DEMO_RESPONSE}
                 style={lightContainerStyle}
                 history={config.messages}
-                onNewMessage={newMessage}
+                onMessage={newMessage}
                 onClearMessages={clearMessages}
               ></DeepChatBrowser>
             ) : config?.connect?.webModel ? (
@@ -161,7 +161,7 @@ export default function ChatComponent({config}) {
                 webModel={getWebModelConfig(config.connect.webModel)}
                 style={lightContainerStyle}
                 history={config.messages}
-                onNewMessage={newMessage}
+                onMessage={newMessage}
                 onClearMessages={clearMessages}
               ></DeepChatBrowser>
             ) : (
@@ -175,7 +175,7 @@ export default function ChatComponent({config}) {
                 mixedFiles={allowMixedFiles}
                 style={lightContainerStyle}
                 history={config.messages}
-                onNewMessage={newMessage}
+                onMessage={newMessage}
                 onClearMessages={clearMessages}
               ></DeepChatBrowser>
             )}

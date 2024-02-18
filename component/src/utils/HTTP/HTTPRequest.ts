@@ -92,21 +92,4 @@ export class HTTPRequest {
     if (io.connectSettings.credentials) requestInit.credentials = io.connectSettings.credentials; 
     HTTPRequest.executePollRequest(io, url, requestInit, messages);
   }
-
-  // prettier-ignore
-  public static verifyKey(key: string, url: string, headers: HeadersInit, method: string,
-      onSuccess: (key: string) => void, onFail: (message: string) => void, onLoad: () => void,
-      handleVerificationResult: HandleVerificationResult, body?: string) {
-    if (key === '') return onFail(ErrorMessages.INVALID_KEY);
-    onLoad();
-    fetch(url, { method, headers, body: body || null })
-      .then((response) => RequestUtils.processResponseByType(response))
-      .then((result: object) => {
-        handleVerificationResult(result, key, onSuccess, onFail);
-      })
-      .catch((err) => {
-        onFail(ErrorMessages.CONNECTION_FAILED);
-        console.error(err);
-      });
-  }
 }

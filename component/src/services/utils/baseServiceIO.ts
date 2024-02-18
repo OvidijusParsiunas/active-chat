@@ -1,3 +1,4 @@
+import {CompletionsHandlers, ServiceFileTypes, RequestContents, StreamHandlers, ServiceIO} from '../serviceIO';
 import {CameraFilesServiceConfig, MicrophoneFilesServiceConfig} from '../../types/fileServiceConfigs';
 import {MessageContentI} from '../../types/messagesInternal';
 import {Messages} from '../../views/chat/messages/messages';
@@ -13,22 +14,13 @@ import {Demo as DemoT} from '../../types/demo';
 import {Response} from '../../types/response';
 import {Connect} from '../../types/connect';
 import {SetFileTypes} from './setFileTypes';
-import {Demo} from '../../utils/demo/demo';
 import {ActiveChat} from '../../activeChat';
-import {
-  KeyVerificationHandlers,
-  CompletionsHandlers,
-  ServiceFileTypes,
-  RequestContents,
-  StreamHandlers,
-  ServiceIO,
-} from '../serviceIO';
+import {Demo} from '../../utils/demo/demo';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export class BaseServiceIO implements ServiceIO {
   readonly rawBody: any = {};
   activeChat: ActiveChat;
-  validateConfigKey = false;
   canSendMessage: ValidateInput = BaseServiceIO.canSendMessage;
   connectSettings: Connect = {};
   fileTypes: ServiceFileTypes = {};
@@ -59,8 +51,6 @@ export class BaseServiceIO implements ServiceIO {
     if (isProgrammatic) return true;
     return !!(text && text.trim() !== '') || !!(files && files.length > 0);
   }
-
-  verifyKey(_key: string, _keyVerificationHandlers: KeyVerificationHandlers) {}
 
   private static createCustomFormDataBody(body: any, messages: MessageContentI[], files: File[]) {
     const formData = new FormData();

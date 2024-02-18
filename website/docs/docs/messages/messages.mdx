@@ -79,7 +79,7 @@ import Tabs from '@theme/Tabs';
 - Type: {`text?: string`, `html?: string`}
 
 Initial `ai` message that is displayed when the chat is loaded. It is different to [`history`](#history) as it will not trigger
-the [`onNewMessage`](/docs/events#onNewMessage) listener, will not be part of the returned messages when [`getMessages`](/docs/methods#getMessages) is called and
+the [`onMessage`](/docs/events#onMessage) listener, will not be part of the returned messages when [`getMessages`](/docs/methods#getMessages) is called and
 is not taken into consideration when calculating [`requestBodyLimits`](/docs/connect#requestBodyLimits). <br />
 `html` is used to render [custom code](/docs/messages/HTML) and can be coupled with a [`deep-chat-temporary-message`](/docs/messages/HTML#deepChatClasses)
 class to make this message disappear after a new one is added.
@@ -614,7 +614,7 @@ Format that defines the details of a file. <br />
 `src` is either the _url_ path to the file location or the base64 encoding as a string (make sure to use the correct type prefix e.g: _"data:(type);base64,"_).<br />
 The component will automatically try to infer the file type from the `src` property so that it can render its media correctly,
 however you can help it by setting the `type`. <br />
-`ref` is the actual file's reference. It is only included in [`onNewMessage`](/docs/events#onNewMessage) events. <br />
+`ref` is the actual file's reference. It is only included in [`onMessage`](/docs/events#onMessage) events. <br />
 
 #### Example
 

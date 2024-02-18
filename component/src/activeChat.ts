@@ -1,5 +1,5 @@
 import {CameraFilesServiceConfig, FilesServiceConfig, MicrophoneFilesServiceConfig} from './types/fileServiceConfigs';
-import {MessageContent, IntroMessage, MessageStyles, UserContent, OnNewMessage} from './types/messages';
+import {MessageContent, IntroMessage, MessageStyles, UserContent, OnMessage} from './types/messages';
 import {WebComponentStyleUtils} from './utils/webComponent/webComponentStyleUtils';
 import {DisableSubmitButton, SubmitButtonStyles} from './types/submitButton';
 import {RequestInterceptor, ResponseInterceptor} from './types/interceptors';
@@ -141,7 +141,7 @@ export class ActiveChat extends InternalHTML {
   disableSubmitButton: DisableSubmitButton = () => {};
 
   @Property('function')
-  onNewMessage?: OnNewMessage;
+  onMessage?: OnMessage;
 
   @Property('function')
   onClearMessages?: () => void;
@@ -165,6 +165,8 @@ export class ActiveChat extends InternalHTML {
 
   _validationHandler?: ValidationHandler;
 
+  readonly _elementRef: HTMLElement;
+
   constructor() {
     super();
     GoogleFont.appendStyleSheetToHead();
@@ -177,8 +179,6 @@ export class ActiveChat extends InternalHTML {
       if (!this._hasBeenRendered) this.onRender();
     }, 20); // rendering takes time, hence this is a high value to be safe
   }
-
-  private readonly _elementRef: HTMLElement;
 
   // prettier-ignore
   override onRender() {

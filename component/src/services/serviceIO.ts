@@ -1,4 +1,5 @@
 import {CameraFilesServiceConfig, FilesServiceConfig, MicrophoneFilesServiceConfig} from '../types/fileServiceConfigs';
+import {IntroMessage, MessageContent} from '../types/messages';
 import {IWebsocketHandler} from '../utils/HTTP/customHandler';
 import {Messages} from '../views/chat/messages/messages';
 import {InterfacesUnion} from '../types/utilityTypes';
@@ -7,8 +8,8 @@ import {FILE_TYPES} from '../types/fileTypes';
 import {Response} from '../types/response';
 import {Connect} from '../types/connect';
 import {Signals} from '../types/handler';
-import {Stream} from '../types/stream';
 import {ActiveChat} from '../activeChat';
+import {Stream} from '../types/stream';
 import {Demo} from '../types/demo';
 
 export interface RequestContents {
@@ -45,16 +46,6 @@ export type ServiceFileTypes = {
 };
 
 export interface ServiceIO {
-  key?: string;
-
-  validateConfigKey: boolean;
-
-  insertKeyPlaceholderText?: string;
-
-  keyHelpUrl?: string;
-
-  url?: string;
-
   // 'pending' is used to signify that the websocket connection will need to be established
   // IWebsocketHandler contains logic for custom handler
   websocket?: WebSocket | 'pending' | IWebsocketHandler;
@@ -86,8 +77,6 @@ export interface ServiceIO {
 
   canSendMessage: (text?: string, files?: File[], isProgrammatic?: boolean) => boolean;
 
-  verifyKey(key: string, keyVerificationHandlers: KeyVerificationHandlers): void;
-
   callAPI(requestContents: RequestContents, messages: Messages): Promise<void>;
 
   extractResultData?(
@@ -112,4 +101,30 @@ export interface ServiceIO {
 
   // mostly used for streaming to not close the stream when it makes another request
   asyncCallInProgress?: boolean;
+
+  // PROPERTIES FOR CHILD COMPONENTS
+
+  // used for extensions that may use their own urls (DeepChat direct-connection)
+  url?: string;
+
+  // new properties
+  loadMessage?: boolean;
+
+  setUpMessagesForService?: (messages: Messages) => void;
+
+  getSetUpMessage?: () => string | null;
+
+  getServiceIntroMessage?: (custom?: IntroMessage) => MessageContent | undefined;
+
+  // add it to a DeepChat interface
+
+  verifyKey?(key: string, keyVerificationHandlers: KeyVerificationHandlers): void;
+
+  key?: string;
+
+  validateConfigKey?: boolean;
+
+  insertKeyPlaceholderText?: string;
+
+  keyHelpUrl?: string;
 }
