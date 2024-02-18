@@ -6,7 +6,7 @@ import {Response} from '../../types/response';
 import {Stream} from '../HTTP/stream';
 
 export class Demo {
-  public static readonly URL = 'deep-chat-demo';
+  public static readonly URL = 'active-chat-demo';
 
   private static generateResponse(messages: Messages) {
     const requestMessage = messages.messages[messages.messages.length - 1];
@@ -52,7 +52,7 @@ export class Demo {
   public static request(io: ServiceIO, messages: Messages) {
     const response = Demo.getResponse(messages);
     setTimeout(async () => {
-      const processedResponse = (await io.deepChat.responseInterceptor?.(response)) || response;
+      const processedResponse = (await io.activeChat.responseInterceptor?.(response)) || response;
       if (processedResponse.error) {
         messages.addNewErrorMessage('service', processedResponse.error);
         io.completionsHandlers.onFinish();

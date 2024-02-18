@@ -15,14 +15,13 @@ import {MessageStream} from './stream/messageStream';
 import {Legacy} from '../../../utils/legacy/legacy';
 import {IntroPanel} from '../introPanel/introPanel';
 import {FileMessageUtils} from './fileMessageUtils';
-import {WebModel} from '../../../webModel/webModel';
 import {CustomStyle} from '../../../types/styles';
 import {HTMLMessages} from './html/htmlMessages';
+import {ActiveChat} from '../../../activeChat';
 import {SetupMessages} from './setupMessages';
 import {FileMessages} from './fileMessages';
 import {MessageUtils} from './messageUtils';
 import {MessagesBase} from './messagesBase';
-import {ActiveChat} from '../../../activeChat';
 import {HTMLUtils} from './html/htmlUtils';
 
 export interface MessageElements {
@@ -49,10 +48,10 @@ export class Messages extends MessagesBase {
     this._onError = FireEvents.onError.bind(this, deepChat);
     this._displayLoadingMessage = Messages.getDisplayLoadingMessage(deepChat, serviceIO);
     this._permittedErrorPrefixes = permittedErrorPrefixes;
-    if (!this.addSetupMessageIfNeeded(deepChat, serviceIO)) {
+    if (!this.addSetupMessageIfNeeded(deepChat)) {
       this.populateIntroPanel(panel, introPanelMarkUp, deepChat.introPanelStyle);
     }
-    this.addIntroductoryMessage(deepChat, serviceIO);
+    this.addIntroductoryMessage(deepChat);
     this.populateHistory(deepChat);
     this._displayServiceErrorMessages = deepChat.errorMessages?.displayServiceErrorMessages;
     deepChat.getMessages = () => JSON.parse(JSON.stringify(this.messages));
@@ -62,7 +61,6 @@ export class Messages extends MessagesBase {
     deepChat.addMessage = (message: ResponseI, isUpdate?: boolean) => {
       this.addAnyMessage({...message, sendUpdate: !!isUpdate}, !isUpdate);
     };
-    if (serviceIO.isWebModel()) (serviceIO as WebModel).setUpMessages(this);
     if (demo) this.prepareDemo(demo);
     if (deepChat.textToSpeech) {
       TextToSpeech.processConfig(deepChat.textToSpeech, (processedConfig) => {
@@ -91,8 +89,8 @@ export class Messages extends MessagesBase {
     }
   }
 
-  private addSetupMessageIfNeeded(deepChat: ActiveChat, serviceIO: ServiceIO) {
-    const text = SetupMessages.getText(deepChat, serviceIO);
+  private addSetupMessageIfNeeded(deepChat: ActiveChat) {
+    const text = SetupMessages.getText(deepChat);
     if (text) {
       const elements = this.createAndAppendNewMessageElement(text, MessageUtils.AI_ROLE);
       this.applyCustomStyles(elements, MessageUtils.AI_ROLE, false);
@@ -100,11 +98,10 @@ export class Messages extends MessagesBase {
     return !!text;
   }
 
-  // WORK - const file for deep chat classes
-  private addIntroductoryMessage(deepChat?: ActiveChat, serviceIO?: ServiceIO) {
+  // WORK - const file for active chat classes
+  private addIntroductoryMessage(deepChat?: ActiveChat) {
     if (deepChat?.shadowRoot) this._introMessage = deepChat.introMessage;
-    let introMessage = this._introMessage;
-    if (serviceIO?.isWebModel()) introMessage ??= (serviceIO as WebModel).getIntroMessage(introMessage);
+    const introMessage = this._introMessage;
     if (introMessage) {
       let elements;
       if (introMessage?.text) {
@@ -147,21 +144,21 @@ export class Messages extends MessagesBase {
     setTimeout(() => ElementUtils.scrollToBottom(this.elementRef), 0);
   }
 
-  private addAnyMessage(message: ResponseI, isInitial = false) {
+  private addAnyMessage(message: ResponseI, isHistory = false) {
     if (message.error) {
       this.addNewErrorMessage('service', message.error);
     } else {
-      this.addNewMessage(message, isInitial);
+      this.addNewMessage(message, isHistory);
     }
   }
 
   // this should not be activated by streamed messages
-  public addNewMessage(data: ResponseI, isInitial = false) {
+  public addNewMessage(data: ResponseI, isHistory = false) {
     const message = Messages.createMessageContent(data);
     const overwrite: Overwrite = {status: data.overwrite}; // if did not overwrite, create a new message
     if (!data.ignoreText && message.text !== undefined && data.text !== null) {
       this.addNewTextMessage(message.text, message.role, overwrite);
-      if (!isInitial && this.textToSpeech && message.role !== MessageUtils.USER_ROLE) {
+      if (!isHistory && this.textToSpeech && message.role !== MessageUtils.USER_ROLE) {
         TextToSpeech.speak(message.text, this.textToSpeech);
       }
     }
@@ -173,7 +170,7 @@ export class Messages extends MessagesBase {
       if (HTMLDeepChatElements.isElementTemporary(elements)) delete message.html;
     }
     if (this.isValidMessageContent(message)) {
-      this.updateStateOnMessage(message, data.overwrite, data.sendUpdate, isInitial);
+      this.updateStateOnMessage(message, data.overwrite, data.sendUpdate, isHistory);
     }
   }
 
@@ -181,9 +178,9 @@ export class Messages extends MessagesBase {
     return messageContent.text || messageContent.html || (messageContent.files && messageContent.files.length > 0);
   }
 
-  private updateStateOnMessage(messageContent: MessageContentI, overwritten?: boolean, update = true, initial = false) {
+  private updateStateOnMessage(messageContent: MessageContentI, overwritten?: boolean, update = true, isHistory = false) {
     if (!overwritten) this.messages.push(messageContent);
-    if (update) this.sendClientUpdate(messageContent, initial);
+    if (update) this.sendClientUpdate(messageContent, isHistory);
   }
 
   // prettier-ignore

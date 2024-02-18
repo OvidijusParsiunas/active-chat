@@ -102,11 +102,7 @@ export interface ServiceIO {
 
   stream?: Stream;
 
-  deepChat: ActiveChat;
-
-  isDirectConnection(): boolean;
-
-  isWebModel(): boolean;
+  activeChat: ActiveChat;
 
   isSubmitProgrammaticallyDisabled?: boolean;
 

@@ -171,7 +171,6 @@ export class SubmitButton extends InputButton<Styles> {
     if ((await this._validationHandler?.(isProgrammatic ? content : undefined)) === false) return;
     this.changeToLoadingIcon();
     await this.addNewMessage(content);
-    if (!this._serviceIO.isWebModel()) this._messages.addLoadingMessage();
     TextInputEl.clear(this._inputElementRef); // when uploading a file and placeholder text present
     const filesData = content.files?.map((fileData) => fileData.file);
     const requestContents = {text: content.text === '' ? undefined : content.text, files: filesData};

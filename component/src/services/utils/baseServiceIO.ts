@@ -27,7 +27,7 @@ import {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export class BaseServiceIO implements ServiceIO {
   readonly rawBody: any = {};
-  deepChat: ActiveChat;
+  activeChat: ActiveChat;
   validateConfigKey = false;
   canSendMessage: ValidateInput = BaseServiceIO.canSendMessage;
   connectSettings: Connect = {};
@@ -43,7 +43,7 @@ export class BaseServiceIO implements ServiceIO {
   streamHandlers: StreamHandlers = {} as StreamHandlers;
 
   constructor(deepChat: ActiveChat, existingFileTypes?: ServiceFileTypes, demo?: DemoT) {
-    this.deepChat = deepChat;
+    this.activeChat = deepChat;
     this.demo = demo;
     Object.assign(this.rawBody, deepChat.connect?.additionalBodyProps);
     this.totalMessagesMaxCharLength = deepChat?.requestBodyLimits?.totalMessagesMaxCharLength;
@@ -52,7 +52,7 @@ export class BaseServiceIO implements ServiceIO {
     if (deepChat.connect) this.connectSettings = deepChat.connect;
     if (this.demo) this.connectSettings.url ??= Demo.URL;
     if (this.connectSettings.websocket) Websocket.setup(this);
-    this.stream = this.deepChat.connect?.stream || Legacy.checkForStream(this.deepChat);
+    this.stream = this.activeChat.connect?.stream || Legacy.checkForStream(this.activeChat);
   }
 
   private static canSendMessage(text?: string, files?: File[], isProgrammatic?: boolean) {

@@ -3,8 +3,8 @@ import {MessageContentI} from '../../types/messagesInternal';
 import {ActiveChat} from '../../activeChat';
 
 export class FireEvents {
-  public static onNewMessage(deepChat: ActiveChat, message: MessageContentI, isInitial: boolean) {
-    const updateBody = JSON.parse(JSON.stringify({message, isInitial}));
+  public static onNewMessage(deepChat: ActiveChat, message: MessageContentI, isHistory: boolean) {
+    const updateBody = JSON.parse(JSON.stringify({message, isHistory}));
     FileMessageUtils.reAddFileRefToObject(message, updateBody);
     deepChat.onNewMessage?.(updateBody);
     deepChat.dispatchEvent(new CustomEvent('new-message', {detail: updateBody}));

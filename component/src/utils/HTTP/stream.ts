@@ -17,7 +17,7 @@ export class Stream {
   public static async request(io: ServiceIO, body: object, messages: Messages, stringifyBody = true) {
     const requestDetails = {body, headers: io.connectSettings?.headers};
     const {body: interceptedBody, headers: interceptedHeaders, error} =
-      (await RequestUtils.processRequestInterceptor(io.deepChat, requestDetails));
+      (await RequestUtils.processRequestInterceptor(io.activeChat, requestDetails));
     const {onOpen, onClose, abortStream} = io.streamHandlers;
     if (error) return RequestUtils.onInterceptorError(messages, error, onClose);
     if (io.connectSettings?.handler) return CustomHandler.stream(io, interceptedBody, messages);
@@ -45,7 +45,7 @@ export class Stream {
           } catch(e) {
             eventData = {};
           }
-          const finalEventData = (await io.deepChat.responseInterceptor?.(eventData)) || eventData;
+          const finalEventData = (await io.activeChat.responseInterceptor?.(eventData)) || eventData;
           io.extractResultData?.(finalEventData, fetchFunc, interceptedBody)
             .then((result?: ResponseI) => {
               // when async call is happening - an event with text signals its over

@@ -11,8 +11,8 @@ export default function ChatComponent({config}) {
 
   // updating messages here to keep track of them so that when user moves to a different page they can be added to config
   // to note componentRef.current will be undefined, hence need to keep track
-  function newMessage({isInitial}) {
-    if (!isInitial) {
+  function newMessage({isHistory}) {
+    if (!isHistory) {
       const deepChatComponent = componentRef.current.children[0];
       if (config.connect?.openAI?.assistant) assignOpenAIAssistantId(deepChatComponent, config);
       const {messages} = config;

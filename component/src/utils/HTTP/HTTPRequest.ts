@@ -16,7 +16,7 @@ export class HTTPRequest {
   public static async request(io: ServiceIO, body: object, messages: Messages, stringifyBody = true) {
     const requestDetails: RequestDetails = {body, headers: io.connectSettings?.headers};
     const {body: interceptedBody, headers, error} =
-      (await RequestUtils.processRequestInterceptor(io.deepChat, requestDetails));
+      (await RequestUtils.processRequestInterceptor(io.activeChat, requestDetails));
     const {onFinish} = io.completionsHandlers;
     if (error) return RequestUtils.onInterceptorError(messages, error, onFinish);
     if (io.connectSettings?.handler) return CustomHandler.request(io, interceptedBody, messages);
@@ -30,12 +30,13 @@ export class HTTPRequest {
       .then((response) => RequestUtils.processResponseByType(response))
       .then(async (result: Response) => {
         if (!io.extractResultData) return; // this return should theoretically not execute
-        const finalResult = (await io.deepChat.responseInterceptor?.(result)) || result;
+        const finalResult = (await io.activeChat.responseInterceptor?.(result)) || result;
         const resultData = await io.extractResultData(finalResult, fetchFunc, interceptedBody);
         // the reason why throwing here is to allow extractResultData to attempt extract error message and throw it
         if (!responseValid) throw result;
         if (!resultData || typeof resultData !== 'object')
-          throw Error(ErrorMessages.INVALID_RESPONSE(result, 'response', !!io.deepChat.responseInterceptor, finalResult));
+          throw Error(
+            ErrorMessages.INVALID_RESPONSE(result, 'response', !!io.activeChat.responseInterceptor, finalResult));
         if (resultData.makingAnotherRequest) return;
         if (Stream.isSimulatable(io.stream, resultData)) {
           Stream.simulate(messages, io.streamHandlers, resultData);
@@ -57,7 +58,7 @@ export class HTTPRequest {
       .then((response) => response.json())
       .then(async (result: object) => {
         if (!io.extractPollResultData) return;
-        const resultData = await io.extractPollResultData((await io.deepChat.responseInterceptor?.(result)) || result);
+        const resultData = await io.extractPollResultData((await io.activeChat.responseInterceptor?.(result)) || result);
         if (resultData.timeoutMS) {
           setTimeout(() => {
             HTTPRequest.executePollRequest(io, url, requestInit, messages);
@@ -82,7 +83,7 @@ export class HTTPRequest {
   public static async poll(io: ServiceIO, body: object, messages: Messages, stringifyBody = true) {
     const requestDetails = {body, headers: io.connectSettings?.headers};
     const {body: interceptedBody, headers, error} =
-      (await RequestUtils.processRequestInterceptor(io.deepChat, requestDetails));
+      (await RequestUtils.processRequestInterceptor(io.activeChat, requestDetails));
     if (error) return RequestUtils.onInterceptorError(messages, error);
     const url = io.connectSettings?.url || io.url || '';
     const method = io.connectSettings?.method || 'POST';

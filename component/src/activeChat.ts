@@ -1,19 +1,13 @@
 import {CameraFilesServiceConfig, FilesServiceConfig, MicrophoneFilesServiceConfig} from './types/fileServiceConfigs';
 import {MessageContent, IntroMessage, MessageStyles, UserContent, OnNewMessage} from './types/messages';
-import {ValidateKeyPropertyView} from './views/validateKeyProperty/validateKeyPropertyView';
 import {WebComponentStyleUtils} from './utils/webComponent/webComponentStyleUtils';
 import {DisableSubmitButton, SubmitButtonStyles} from './types/submitButton';
 import {RequestInterceptor, ResponseInterceptor} from './types/interceptors';
 import {FocusUtils} from './views/chat/input/textInput/focusUtils';
-import {DirectServiceIO} from './services/utils/directServiceIO';
-import {InsertKeyViewStyles} from './types/insertKeyViewStyles';
 import {InternalHTML} from './utils/webComponent/internalHTML';
-import {InsertKeyView} from './views/insertKey/insertKeyView';
-import {WebModel as WebModelClass} from './webModel/webModel';
 import {ServiceIOFactory} from './services/serviceIOFactory';
 import {ValidationHandler} from './types/validationHandler';
 import {GoogleFont} from './utils/webComponent/googleFont';
-import {DirectConnection} from './types/directConnection';
 import {TextToSpeechConfig} from './types/textToSpeech';
 import {SpeechToTextConfig} from './types/microphone';
 import {ErrorMessages, OnError} from './types/error';
@@ -21,7 +15,6 @@ import {RequestBodyLimits} from './types/chatLimits';
 import {Property} from './utils/decorators/property';
 import {FireEvents} from './utils/events/fireEvents';
 import {ValidateInput} from './types/validateInput';
-import {WebModel} from './types/webModel/webModel';
 import {DropupStyles} from './types/dropupStyles';
 import {HTMLClassUtilities} from './types/html';
 import {ChatView} from './views/chat/chatView';
@@ -41,12 +34,6 @@ import {Demo} from './types/demo';
 export class ActiveChat extends InternalHTML {
   @Property('object')
   connect?: Connect;
-
-  @Property('object')
-  directConnection?: DirectConnection;
-
-  @Property('object')
-  webModel?: WebModel;
 
   @Property('object')
   requestBodyLimits?: RequestBodyLimits;
@@ -178,10 +165,6 @@ export class ActiveChat extends InternalHTML {
 
   _validationHandler?: ValidationHandler;
 
-  // TO-DO - key view style
-  @Property('object')
-  _insertKeyViewStyles?: InsertKeyViewStyles;
-
   constructor() {
     super();
     GoogleFont.appendStyleSheetToHead();
@@ -197,11 +180,6 @@ export class ActiveChat extends InternalHTML {
 
   private readonly _elementRef: HTMLElement;
 
-  private changeToChatView() {
-    if (this._activeService) this._activeService.validateConfigKey = false;
-    this.onRender();
-  }
-
   // prettier-ignore
   override onRender() {
     Legacy.processConnect(this);
@@ -212,25 +190,12 @@ export class ActiveChat extends InternalHTML {
     }
     WebComponentStyleUtils.applyDefaultStyleToComponent(this.style, this.chatStyle);
     Legacy.checkForContainerStyles(this, this._elementRef);
-    if (this._activeService.key && this._activeService.validateConfigKey) {
-      ValidateKeyPropertyView.render(this._elementRef, this.changeToChatView.bind(this), this._activeService);
-    } else if (!(this._activeService instanceof DirectServiceIO) || this._activeService.key) {
-      // set before container populated, not available in constructor for react,
-      // assigning to variable as it is added to panel and is no longer child (test in official website)
-      this._childElement ??= this.children[0] as HTMLElement | undefined;
-      ChatView.render(this, this._elementRef, this._activeService, this._childElement);
-    } else if (this._activeService instanceof DirectServiceIO) { // when direct service with no key
-      // the reason why this is not initiated in the constructor is because properties/attributes are not available
-      // when it is executed, meaning that if the user sets customService or key, this would first appear and
-      // then the chatview would be rendered after it, which causes a blink and is bad UX
-      InsertKeyView.render(this._elementRef, this.changeToChatView.bind(this), this._activeService);
-    }
+    // set before container populated, not available in constructor for react,
+    // assigning to variable as it is added to panel and is no longer child (test in official website)
+    this._childElement ??= this.children[0] as HTMLElement | undefined;
+    ChatView.render(this, this._elementRef, this._activeService, this._childElement);
     this._hasBeenRendered = true;
     FireEvents.onRender(this);
-  }
-
-  disconnectedCallback() {
-    WebModelClass.chat = undefined;
   }
 }
 

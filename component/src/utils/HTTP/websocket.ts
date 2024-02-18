@@ -21,7 +21,7 @@ export class Websocket {
   }
 
   public static createConnection(io: ServiceIO, messages: Messages) {
-    if (!document.body.contains(io.deepChat)) return; // check if element is still present
+    if (!document.body.contains(io.activeChat)) return; // check if element is still present
     const websocketConfig = io.connectSettings.websocket;
     if (!websocketConfig) return;
     if (io.connectSettings.handler) return CustomHandler.websocket(io, messages);
@@ -33,7 +33,7 @@ export class Websocket {
       io.websocket.onopen = () => {
         messages.removeError();
         if (io.websocket && typeof io.websocket === 'object') Websocket.assignListeners(io, websocket, messages);
-        io.deepChat._validationHandler?.();
+        io.activeChat._validationHandler?.();
       };
       io.websocket.onerror = (event) => {
         console.error(event);
@@ -46,8 +46,8 @@ export class Websocket {
   }
 
   private static retryConnection(io: ServiceIO, messages: Messages) {
-    io.deepChat._validationHandler?.();
-    if (!document.body.contains(io.deepChat)) return; // check if element is still present
+    io.activeChat._validationHandler?.();
+    if (!document.body.contains(io.activeChat)) return; // check if element is still present
     io.websocket = 'pending';
     if (!messages.isLastMessageError()) messages.addNewErrorMessage('service', 'Connection error');
     setTimeout(() => {
@@ -61,10 +61,10 @@ export class Websocket {
       if (!io.extractResultData) return; // this return should theoretically not execute
       try {
         const result: Response = JSON.parse(message.data);
-        const finalResult = (await io.deepChat.responseInterceptor?.(result)) || result;
+        const finalResult = (await io.activeChat.responseInterceptor?.(result)) || result;
         const resultData = await io.extractResultData(finalResult);
         if (!resultData || typeof resultData !== 'object')
-          throw Error(ErrorMessages.INVALID_RESPONSE(result, 'server', !!io.deepChat.responseInterceptor, finalResult));
+          throw Error(ErrorMessages.INVALID_RESPONSE(result, 'server', !!io.activeChat.responseInterceptor, finalResult));
         if (Stream.isSimulation(io.stream)) {
           const upsertFunc = Websocket.stream.bind(this, io, messages, roleToStream);
           const stream = roleToStream[result.role || MessageUtils.AI_ROLE];
@@ -89,7 +89,7 @@ export class Websocket {
     const ws = io.websocket;
     if (!ws || ws === 'pending') return;
     const requestDetails = {body, headers: io.connectSettings?.headers};
-    const {body: interceptedBody, error} = await RequestUtils.processRequestInterceptor(io.deepChat, requestDetails);
+    const {body: interceptedBody, error} = await RequestUtils.processRequestInterceptor(io.activeChat, requestDetails);
     if (error) return messages.addNewErrorMessage('service', error);
     if (!Websocket.isWebSocket(ws)) return ws.newUserMessage.listener(interceptedBody);
     const processedBody = stringifyBody ? JSON.stringify(interceptedBody) : interceptedBody;
