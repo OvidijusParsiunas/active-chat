@@ -104,17 +104,13 @@ export interface ServiceIO {
 
   // PROPERTIES FOR CHILD COMPONENTS
 
-  // used for extensions that may use their own urls (DeepChat direct-connection)
   url?: string;
 
-  // new properties
-  loadMessage?: boolean;
+  isLoadingMessage: boolean;
 
   setUpMessagesForService?: (messages: Messages) => void;
 
-  getSetUpMessage?: () => string | null;
-
-  getServiceIntroMessage?: (custom?: IntroMessage) => MessageContent | undefined;
+  getServiceIntroMessage?: (custom?: IntroMessage) => IntroMessage | undefined;
 
   // add it to a DeepChat interface
 
@@ -122,7 +118,7 @@ export interface ServiceIO {
 
   key?: string;
 
-  validateConfigKey?: boolean;
+  validateKeyProperty?: boolean;
 
   insertKeyPlaceholderText?: string;
 

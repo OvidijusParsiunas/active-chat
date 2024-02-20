@@ -16,15 +16,15 @@ export class TextInputEl {
   private readonly _config: TextInput;
   submit?: () => void;
 
-  constructor(deepChat: ActiveChat, serviceIO: ServiceIO) {
-    const processedConfig = TextInputEl.processConfig(serviceIO, deepChat.textInput);
+  constructor(activeChat: ActiveChat, serviceIO: ServiceIO) {
+    const processedConfig = TextInputEl.processConfig(serviceIO, activeChat.textInput);
     this.elementRef = TextInputEl.createContainerElement(processedConfig?.styles?.container);
     this.inputElementRef = this.createInputElement(processedConfig);
     this._config = processedConfig;
     this.elementRef.appendChild(this.inputElementRef);
     setTimeout(() => {
-      // in a timeout as deepChat._validationHandler initialised later
-      TextInputEvents.add(this.inputElementRef, deepChat.textInput?.characterLimit, deepChat._validationHandler);
+      // in a timeout as activeChat._validationHandler initialised later
+      TextInputEvents.add(this.inputElementRef, activeChat.textInput?.characterLimit, activeChat._validationHandler);
     });
   }
 

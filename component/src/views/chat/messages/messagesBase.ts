@@ -2,7 +2,7 @@ import {MessageElementsStyles, MessageRoleStyles, MessageStyles, UserContent} fr
 import {MessageContentI, Overwrite} from '../../../types/messagesInternal';
 import {ProcessedTextToSpeechConfig} from './textToSpeech/textToSpeech';
 import {ElementUtils} from '../../../utils/element/elementUtils';
-import {HTMLDeepChatElements} from './html/htmlDeepChatElements';
+import {HTMLActiveChatElements} from './html/htmlActiveChatElements';
 import {RemarkableConfig} from './remarkable/remarkableConfig';
 import {FireEvents} from '../../../utils/events/fireEvents';
 import {HTMLClassUtilities} from '../../../types/html';
@@ -31,16 +31,16 @@ export class MessagesBase {
   private _remarkable: Remarkable;
   private readonly _onMessage?: (message: MessageContentI, isHistory: boolean) => void;
 
-  constructor(deepChat: ActiveChat) {
+  constructor(activeChat: ActiveChat) {
     this.elementRef = MessagesBase.createContainerElement();
-    this.messageStyles = deepChat.messageStyles;
+    this.messageStyles = activeChat.messageStyles;
     this._remarkable = RemarkableConfig.createNew();
-    this._avatars = deepChat.avatars;
-    this._names = deepChat.names;
-    this._onMessage = FireEvents.onMessage.bind(this, deepChat);
-    if (deepChat.htmlClassUtilities) this.htmlClassUtilities = deepChat.htmlClassUtilities;
+    this._avatars = activeChat.avatars;
+    this._names = activeChat.names;
+    this._onMessage = FireEvents.onMessage.bind(this, activeChat);
+    if (activeChat.htmlClassUtilities) this.htmlClassUtilities = activeChat.htmlClassUtilities;
     setTimeout(() => {
-      this.submitUserMessage = deepChat.submitUserMessage; // wait for it to be available
+      this.submitUserMessage = activeChat.submitUserMessage; // wait for it to be available
     });
   }
 
@@ -94,7 +94,7 @@ export class MessagesBase {
   protected static isTemporaryElement(elements: MessageElements) {
     return (
       elements?.bubbleElement.classList.contains('loading-message-text') ||
-      HTMLDeepChatElements.isElementTemporary(elements)
+      HTMLActiveChatElements.isElementTemporary(elements)
     );
   }
 

@@ -42,9 +42,9 @@ export class SubmitButton extends InputButton<Styles> {
   readonly status = {requestInProgress: false, loadingActive: false};
 
   // prettier-ignore
-  constructor(deepChat: ActiveChat, inputElementRef: HTMLElement, messages: Messages, serviceIO: ServiceIO,
+  constructor(activeChat: ActiveChat, inputElementRef: HTMLElement, messages: Messages, serviceIO: ServiceIO,
       fileAttachments: FileAttachments) {
-    const submitButtonStyles = SubmitButtonStateStyle.process(deepChat.submitButtonStyles);
+    const submitButtonStyles = SubmitButtonStateStyle.process(activeChat.submitButtonStyles);
     super(SubmitButton.createButtonContainerElement(), submitButtonStyles?.position, submitButtonStyles);
     this._messages = messages;
     this._inputElementRef = inputElementRef;
@@ -54,10 +54,10 @@ export class SubmitButton extends InputButton<Styles> {
     this._stopClicked = {listener: () => {}};
     this._serviceIO = serviceIO;
     this._alwaysEnabled = !!submitButtonStyles?.alwaysEnabled;
-    deepChat.disableSubmitButton = this.disableSubmitButton.bind(this, serviceIO);
-    this.attemptOverwriteLoadingStyle(deepChat);
-    setTimeout(() => { // in a timeout as deepChat._validationHandler initialised later
-      this._validationHandler = deepChat._validationHandler;
+    activeChat.disableSubmitButton = this.disableSubmitButton.bind(this, serviceIO);
+    this.attemptOverwriteLoadingStyle(activeChat);
+    setTimeout(() => { // in a timeout as activeChat._validationHandler initialised later
+      this._validationHandler = activeChat._validationHandler;
       this.assignHandlers(this._validationHandler as ValidationHandler);
       this._validationHandler?.();
     });
@@ -106,17 +106,17 @@ export class SubmitButton extends InputButton<Styles> {
   }
 
   // prettier-ignore
-  private attemptOverwriteLoadingStyle(deepChat: ActiveChat) {
+  private attemptOverwriteLoadingStyle(activeChat: ActiveChat) {
     if (this._customStyles?.submit?.svg
         || this._customStyles?.loading?.svg?.content || this._customStyles?.loading?.text?.content) return;
-    if (deepChat.displayLoadingBubble === undefined || deepChat.displayLoadingBubble === true) {
+    if (activeChat.displayLoadingBubble === undefined || activeChat.displayLoadingBubble === true) {
       const styleElement = document.createElement('style');
       styleElement.textContent = `
         .loading-button > * {
           filter: brightness(0) saturate(100%) invert(72%) sepia(0%) saturate(3044%) hue-rotate(322deg) brightness(100%)
             contrast(96%) !important;
         }`;
-      deepChat.shadowRoot?.appendChild(styleElement);
+      activeChat.shadowRoot?.appendChild(styleElement);
       this._isSVGLoadingIconOverriden = true;
     }
   }
@@ -171,6 +171,7 @@ export class SubmitButton extends InputButton<Styles> {
     if ((await this._validationHandler?.(isProgrammatic ? content : undefined)) === false) return;
     this.changeToLoadingIcon();
     await this.addNewMessage(content);
+    if (this._serviceIO.isLoadingMessage) this._messages.addLoadingMessage();
     TextInputEl.clear(this._inputElementRef); // when uploading a file and placeholder text present
     const filesData = content.files?.map((fileData) => fileData.file);
     const requestContents = {text: content.text === '' ? undefined : content.text, files: filesData};

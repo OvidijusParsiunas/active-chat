@@ -21,14 +21,14 @@ export class FileAttachmentsType {
   private _validationHandler?: ValidationHandler;
 
   // prettier-ignore
-  constructor(deepChat: ActiveChat, fileAttachments: FileAttachments, toggleContainer: (display: boolean) => void,
+  constructor(activeChat: ActiveChat, fileAttachments: FileAttachments, toggleContainer: (display: boolean) => void,
       container: HTMLElement) {
     if (fileAttachments.maxNumberOfFiles) this._fileCountLimit = fileAttachments.maxNumberOfFiles;
     this._toggleContainerDisplay = toggleContainer;
     this._fileAttachmentsContainerRef = container;
     if (fileAttachments.acceptedFormats) this._acceptedFormat = fileAttachments.acceptedFormats;
-     // in a timeout as deepChat._validationHandler initialised later
-    setTimeout(() => {this._validationHandler = deepChat._validationHandler;});
+     // in a timeout as activeChat._validationHandler initialised later
+    setTimeout(() => {this._validationHandler = activeChat._validationHandler;});
   }
 
   attemptAddFile(file: File, fileReaderResult: string) {

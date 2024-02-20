@@ -1,7 +1,7 @@
 import {EventToFunction, HTMLClassUtility, HTMLClassUtilities} from '../../../../types/html';
 import {StatefulEvents} from '../../../../utils/element/statefulEvents';
 import {StyleUtils} from '../../../../utils/element/styleUtils';
-import {HTMLDeepChatElements} from './htmlDeepChatElements';
+import {HTMLActiveChatElements} from './htmlActiveChatElements';
 import {StatefulStyles} from '../../../../types/styles';
 import {MessagesBase} from '../messagesBase';
 
@@ -22,8 +22,8 @@ export class HTMLUtils {
   private static applyClassUtilitiesToElement(element: HTMLElement, classUtility: HTMLClassUtility) {
     const {events, styles} = classUtility;
     if (events) HTMLUtils.applyEventsToElement(element, events);
-    // if deep chat class then style was already applied
-    if (styles && !HTMLDeepChatElements.doesElementContainDeepChatClass(element)) {
+    // if active chat class then style was already applied
+    if (styles && !HTMLActiveChatElements.doesElementContainActiveChatClass(element)) {
       HTMLUtils.applyStylesToElement(element, styles);
     }
   }
@@ -40,7 +40,7 @@ export class HTMLUtils {
   }
 
   public static apply(messages: MessagesBase, outmostElement: HTMLElement) {
-    HTMLDeepChatElements.applyDeepChatUtilities(messages, messages.htmlClassUtilities, outmostElement);
+    HTMLActiveChatElements.applyActiveChatUtilities(messages, messages.htmlClassUtilities, outmostElement);
     HTMLUtils.applyCustomClassUtilities(messages.htmlClassUtilities, outmostElement);
   }
 }

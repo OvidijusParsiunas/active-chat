@@ -49,10 +49,10 @@ export class ValidationHandler {
   }
 
   // prettier-ignore
-  public static attach(deepChat: ActiveChat, serviceIO: ServiceIO, textInput: TextInputEl,
+  public static attach(activeChat: ActiveChat, serviceIO: ServiceIO, textInput: TextInputEl,
       fileAttachments: FileAttachments, submitButton: SubmitButton) {
-    const validateInput = deepChat.validateInput || Legacy.processValidateInput(deepChat);
-    deepChat._validationHandler = async (programmatic?: UserContentI) => {
+    const validateInput = activeChat.validateInput || Legacy.processValidateInput(activeChat);
+    activeChat._validationHandler = async (programmatic?: UserContentI) => {
       if (submitButton.status.loadingActive || submitButton.status.requestInProgress) return false;
       if (serviceIO.isSubmitProgrammaticallyDisabled === true) return false;
       if (!ValidationHandler.validateWebsocket(serviceIO, submitButton)) return false;

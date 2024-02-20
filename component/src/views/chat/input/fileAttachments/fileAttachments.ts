@@ -20,9 +20,9 @@ export class FileAttachments {
   }
 
   // prettier-ignore
-  addType(deepChat: ActiveChat, files: FileAttachmentsT, type: keyof ServiceFileTypes) {
+  addType(activeChat: ActiveChat, files: FileAttachmentsT, type: keyof ServiceFileTypes) {
     const fileAttachmentsType = FileAttachmentTypeFactory.create(
-      deepChat, files, this.toggleContainerDisplay.bind(this), this.elementRef, type);
+      activeChat, files, this.toggleContainerDisplay.bind(this), this.elementRef, type);
     this._fileAttachmentsTypes.push(fileAttachmentsType);
     return fileAttachmentsType;
   }

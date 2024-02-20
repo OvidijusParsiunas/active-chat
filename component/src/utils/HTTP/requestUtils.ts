@@ -66,8 +66,8 @@ export class RequestUtils {
     return response.blob();
   }
 
-  public static async processRequestInterceptor(deepChat: ActiveChat, requestDetails: RequestDetails): InterceptorResultP {
-    const result = (await deepChat.requestInterceptor?.(requestDetails)) || requestDetails;
+  public static async processRequestInterceptor(chat: ActiveChat, requestDetails: RequestDetails): InterceptorResultP {
+    const result = (await chat.requestInterceptor?.(requestDetails)) || requestDetails;
     const resReqDetails = result as RequestDetails;
     const resErrDetails = result as {error?: string};
     return {body: resReqDetails.body, headers: resReqDetails.headers, error: resErrDetails.error};

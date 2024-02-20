@@ -4,6 +4,7 @@ import {WebComponentStyleUtils} from './utils/webComponent/webComponentStyleUtil
 import {DisableSubmitButton, SubmitButtonStyles} from './types/submitButton';
 import {RequestInterceptor, ResponseInterceptor} from './types/interceptors';
 import {FocusUtils} from './views/chat/input/textInput/focusUtils';
+import {SetupMessages} from './views/chat/messages/setupMessages';
 import {InternalHTML} from './utils/webComponent/internalHTML';
 import {ServiceIOFactory} from './services/serviceIOFactory';
 import {ValidationHandler} from './types/validationHandler';
@@ -166,6 +167,8 @@ export class ActiveChat extends InternalHTML {
   _validationHandler?: ValidationHandler;
 
   readonly _elementRef: HTMLElement;
+
+  readonly _getSetUpMessage = SetupMessages.getText;
 
   constructor() {
     super();

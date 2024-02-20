@@ -13,14 +13,14 @@ export type AddErrorMessage = Messages['addNewErrorMessage'];
 export class SpeechToText extends MicrophoneButton {
   private readonly _addErrorMessage: AddErrorMessage;
 
-  constructor(deepChat: ActiveChat, textInput: TextInputEl, addErrorMessage: AddErrorMessage) {
-    super(typeof deepChat.speechToText === 'object' ? deepChat.speechToText?.button : {});
-    const {serviceName, processedConfig} = SpeechToText.processConfiguration(textInput, deepChat.speechToText);
+  constructor(activeChat: ActiveChat, textInput: TextInputEl, addErrorMessage: AddErrorMessage) {
+    super(typeof activeChat.speechToText === 'object' ? activeChat.speechToText?.button : {});
+    const {serviceName, processedConfig} = SpeechToText.processConfiguration(textInput, activeChat.speechToText);
     this._addErrorMessage = addErrorMessage;
     if (serviceName === 'webspeech' && !SpeechToElement.isWebSpeechSupported()) {
       this.changeToUnsupported();
     } else {
-      const isInputEnabled = !deepChat.textInput || !deepChat.textInput.disabled;
+      const isInputEnabled = !activeChat.textInput || !activeChat.textInput.disabled;
       this.elementRef.onclick = this.buttonClick.bind(this, textInput, isInputEnabled, serviceName, processedConfig);
     }
   }

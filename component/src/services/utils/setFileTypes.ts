@@ -136,15 +136,15 @@ export class SetFileTypes {
     }
   }
 
-  public static set(deepChat: ActiveChat, serviceIO: ServiceIO, existingFileTypes?: ServiceFileTypes) {
+  public static set(activeChat: ActiveChat, serviceIO: ServiceIO, existingFileTypes?: ServiceFileTypes) {
     SetFileTypes.populateDefaultFileIO(existingFileTypes?.audio, '.4a,.mp3,.webm,.mp4,.mpga,.wav,.mpeg,.m4a');
     SetFileTypes.populateDefaultFileIO(existingFileTypes?.images, '.png,.jpg');
     const remarkable = RemarkableConfig.createNew();
-    SetFileTypes.processImagesConfig(serviceIO, remarkable, deepChat.images, existingFileTypes?.images);
-    SetFileTypes.processCamera(serviceIO, remarkable, deepChat.camera, deepChat.images);
-    SetFileTypes.processGifConfig(serviceIO, remarkable, deepChat.gifs, existingFileTypes?.gifs);
-    SetFileTypes.processAudioConfig(serviceIO, remarkable, deepChat.audio, existingFileTypes?.audio);
-    SetFileTypes.processMicrophone(serviceIO, remarkable, deepChat.microphone, deepChat.audio);
-    SetFileTypes.processMixedFiles(serviceIO, remarkable, deepChat.mixedFiles);
+    SetFileTypes.processImagesConfig(serviceIO, remarkable, activeChat.images, existingFileTypes?.images);
+    SetFileTypes.processCamera(serviceIO, remarkable, activeChat.camera, activeChat.images);
+    SetFileTypes.processGifConfig(serviceIO, remarkable, activeChat.gifs, existingFileTypes?.gifs);
+    SetFileTypes.processAudioConfig(serviceIO, remarkable, activeChat.audio, existingFileTypes?.audio);
+    SetFileTypes.processMicrophone(serviceIO, remarkable, activeChat.microphone, activeChat.audio);
+    SetFileTypes.processMixedFiles(serviceIO, remarkable, activeChat.mixedFiles);
   }
 }

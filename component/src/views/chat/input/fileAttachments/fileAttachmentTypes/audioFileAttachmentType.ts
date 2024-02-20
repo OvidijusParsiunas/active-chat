@@ -14,9 +14,9 @@ export class AudioFileAttachmentType extends FileAttachmentsType {
   private static readonly TIMER_LIMIT_S = 5999;
 
   // prettier-ignore
-  constructor(deepChat: ActiveChat, fileAttachments: FileAttachments,
+  constructor(activeChat: ActiveChat, fileAttachments: FileAttachments,
       toggleContainer: (display: boolean) => void, container: HTMLElement) {
-    super(deepChat, fileAttachments, toggleContainer, container);
+    super(activeChat, fileAttachments, toggleContainer, container);
   }
 
   private static createAudioContainer() {

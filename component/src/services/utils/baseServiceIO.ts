@@ -30,18 +30,19 @@ export class BaseServiceIO implements ServiceIO {
   maxMessages?: number;
   demo?: DemoT;
   stream?: StreamI;
+  isLoadingMessage = true;
   // these are placeholders that are later populated in submitButton.ts
   completionsHandlers: CompletionsHandlers = {} as CompletionsHandlers;
   streamHandlers: StreamHandlers = {} as StreamHandlers;
 
-  constructor(deepChat: ActiveChat, existingFileTypes?: ServiceFileTypes, demo?: DemoT) {
-    this.activeChat = deepChat;
+  constructor(activeChat: ActiveChat, existingFileTypes?: ServiceFileTypes, demo?: DemoT) {
+    this.activeChat = activeChat;
     this.demo = demo;
-    Object.assign(this.rawBody, deepChat.connect?.additionalBodyProps);
-    this.totalMessagesMaxCharLength = deepChat?.requestBodyLimits?.totalMessagesMaxCharLength;
-    this.maxMessages = deepChat?.requestBodyLimits?.maxMessages;
-    SetFileTypes.set(deepChat, this, existingFileTypes);
-    if (deepChat.connect) this.connectSettings = deepChat.connect;
+    Object.assign(this.rawBody, activeChat.connect?.additionalBodyProps);
+    this.totalMessagesMaxCharLength = activeChat?.requestBodyLimits?.totalMessagesMaxCharLength;
+    this.maxMessages = activeChat?.requestBodyLimits?.maxMessages;
+    SetFileTypes.set(activeChat, this, existingFileTypes);
+    if (activeChat.connect) this.connectSettings = activeChat.connect;
     if (this.demo) this.connectSettings.url ??= Demo.URL;
     if (this.connectSettings.websocket) Websocket.setup(this);
     this.stream = this.activeChat.connect?.stream || Legacy.checkForStream(this.activeChat);

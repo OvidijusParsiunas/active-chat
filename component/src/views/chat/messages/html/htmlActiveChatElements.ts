@@ -5,11 +5,12 @@ import {MessagesBase} from '../messagesBase';
 import {MessageElements} from '../messages';
 import {HTMLUtils} from './htmlUtils';
 
-const DEEP_CHAT_TEMPORARY_MESSAGE = 'deep-chat-temporary-message';
-const DEEP_CHAT_SUGGESTION_BUTTON = 'deep-chat-suggestion-button';
+// WORK - update documentation
+const ACTIVE_CHAT_TEMPORARY_MESSAGE = 'chat-temporary-message';
+const ACTIVE_CHAT_SUGGESTION_BUTTON = 'chat-suggestion-button';
 
-const DEEP_CHAT_ELEMENTS: HTMLClassUtilities = {
-  'deep-chat-button': {
+const ACTIVE_CHAT_ELEMENTS: HTMLClassUtilities = {
+  'chat-button': {
     styles: {
       default: {
         backgroundColor: 'white',
@@ -30,9 +31,9 @@ const DEEP_CHAT_ELEMENTS: HTMLClassUtilities = {
   },
 };
 
-const DEEP_CHAT_ELEMENT_CLASSES = Object.keys(DEEP_CHAT_ELEMENTS);
+const ACTIVE_CHAT_ELEMENT_CLASSES = Object.keys(ACTIVE_CHAT_ELEMENTS);
 
-export class HTMLDeepChatElements {
+export class HTMLActiveChatElements {
   private static applySuggestionEvent(messages: MessagesBase, element: Element) {
     // needs to be in a timeout for submitMessage to be available
     setTimeout(() => {
@@ -44,15 +45,15 @@ export class HTMLDeepChatElements {
 
   public static isElementTemporary(messageElements?: MessageElements) {
     if (!messageElements) return false;
-    return messageElements.bubbleElement.children[0]?.classList.contains(DEEP_CHAT_TEMPORARY_MESSAGE);
+    return messageElements.bubbleElement.children[0]?.classList.contains(ACTIVE_CHAT_TEMPORARY_MESSAGE);
   }
 
-  public static doesElementContainDeepChatClass(element: HTMLElement) {
-    return DEEP_CHAT_ELEMENT_CLASSES.find((className) => element.classList.contains(className));
+  public static doesElementContainActiveChatClass(element: HTMLElement) {
+    return ACTIVE_CHAT_ELEMENT_CLASSES.find((className) => element.classList.contains(className));
   }
 
   private static applyEvents(element: Element, className: string) {
-    const events = DEEP_CHAT_ELEMENTS[className].events;
+    const events = ACTIVE_CHAT_ELEMENTS[className].events;
     Object.keys(events || []).forEach((eventType) => {
       element.addEventListener(eventType, events?.[eventType as keyof GlobalEventHandlersEventMap] as () => void);
     });
@@ -66,9 +67,9 @@ export class HTMLDeepChatElements {
       }
       return styles;
     }, []);
-    const deepChatStyles = DEEP_CHAT_ELEMENTS[className].styles;
-    if (deepChatStyles) {
-      const stylesCp = JSON.parse(JSON.stringify(deepChatStyles));
+    const activeChatStyles = ACTIVE_CHAT_ELEMENTS[className].styles;
+    if (activeChatStyles) {
+      const stylesCp = JSON.parse(JSON.stringify(activeChatStyles));
       if (stylesCp.default) StyleUtils.overwriteDefaultWithAlreadyApplied(stylesCp, element as HTMLElement);
       customStyles.unshift(stylesCp); // add it to the front to be primary
     }
@@ -76,16 +77,16 @@ export class HTMLDeepChatElements {
     return StyleUtils.processStateful(mergedStyles, {}, {});
   }
 
-  public static applyDeepChatUtilities(messages: MessagesBase, utilities: HTMLClassUtilities, element: HTMLElement) {
-    DEEP_CHAT_ELEMENT_CLASSES.forEach((className) => {
+  public static applyActiveChatUtilities(messages: MessagesBase, utilities: HTMLClassUtilities, element: HTMLElement) {
+    ACTIVE_CHAT_ELEMENT_CLASSES.forEach((className) => {
       const elements = element.getElementsByClassName(className);
       Array.from(elements || []).forEach((element) => {
-        const styles = HTMLDeepChatElements.getProcessedStyles(utilities, element, className);
+        const styles = HTMLActiveChatElements.getProcessedStyles(utilities, element, className);
         HTMLUtils.applyStylesToElement(element as HTMLElement, styles);
-        HTMLDeepChatElements.applyEvents(element, className);
+        HTMLActiveChatElements.applyEvents(element, className);
       });
     });
-    const suggestionElements = element.getElementsByClassName(DEEP_CHAT_SUGGESTION_BUTTON);
-    Array.from(suggestionElements).forEach((element) => HTMLDeepChatElements.applySuggestionEvent(messages, element));
+    const suggestionElements = element.getElementsByClassName(ACTIVE_CHAT_SUGGESTION_BUTTON);
+    Array.from(suggestionElements).forEach((element) => HTMLActiveChatElements.applySuggestionEvent(messages, element));
   }
 }
