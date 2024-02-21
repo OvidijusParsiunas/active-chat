@@ -1,4 +1,4 @@
-import DeepChatBrowser from '../../components/table/deepChatBrowser';
+import DeepChatBrowser from '../../components/chat/deepChatBrowser';
 import './smallScreen.css';
 import React from 'react';
 

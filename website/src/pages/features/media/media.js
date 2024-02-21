@@ -1,4 +1,4 @@
-import DeepChatBrowser from '../../../components/table/deepChatBrowser';
+import DeepChatBrowser from '../../../components/chat/deepChatBrowser';
 import OnVisibleAnimation from '../../utils/onVisibleAnimation';
 import hljs from 'highlight.js';
 import React from 'react';

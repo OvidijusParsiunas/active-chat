@@ -8,7 +8,7 @@ Events can be observed in two ways, either by assigning a function to a property
 
 ### `onMessage` {#onMessage}
 
-- Function: (`newMessage: Body`) => `void`
+- Function: (`body: Body`) => `void`
 - Event: `message`
 - `Body`: {[`message: MessageContent`](/docs/messages#MessageContent), `isHistory: boolean`}
 
@@ -18,10 +18,10 @@ Triggered when a message is sent from the user and recieved from the target serv
 
 #### Example
 
-import ComponentContainerMethods from '@site/src/components/table/componentContainerMethods';
-import ComponentContainerEvents from '@site/src/components/table/componentContainerEvents';
-import ComponentContainer from '@site/src/components/table/componentContainer';
-import DeepChatBrowser from '@site/src/components/table/deepChatBrowser';
+import ComponentContainerMethods from '@site/src/components/chat/componentContainerMethods';
+import ComponentContainerEvents from '@site/src/components/chat/componentContainerEvents';
+import ComponentContainer from '@site/src/components/chat/componentContainer';
+import DeepChatBrowser from '@site/src/components/chat/deepChatBrowser';
 import LineBreak from '@site/src/components/markdown/lineBreak';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 import TabItem from '@theme/TabItem';
@@ -107,6 +107,10 @@ chatElementRef.addEventListener('messages-cleared', () => { console.log("Message
 Triggered when the component has finished rendering on the browser's window.
 
 #### Example
+
+<ComponentContainerEvents propertyName={'onComponentRender'}>
+  <DeepChatBrowser style={{borderRadius: '8px'}} demo={true}></DeepChatBrowser>
+</ComponentContainerEvents>
 
 <Tabs>
 <TabItem value="js" label="Function">

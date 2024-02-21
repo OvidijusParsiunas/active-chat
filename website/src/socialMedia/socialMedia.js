@@ -1,4 +1,4 @@
-import DeepChatBrowser from '../components/table/deepChatBrowser';
+import DeepChatBrowser from '../components/chat/deepChatBrowser';
 import huggingFaceLogo from '/img/huggingFaceLogo.png';
 import stabilityAILogo from '/img/stabilityAILogo.png';
 import assemblyAILogo from '/img/assemblyAILogo.png';

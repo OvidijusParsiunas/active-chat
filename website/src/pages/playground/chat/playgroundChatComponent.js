@@ -1,4 +1,4 @@
-import DeepChatBrowser from '../../../components/table/deepChatBrowser';
+import DeepChatBrowser from '../../../components/chat/deepChatBrowser';
 import {useColorMode} from '@docusaurus/theme-common';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 import './playgroundChatComponent.css';
@@ -11,7 +11,7 @@ export default function ChatComponent({config}) {
 
   // updating messages here to keep track of them so that when user moves to a different page they can be added to config
   // to note componentRef.current will be undefined, hence need to keep track
-  function newMessage({isHistory}) {
+  function onMessage({isHistory}) {
     if (!isHistory) {
       const deepChatComponent = componentRef.current.children[0];
       if (config.connect?.openAI?.assistant) assignOpenAIAssistantId(deepChatComponent, config);
@@ -21,7 +21,7 @@ export default function ChatComponent({config}) {
     }
   }
 
-  function clearMessages() {
+  function onClearMessages() {
     config?.messages.splice(0, config.messages.length);
   }
 
@@ -79,8 +79,8 @@ export default function ChatComponent({config}) {
                   style={darkContainerStyle}
                   messageStyles={darkMessageStyles}
                   history={config.messages}
-                  onMessage={newMessage}
-                  onClearMessages={clearMessages}
+                  onMessage={onMessage}
+                  onClearMessages={onClearMessages}
                   textInput={darkTextInput}
                   submitButtonStyles={darkButtonStyles}
                   auxiliaryStyle={darkAuxiliaryStyle}
@@ -92,8 +92,8 @@ export default function ChatComponent({config}) {
                   style={darkContainerStyle}
                   messageStyles={darkMessageStyles}
                   history={config.messages}
-                  onMessage={newMessage}
-                  onClearMessages={clearMessages}
+                  onMessage={onMessage}
+                  onClearMessages={onClearMessages}
                   textInput={darkTextInput}
                   submitButtonStyles={darkButtonStyles}
                   auxiliaryStyle={darkAuxiliaryStyle}
@@ -105,8 +105,8 @@ export default function ChatComponent({config}) {
                   style={darkContainerStyle}
                   messageStyles={darkMessageStyles}
                   history={config.messages}
-                  onMessage={newMessage}
-                  onClearMessages={clearMessages}
+                  onMessage={onMessage}
+                  onClearMessages={onClearMessages}
                 ></DeepChatBrowser>
               ) : (
                 <DeepChatBrowser
@@ -120,8 +120,8 @@ export default function ChatComponent({config}) {
                   style={darkContainerStyle}
                   messageStyles={darkMessageStyles}
                   history={config.messages}
-                  onMessage={newMessage}
-                  onClearMessages={clearMessages}
+                  onMessage={onMessage}
+                  onClearMessages={onClearMessages}
                   textInput={darkTextInput}
                   submitButtonStyles={darkButtonStyles}
                   auxiliaryStyle={darkAuxiliaryStyle}
@@ -145,24 +145,24 @@ export default function ChatComponent({config}) {
                 mixedFiles={allowMixedFiles}
                 style={lightContainerStyle}
                 history={config.messages}
-                onMessage={newMessage}
-                onClearMessages={clearMessages}
+                onMessage={onMessage}
+                onClearMessages={onClearMessages}
               ></DeepChatBrowser>
             ) : config?.connect?.demo ? (
               <DeepChatBrowser
                 demo={DEMO_RESPONSE}
                 style={lightContainerStyle}
                 history={config.messages}
-                onMessage={newMessage}
-                onClearMessages={clearMessages}
+                onMessage={onMessage}
+                onClearMessages={onClearMessages}
               ></DeepChatBrowser>
             ) : config?.connect?.webModel ? (
               <DeepChatBrowser
                 webModel={getWebModelConfig(config.connect.webModel)}
                 style={lightContainerStyle}
                 history={config.messages}
-                onMessage={newMessage}
-                onClearMessages={clearMessages}
+                onMessage={onMessage}
+                onClearMessages={onClearMessages}
               ></DeepChatBrowser>
             ) : (
               <DeepChatBrowser
@@ -175,8 +175,8 @@ export default function ChatComponent({config}) {
                 mixedFiles={allowMixedFiles}
                 style={lightContainerStyle}
                 history={config.messages}
-                onMessage={newMessage}
-                onClearMessages={clearMessages}
+                onMessage={onMessage}
+                onClearMessages={onClearMessages}
               ></DeepChatBrowser>
             )}
           </div>

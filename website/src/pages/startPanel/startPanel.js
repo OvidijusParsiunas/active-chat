@@ -1,4 +1,4 @@
-import DeepChatBrowser from '../../components/table/deepChatBrowser';
+import DeepChatBrowser from '../../components/chat/deepChatBrowser';
 import SmallScreenPanel from '../smallScreen/smallScreen';
 import StartPanelParticles from './startPanelParticles';
 import DeepChatLogo from '../smallScreen/deepChatLogo';
