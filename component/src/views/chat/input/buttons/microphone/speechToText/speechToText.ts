@@ -1,32 +1,40 @@
-import {SpeechToTextConfig} from '../../../../../types/microphone';
+import {ValidationHandler} from '../../../../../../types/validationHandler';
+import {SpeechToTextConfig} from '../../../../../../types/microphone';
 import {OnPreResult} from 'speech-to-element/dist/types/options';
-import {TextInputEl} from '../../textInput/textInput';
-import {Messages} from '../../../messages/messages';
-import {MicrophoneButton} from './microphoneButton';
-import {ActiveChat} from '../../../../../activeChat';
+import {TextInputEl} from '../../../textInput/textInput';
+import {ActiveChat} from '../../../../../../activeChat';
+import {Messages} from '../../../../messages/messages';
+import {MicrophoneButton} from '../microphoneButton';
 import SpeechToElement from 'speech-to-element';
+import {SilenceSubmit} from './silenceSubmit';
 
-type ProcessedConfig = SpeechToTextConfig & {onPreResult?: OnPreResult};
+export type ProcessedConfig = SpeechToTextConfig & {onPreResult?: OnPreResult};
 
 export type AddErrorMessage = Messages['addNewErrorMessage'];
 
 export class SpeechToText extends MicrophoneButton {
   private readonly _addErrorMessage: AddErrorMessage;
+  private _silenceSubmit?: SilenceSubmit;
+  private _validationHandler?: ValidationHandler;
 
-  constructor(activeChat: ActiveChat, textInput: TextInputEl, addErrorMessage: AddErrorMessage) {
-    super(typeof activeChat.speechToText === 'object' ? activeChat.speechToText?.button : {});
-    const {serviceName, processedConfig} = SpeechToText.processConfiguration(textInput, activeChat.speechToText);
+  constructor(deepChat: ActiveChat, textInput: TextInputEl, addErrorMessage: AddErrorMessage) {
+    super(typeof deepChat.speechToText === 'object' ? deepChat.speechToText?.button : {});
+    const {serviceName, processedConfig} = this.processConfiguration(textInput, deepChat.speechToText);
     this._addErrorMessage = addErrorMessage;
     if (serviceName === 'webspeech' && !SpeechToElement.isWebSpeechSupported()) {
       this.changeToUnsupported();
     } else {
-      const isInputEnabled = !activeChat.textInput || !activeChat.textInput.disabled;
+      const isInputEnabled = !deepChat.textInput || !deepChat.textInput.disabled;
       this.elementRef.onclick = this.buttonClick.bind(this, textInput, isInputEnabled, serviceName, processedConfig);
     }
+    setTimeout(() => {
+      this._validationHandler = deepChat._validationHandler;
+    });
   }
 
+  // fix bug to be able to submit after recording
   // prettier-ignore
-  private static processConfiguration(textInput: TextInputEl, config?: boolean | SpeechToTextConfig):
+  private processConfiguration(textInput: TextInputEl, config?: boolean | SpeechToTextConfig):
       {serviceName: string, processedConfig: ProcessedConfig} {
     const newConfig = typeof config === 'object' ? config : {};
     const webSpeechConfig = typeof newConfig.webSpeech === 'object' ? newConfig.webSpeech : {};
@@ -51,28 +59,37 @@ export class SpeechToText extends MicrophoneButton {
         return null;
       };
     }
+    if (newConfig.submitAfterSilence) this._silenceSubmit = new SilenceSubmit(newConfig.submitAfterSilence);
     const serviceName = SpeechToText.getServiceName(newConfig);
     return {serviceName, processedConfig};
   }
 
   private static getServiceName(config: SpeechToTextConfig) {
-    if (config.webSpeech) {
-      return 'webspeech';
-    }
-    if (config.azure) {
-      return 'azure';
-    }
-    return 'webspeech';
+    return config.azure ? 'azure' : 'webspeech';
   }
 
-  private buttonClick(textInput: TextInputEl, isInputEnabled: boolean, serviceName: string, config?: SpeechToTextConfig) {
+  private buttonClick(textInput: TextInputEl, isInputEnabled: boolean, serviceName: string, config?: ProcessedConfig) {
     textInput.removeTextIfPlaceholder();
     SpeechToElement.toggle(serviceName as 'webspeech', {
       insertInCursorLocation: false,
       element: isInputEnabled ? textInput.inputElementRef : undefined,
-      onError: this.onError.bind(this),
+      onError: () => {
+        this.onError();
+        this._silenceSubmit?.clearSilenceTimeout();
+      },
       onStart: this.changeToActive.bind(this),
-      onStop: this.changeToDefault.bind(this),
+      onStop: () => {
+        this._validationHandler?.();
+        this._silenceSubmit?.clearSilenceTimeout();
+        this.changeToDefault();
+      },
+      onPauseTrigger: (isStart: boolean) => {
+        this._silenceSubmit?.onPause(isStart, textInput, this.elementRef.onclick as Function);
+      },
+      onResult: (_, isFinal: boolean) => {
+        if (isFinal) this._validationHandler?.();
+        this._silenceSubmit?.resetSilenceTimeout(textInput, this.elementRef.onclick as Function);
+      },
       onCommandModeTrigger: this.onCommandModeTrigger.bind(this),
       ...config,
     });

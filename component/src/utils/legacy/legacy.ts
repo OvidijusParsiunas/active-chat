@@ -105,5 +105,6 @@ export class Legacy {
       console.error('Please see the onMessage event: https://deepchat.dev/docs/events#onMessage');
       legacyActiveChat.onNewMessage?.(updateBody);
     }
+    activeChat.dispatchEvent(new CustomEvent('new-message', {detail: updateBody}));
   }
 }

@@ -1,4 +1,4 @@
-import ComponentContainer, {extractChildChatElement} from '@site/src/components/table/componentContainer';
+import ComponentContainer, {extractChildChatElement} from '@site/src/components/chat/componentContainer';
 import LiveData from './liveData';
 import React from 'react';
 
