@@ -22,7 +22,7 @@ import {TextInputEl} from './textInput/textInput';
 import {ActiveChat} from '../../../activeChat';
 import {Messages} from '../messages/messages';
 
-type Buttons = {
+export type Buttons = {
   [key in BUTTON_TYPES]?: {button: InputButton; fileType?: FileAttachmentsType};
 };
 
@@ -33,16 +33,16 @@ export class Input {
     this.elementRef = Input.createPanelElement(activeChat.inputAreaStyle);
     const textInput = new TextInputEl(activeChat, serviceIO);
     const buttons: Buttons = {};
-    const fileAttachments = this.createFileUploadComponents(activeChat, serviceIO, containerElement, buttons);
+    const fileAtts = this.createFileUploadComponents(activeChat, serviceIO, containerElement, buttons);
     if (activeChat.speechToText && !buttons.microphone) {
       buttons.microphone = {button: new SpeechToText(activeChat, textInput, messages.addNewErrorMessage.bind(messages))};
     }
-    const submitButton = new SubmitButton(activeChat, textInput.inputElementRef, messages, serviceIO, fileAttachments);
+    const submitButton = new SubmitButton(activeChat, textInput.inputElementRef, messages, serviceIO, fileAtts, buttons);
     textInput.submit = submitButton.submitFromInput.bind(submitButton);
-    ValidationHandler.attach(activeChat, serviceIO, textInput, fileAttachments, submitButton);
+    ValidationHandler.attach(activeChat, serviceIO, textInput, fileAtts, submitButton);
     activeChat.submitUserMessage = submitButton.programmaticSubmit.bind(submitButton);
     buttons.submit = {button: submitButton};
-    Input.addElements(this.elementRef, textInput, buttons, containerElement, fileAttachments, activeChat.dropupStyles);
+    Input.addElements(this.elementRef, textInput, buttons, containerElement, fileAtts, activeChat.dropupStyles);
   }
 
   private static createPanelElement(customStyle?: CustomStyle) {
