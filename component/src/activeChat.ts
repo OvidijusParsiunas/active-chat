@@ -172,7 +172,6 @@ export class ActiveChat extends InternalHTML {
 
   constructor() {
     super();
-    GoogleFont.appendStyleSheetToHead();
     this._elementRef = document.createElement('div');
     this._elementRef.id = 'container';
     this.attachShadow({mode: 'open'}).appendChild(this._elementRef);
@@ -185,6 +184,7 @@ export class ActiveChat extends InternalHTML {
 
   // prettier-ignore
   override onRender() {
+    GoogleFont.attemptAppendStyleSheetToHead(this.style);
     Legacy.processConnect(this);
     if (!this._activeService || this._activeService.demo) this._activeService = ServiceIOFactory.create(this); 
     if (this.auxiliaryStyle && !this._auxiliaryStyleApplied) {
