@@ -137,12 +137,4 @@ export class BaseServiceIO implements ServiceIO {
     if (!RequestUtils.validateResponseFormat(result)) return undefined as unknown as Response;
     return result;
   }
-
-  public isDirectConnection() {
-    return false;
-  }
-
-  public isWebModel() {
-    return false;
-  }
 }
