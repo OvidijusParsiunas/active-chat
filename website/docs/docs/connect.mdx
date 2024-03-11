@@ -6,7 +6,7 @@ sidebar_position: 2
 
 <h2>How to connect to an API</h2>
 
-You can connect to any API by defining their details inside the [`connect`](#connect) property. The target endpoint will need to be able to accept
+You can connect to any API by defining their details inside the [`connect`](/docs/connect#connect-1) property. The target endpoint will need to be able to accept
 and respond using the formats described below.
 
 <a href="https://youtu.be/0jzILPqA454?si=6d13VCmfCt3iQa9W">
@@ -19,11 +19,11 @@ and respond using the formats described below.
 The outgoing Deep Chat request body is encapsulated in one of the following formats:
 
 - When sending **text** based messages only, the request body will have the following JSON type: <br />
-  {[`messages: MessageContent[]`](/docs/messages/#MessageContent)} <br />
+  \{[`messages: MessageContent[]`](/docs/messages/#MessageContent)\} <br />
 
 - When sending messages that contain **files**, the request body is going to be serialized inside a [FormData](https://developer.mozilla.org/en-US/docs/Web/API/FormData) type
-  where files are set inside an array property called _"files"_ and each text message is stored inside a _"message{index}"_ property with a corresponding index: <br />
-  {`files: File[]`, [`message1: MessageContent`](/docs/messages/#MessageContent), [`message2: MessageContent`](/docs/messages/#MessageContent)... } <br />
+  where files are set inside an array property called _"files"_ and each text message is stored inside a _"message\{index\}"_ property with a corresponding index: <br />
+  \{`files: File[]`, [`message1: MessageContent`](/docs/messages/#MessageContent), [`message2: MessageContent`](/docs/messages/#MessageContent)... \} <br />
 
 <h3>Response message</h3>
 
@@ -49,7 +49,7 @@ import Tabs from '@theme/Tabs';
 
 ### `connect`
 
-- Type: {<br />
+- Type: \{<br />
   &nbsp;&nbsp;&nbsp;&nbsp; `url?: string`, <br />
   &nbsp;&nbsp;&nbsp;&nbsp; `method?: string`, <br />
   &nbsp;&nbsp;&nbsp;&nbsp; `headers?: {[string]: string}`, <br />
@@ -58,9 +58,9 @@ import Tabs from '@theme/Tabs';
   &nbsp;&nbsp;&nbsp;&nbsp; [`websocket?: Websocket`](#Websocket), <br />
   &nbsp;&nbsp;&nbsp;&nbsp; [`stream?: Stream`](#Stream), <br />
   &nbsp;&nbsp;&nbsp;&nbsp; [`handler?: Handler`](#Handler) <br />
-  }
+  \}
 
-- Default: _{ method: "POST", credentials: "same-origin" }_
+- Default: _\{ method: "POST", credentials: "same-origin" \}_
 
 Settings for the outgoing API requests. This object MUST have `url` or `handler` property defined. <br />
 `additionalBodyProps` is used to add additional key value properties to the outgoing message body. <br />
@@ -124,7 +124,7 @@ Settings for the outgoing API requests. This object MUST have `url` or `handler`
 
 ### `requestBodyLimits` {#requestBodyLimits}
 
-- Type: {`maxMessages?: number`, `totalMessagesMaxCharLength?: number`}
+- Type: \{`maxMessages?: number`, `totalMessagesMaxCharLength?: number`\}
 
 Used to limit the content that is going to be included in the outgoing requests. <br />
 `maxMessages` is the maximum number of messages counting from the most recent one. If this is set to a number higher than _0_ such as _1_ - the outgoing request will only include the new user message,
@@ -187,7 +187,7 @@ Types shared with other component properties:
 
 ### `Response` {#Response}
 
-- Type: {[`MessageContent`](/docs/messages/#MessageContent), `error?: string`, `overwrite?: boolean`}
+- Type: \{[`MessageContent`](/docs/messages/#MessageContent), `error?: string`, `overwrite?: boolean`\}
 
 Object containing response information from the target service. It has the same properties as [`MessageContent`](/docs/messages/#MessageContent) with additional optional `error` and
 `overwrite` properties: <br />
@@ -305,7 +305,7 @@ Messages from the server:
 
 ### `Stream` {#Stream}
 
-- Type: `boolean` | {`simulation?: boolean | number | string`}
+- Type: `boolean` | \{`simulation?: boolean | number | string`\}
 
 Used to stream responses from the target service. <br />
 By setting _true_ - the chat will stream incoming [`server-sent events`](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) from
@@ -525,13 +525,13 @@ Error handling must be done within the `handler` function.
 
 #### `Signals` {#Signals}
 
-- Type: { <br />
+- Type: \{ <br />
   &nbsp;&nbsp;&nbsp;&nbsp;[`onResponse: (response: Response) => void`](#Response), <br />
   &nbsp;&nbsp;&nbsp;&nbsp;`onOpen: () => void`, <br />
   &nbsp;&nbsp;&nbsp;&nbsp;`onClose: () => void`, <br />
   &nbsp;&nbsp;&nbsp;&nbsp;`stopClicked: {listener: () => void}`, <br />
   &nbsp;&nbsp;&nbsp;&nbsp;`newUserMessage: {listener: (body: any) => void}` <br />
-  }
+  \}
 
 Object containing functions that are used to notify the Deep Chat component about the status of the current request.
 The `stopClicked` and `newUserMessage` functions are triggered by Deep Chat itself and contain `listener` properties

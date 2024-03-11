@@ -105,7 +105,7 @@ chatElementRef.submitUserMessage({text: "User message"});
 
 #### `UserMessage` {#UserMessage}
 
-- Type: {`text?: string`, [`files?: File[] | FileList`](https://developer.mozilla.org/en-US/docs/Web/API/FileList)}
+- Type: \{`text?: string`, [`files?: File[] | FileList`](https://developer.mozilla.org/en-US/docs/Web/API/FileList)\}
 
 `text` is the text content of the outgoing message. <br />
 `files` is an array containing files that are going to be part of the outgoing message. This can either be an array
@@ -145,7 +145,7 @@ and [`textToSpeech`](/docs/speech#textToSpeech) be triggered.
 #### Example
 
 <ComponentContainerMethods
-  propertyName={'_addMessage'}
+  propertyName={'addMessage'}
   displayResults={false}
   argument={{
     html: `<button class="deep-chat-button deep-chat-suggestion-button deep-chat-temporary-message">What is your name?</button>`,
