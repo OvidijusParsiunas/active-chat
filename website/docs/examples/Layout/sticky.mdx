@@ -31,7 +31,7 @@ import Tabs from '@theme/Tabs';
     {"text": "Seeking fulfillment and personal growth.", "role": "ai"}
   ]'
   demo="true"
-  stream="true"
+  connect='{"stream": true}'
 ></deep-chat>
 ```
 
@@ -46,7 +46,7 @@ import Tabs from '@theme/Tabs';
       {text: 'What is the meaning of life?', role: 'user'},
       {text: 'Seeking fulfillment and personal growth.', role: 'ai'},
     ]}
-    stream={true}
+    connect={{stream: true}}
     style={{
       borderRadius: '10px',
       position: 'fixed',

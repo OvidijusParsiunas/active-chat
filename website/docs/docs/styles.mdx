@@ -561,7 +561,7 @@ however `hover` and `submit` need to be defined.
         },
       },
     }}
-    stream={true}
+    connect={{stream: true}}
     demo={true}
   ></DeepChatBrowser>
 </ComponentContainer>
@@ -627,7 +627,7 @@ however `hover` and `submit` need to be defined.
     "alwaysEnabled": true
   }'
   style="border-radius: 8px"
-  stream="true"
+  connect='{"stream": true}'
   demo="true"
 ></deep-chat>
 ```
@@ -928,9 +928,7 @@ Styling for a button inside the chat view. <br />
       },
       alwaysEnabled: true,
     }}
-    directConnection={{
-      demo: true,
-    }}
+    demo={true}
     images={{
       button: {
         styles: {
