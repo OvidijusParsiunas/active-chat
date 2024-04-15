@@ -1,3 +1,4 @@
+import {FileAttachments} from '../fileAttachments/fileAttachments';
 import {KEYBOARD_KEY} from '../../../../utils/buttons/keyboardKeys';
 import {StyleUtils} from '../../../../utils/element/styleUtils';
 import {Browser} from '../../../../utils/browser/browser';
@@ -16,7 +17,8 @@ export class TextInputEl {
   private readonly _config: TextInput;
   submit?: () => void;
 
-  constructor(activeChat: ActiveChat, serviceIO: ServiceIO) {
+  // prettier-ignore
+  constructor(activeChat: ActiveChat, serviceIO: ServiceIO, fileAts: FileAttachments) {
     const processedConfig = TextInputEl.processConfig(serviceIO, activeChat.textInput);
     this.elementRef = TextInputEl.createContainerElement(processedConfig?.styles?.container);
     this.inputElementRef = this.createInputElement(processedConfig);
@@ -24,7 +26,8 @@ export class TextInputEl {
     this.elementRef.appendChild(this.inputElementRef);
     setTimeout(() => {
       // in a timeout as activeChat._validationHandler initialised later
-      TextInputEvents.add(this.inputElementRef, activeChat.textInput?.characterLimit, activeChat._validationHandler);
+      TextInputEvents.add(
+        this.inputElementRef, fileAts, activeChat.textInput?.characterLimit, activeChat._validationHandler);
     });
   }
 
@@ -96,7 +99,7 @@ export class TextInputEl {
       inputElement.onblur = this.onBlur.bind(this, textInput.styles.focus, textInput?.styles?.container);
     }
     inputElement.addEventListener('keydown', this.onKeydown.bind(this));
-    inputElement.onpaste = PasteUtils.sanitizePastedTextContent;
+    inputElement.addEventListener('paste', PasteUtils.sanitizePastedTextContent);
   }
 
   private onFocus(focusStyle?: CustomStyle) {

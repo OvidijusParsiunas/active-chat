@@ -31,18 +31,18 @@ export class Input {
 
   constructor(activeChat: ActiveChat, messages: Messages, serviceIO: ServiceIO, containerElement: HTMLElement) {
     this.elementRef = Input.createPanelElement(activeChat.inputAreaStyle);
-    const textInput = new TextInputEl(activeChat, serviceIO);
     const buttons: Buttons = {};
-    const fileAtts = this.createFileUploadComponents(activeChat, serviceIO, containerElement, buttons);
+    const fileAts = this.createFileUploadComponents(activeChat, serviceIO, containerElement, buttons);
+    const textInput = new TextInputEl(activeChat, serviceIO, fileAts);
     if (activeChat.speechToText && !buttons.microphone) {
       buttons.microphone = {button: new SpeechToText(activeChat, textInput, messages.addNewErrorMessage.bind(messages))};
     }
-    const submitButton = new SubmitButton(activeChat, textInput.inputElementRef, messages, serviceIO, fileAtts, buttons);
+    const submitButton = new SubmitButton(activeChat, textInput.inputElementRef, messages, serviceIO, fileAts, buttons);
     textInput.submit = submitButton.submitFromInput.bind(submitButton);
-    ValidationHandler.attach(activeChat, serviceIO, textInput, fileAtts, submitButton);
+    ValidationHandler.attach(activeChat, serviceIO, textInput, fileAts, submitButton);
     activeChat.submitUserMessage = submitButton.programmaticSubmit.bind(submitButton);
     buttons.submit = {button: submitButton};
-    Input.addElements(this.elementRef, textInput, buttons, containerElement, fileAtts, activeChat.dropupStyles);
+    Input.addElements(this.elementRef, textInput, buttons, containerElement, fileAts, activeChat.dropupStyles);
   }
 
   private static createPanelElement(customStyle?: CustomStyle) {
