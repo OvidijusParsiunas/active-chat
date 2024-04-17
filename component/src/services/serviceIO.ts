@@ -1,9 +1,9 @@
 import {CameraFilesServiceConfig, FilesServiceConfig, MicrophoneFilesServiceConfig} from '../types/fileServiceConfigs';
-import {IntroMessage, MessageContent} from '../types/messages';
 import {IWebsocketHandler} from '../utils/HTTP/customHandler';
 import {Messages} from '../views/chat/messages/messages';
 import {InterfacesUnion} from '../types/utilityTypes';
 import {FetchFunc} from '../utils/HTTP/requestUtils';
+import {IntroMessage} from '../types/messages';
 import {FILE_TYPES} from '../types/fileTypes';
 import {Response} from '../types/response';
 import {Connect} from '../types/connect';
