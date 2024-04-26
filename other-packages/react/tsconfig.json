@@ -28,6 +28,6 @@
       }
     ]
   },
-  "include": ["src/activeChat.ts"],
+  "include": ["src/deepChat.ts"],
   "exclude": []
 }
