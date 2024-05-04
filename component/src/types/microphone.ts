@@ -19,6 +19,15 @@ export interface AudioRecordingFiles {
 
 export type SubmitAfterSilence = true | number;
 
+export interface SpeechEvents {
+  onStart?: () => void;
+  onStop?: () => void;
+  onResult?: (text: string, isFinal: boolean) => void;
+  onPreResult?: (text: string, isFinal: boolean) => void;
+  onCommandModeTrigger?: (isStart: boolean) => void;
+  onPauseTrigger?: (isStart: boolean) => void;
+}
+
 export type SpeechToTextConfig = {
   webSpeech?: true | WebSpeechOptions;
   azure?: AzureOptions;
@@ -29,4 +38,5 @@ export type SpeechToTextConfig = {
   stopAfterSubmit?: false;
   submitAfterSilence?: SubmitAfterSilence;
   button?: {commandMode?: ButtonStyles} & MicrophoneStyles; // TO-DO - potentially include a pause style
+  events?: SpeechEvents;
 };
