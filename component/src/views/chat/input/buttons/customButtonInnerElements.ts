@@ -1,4 +1,4 @@
-import {ButtonInnerElements, ButtonStateStyles} from '../../../../types/buttonInternal';
+import {ButtonStateStyles} from '../../../../types/buttonInternal';
 import {SVGIconUtils} from '../../../../utils/svg/svgIconUtils';
 
 export class CustomButtonInnerElements {
@@ -15,8 +15,8 @@ export class CustomButtonInnerElements {
 
   public static createCustomElement<T>(state: keyof T, customStyles?: ButtonStateStyles<T>) {
     const stateStyle = customStyles?.[state];
-    if (stateStyle?.text?.content) return CustomButtonInnerElements.createElement(stateStyle?.text?.content, true);
     if (stateStyle?.svg?.content) return CustomButtonInnerElements.createElement(stateStyle?.svg?.content, false);
+    if (stateStyle?.text?.content) return CustomButtonInnerElements.createElement(stateStyle?.text?.content, true);
     return;
   }
 
@@ -36,23 +36,13 @@ export class CustomButtonInnerElements {
     return element;
   }
 
-  // used for creating elements that change state in a sequence
+  // https://github.com/OvidijusParsiunas/deep-chat/issues/175
+  // isDropup here is only determined by the user and not when moved to dropup automatically
   // prettier-ignore
-  public static create<T>(
-      parentEl: HTMLElement, states: (keyof T)[], styles?: ButtonStateStyles<T>): ButtonInnerElements<T> {
-    const returnObj: ButtonInnerElements<T> = {};
-    if (!styles) {
-      CustomButtonInnerElements.processElement(parentEl);
-      return returnObj;
-    }
-    // if the user has specified element for any state, it will be reused for next states
-    const initialStateEl = CustomButtonInnerElements.createSpecificStateElement<T>(parentEl, states[0], styles);
-    returnObj[states[0]] = initialStateEl;
-    let lastStateEl = initialStateEl;
-    states.slice(1).forEach((state) => {
-      lastStateEl = CustomButtonInnerElements.createCustomElement<T>(state, styles) || lastStateEl;
-      returnObj[state] = lastStateEl;
-    });
-    return returnObj;
+  public static createInnerElement<T>(parentEl: HTMLElement,
+      baseButton: SVGGraphicsElement, state: keyof T, customStyles?: ButtonStateStyles<T>, isDropup = false) {
+    // if the destination is specified to be dropup and content is not defined - use baseButton
+    if (isDropup && !customStyles?.[state]?.svg?.content) return baseButton;
+    return CustomButtonInnerElements.createSpecificStateElement(parentEl, state, customStyles) || baseButton;
   }
 }
