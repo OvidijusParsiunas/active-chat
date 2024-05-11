@@ -7,6 +7,7 @@ import {StreamSimulation} from '../../types/stream';
 import {ServiceIO} from '../../services/serviceIO';
 import {Response} from '../../types/response';
 import {RequestUtils} from './requestUtils';
+import {ActiveChat} from '../../activeChat';
 import {Demo} from '../demo/demo';
 import {Stream} from './stream';
 
@@ -20,8 +21,15 @@ export class Websocket {
     }
   }
 
+  private static isElementPresentInDOM(activeChat: ActiveChat) {
+    // to make sure that reconnection is not happening when component removed
+    // this particular check also works if ActiveChat is inside a light DOM elem
+    // https://github.com/OvidijusParsiunas/deep-chat/pull/194
+    return !!(activeChat.getRootNode({composed: true}) instanceof Document);
+  }
+
   public static createConnection(io: ServiceIO, messages: Messages) {
-    if (!document.body.contains(io.activeChat)) return; // check if element is still present
+    if (!Websocket.isElementPresentInDOM(io.activeChat)) return;
     const websocketConfig = io.connectSettings.websocket;
     if (!websocketConfig) return;
     if (io.connectSettings.handler) return CustomHandler.websocket(io, messages);
@@ -47,7 +55,7 @@ export class Websocket {
 
   private static retryConnection(io: ServiceIO, messages: Messages) {
     io.activeChat._validationHandler?.();
-    if (!document.body.contains(io.activeChat)) return; // check if element is still present
+    if (!Websocket.isElementPresentInDOM(io.activeChat)) return;
     io.websocket = 'pending';
     if (!messages.isLastMessageError()) messages.addNewErrorMessage('service', 'Connection error');
     setTimeout(() => {
