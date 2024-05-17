@@ -23,7 +23,7 @@ export class Websocket {
 
   private static isElementPresentInDOM(activeChat: ActiveChat) {
     // to make sure that reconnection is not happening when component removed
-    // this particular check also works if ActiveChat is inside a light DOM elem
+    // this particular check also works if ActiveChat is inside a shadow DOM elem
     // https://github.com/OvidijusParsiunas/deep-chat/pull/194
     return !!(activeChat.getRootNode({composed: true}) instanceof Document);
   }
