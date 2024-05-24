@@ -1,6 +1,7 @@
 import {Messages} from '../../views/chat/messages/messages';
 import {Response as ResponseI} from '../../types/response';
 import {RequestDetails} from '../../types/interceptors';
+import {ErrorResp} from '../../types/errorInternal';
 import {ServiceIO} from '../../services/serviceIO';
 import {GenericObject} from '../../types/object';
 import {Connect} from '../../types/connect';
@@ -35,9 +36,15 @@ export class RequestUtils {
     return result;
   }
 
-  public static displayError(messages: Messages, err: object | string, defMessage = 'Service error, please try again.') {
+  public static displayError(messages: Messages, err: ErrorResp, defMessage = 'Service error, please try again.') {
     console.error(err);
     if (typeof err === 'object') {
+      if (err instanceof Error) {
+        return messages.addNewErrorMessage('service', err.message);
+      }
+      if (Array.isArray(err) || typeof err.error === 'string') {
+        return messages.addNewErrorMessage('service', err);
+      }
       if (Object.keys(err).length === 0) {
         return messages.addNewErrorMessage('service', defMessage);
       }
@@ -66,8 +73,8 @@ export class RequestUtils {
     return response.blob();
   }
 
-  public static async processRequestInterceptor(chat: ActiveChat, requestDetails: RequestDetails): InterceptorResultP {
-    const result = (await chat.requestInterceptor?.(requestDetails)) || requestDetails;
+  public static async processRequestInterceptor(deepChat: ActiveChat, requestDetails: RequestDetails): InterceptorResultP {
+    const result = (await deepChat.requestInterceptor?.(requestDetails)) || requestDetails;
     const resReqDetails = result as RequestDetails;
     const resErrDetails = result as {error?: string};
     return {body: resReqDetails.body, headers: resReqDetails.headers, error: resErrDetails.error};
