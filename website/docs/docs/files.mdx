@@ -537,14 +537,14 @@ Use this [Playground](https://jonschlinkert.github.io/remarkable/demo/) to help 
 ### `CameraFilesServiceConfig` {#CameraFilesServiceConfig}
 
 - Type: \{<br />
-  &nbsp;&nbsp;&nbsp;&nbsp; [`request?: Request`](/docs/connect#Request), <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; [`connect?: Connect`](/docs/connect#connect-1), <br />
   &nbsp;&nbsp;&nbsp;&nbsp; [`files?: CameraFiles`](#CameraFiles), <br />
   &nbsp;&nbsp;&nbsp;&nbsp; [`button?: Button`](/docs/styles#Button), <br />
   &nbsp;&nbsp;&nbsp;&nbsp; [`modalContainerStyle?: CustomStyle`](/docs/styles#CustomStyle) <br />
   \}
 
 Configuration for capturing images using a web camera and handling the resultant files. <br />
-`request` is used to override the default request settings when sending image files. <br />
+`connect` is used to override the default connection settings when sending image files. <br />
 `files` is used to configure the files that are captured by the camera. <br />
 `button` is used to customize the button element used for the camera. <br />
 `modalContainerStyle` is used to customize the modal used to display the camera. <br />
@@ -555,7 +555,7 @@ Configuration for capturing images using a web camera and handling the resultant
     introMessage={{text: 'Use the camera button to open up a modal for capturing photos.'}}
     demo={true}
     camera={{
-      request: {url: 'https://customapi.com/image-from-camera'},
+      connect: {url: 'https://customapi.com/image-from-camera'},
       files: {format: 'png'},
       button: {position: 'outside-left'},
       modalContainerStyle: {borderRadius: '5px'},
@@ -569,7 +569,7 @@ Configuration for capturing images using a web camera and handling the resultant
 ```html
 <deep-chat
   camera='{
-    "request": {"url": "https://customapi.com/image-from-camera"},
+    "connect": {"url": "https://customapi.com/image-from-camera"},
     "files": {"format": "png"},
     "button": {"position": "outside-left"},
     "modalContainerStyle": {"borderRadius": "5px"}
@@ -585,7 +585,7 @@ Configuration for capturing images using a web camera and handling the resultant
 
 <deep-chat
   camera='{
-    "request": {"url": "https://customapi.com/image-from-camera"},
+    "connect": {"url": "https://customapi.com/image-from-camera"},
     "files": {"format": "png"},
     "button": {"position": "outside-left"},
     "modalContainerStyle": {"borderRadius": "5px"}
@@ -686,13 +686,13 @@ the `acceptedFormats` property, it will override this one.<br />
 ### `MicrophoneFilesServiceConfig` {#MicrophoneFilesServiceConfig}
 
 - Type: \{<br />
-  &nbsp;&nbsp;&nbsp;&nbsp; [`request?: Request`](/docs/connect#Request), <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; [`connect?: Connect`](/docs/connect#connect-1), <br />
   &nbsp;&nbsp;&nbsp;&nbsp; [`files?: AudioRecordingFiles`](#AudioRecordingFiles), <br />
   &nbsp;&nbsp;&nbsp;&nbsp; [`button?: MicrophoneStyles`](/docs/styles#MicrophoneStyles) <br />
   \}
 
 Configuration for recording audio using a microphone and handling the resultant files. <br />
-`request` is used to override the default request settings when sending audio files. <br />
+`connect` is used to override the default connection settings when sending audio files. <br />
 `files` is used to configure the resultant files that are recorded by the microphone. <br />
 `button` is the styling used for the microphone button element. <br />
 
@@ -702,7 +702,7 @@ Configuration for recording audio using a microphone and handling the resultant 
     introMessage={{text: 'Use the microphone button to record audio.'}}
     demo={true}
     microphone={{
-      request: {url: 'https://customapi.com/audio-from-microphone'},
+      connect: {url: 'https://customapi.com/audio-from-microphone'},
       files: {format: 'mp3'},
       button: {position: 'outside-left'},
     }}
@@ -715,7 +715,7 @@ Configuration for recording audio using a microphone and handling the resultant 
 ```html
 <deep-chat
   microphone='{
-    "request": {"url": "https://customapi.com/audio-from-microphone"},
+    "connect": {"url": "https://customapi.com/audio-from-microphone"},
     "files": {"format": "mp3"},
     "button": {"position": "outside-left"}
   }'
@@ -730,7 +730,7 @@ Configuration for recording audio using a microphone and handling the resultant 
 
 <deep-chat
   microphone='{
-    "request": {"url": "https://customapi.com/audio-from-microphone"},
+    "connect": {"url": "https://customapi.com/audio-from-microphone"},
     "files": {"format": "mp3"},
     "button": {"position": "outside-left"}
   }'
