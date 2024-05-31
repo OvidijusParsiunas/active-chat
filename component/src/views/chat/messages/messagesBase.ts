@@ -1,17 +1,18 @@
 import {MessageElementsStyles, MessageRoleStyles, MessageStyles, UserContent} from '../../../types/messages';
 import {MessageContentI, Overwrite} from '../../../types/messagesInternal';
 import {ProcessedTextToSpeechConfig} from './textToSpeech/textToSpeech';
-import {ElementUtils} from '../../../utils/element/elementUtils';
 import {HTMLActiveChatElements} from './html/htmlActiveChatElements';
+import {ElementUtils} from '../../../utils/element/elementUtils';
 import {RemarkableConfig} from './remarkable/remarkableConfig';
+import {RemarkableUtils} from './remarkable/remarkableUtils';
 import {FireEvents} from '../../../utils/events/fireEvents';
 import {HTMLClassUtilities} from '../../../types/html';
 import {MessageStyleUtils} from './messageStyleUtils';
 import {IntroPanel} from '../introPanel/introPanel';
 import {Response} from '../../../types/response';
 import {Avatars} from '../../../types/avatars';
-import {MessageUtils} from './messageUtils';
 import {ActiveChat} from '../../../activeChat';
+import {MessageUtils} from './messageUtils';
 import {Names} from '../../../types/names';
 import {MessageElements} from './messages';
 import {Remarkable} from 'remarkable';
@@ -166,10 +167,11 @@ export class MessagesBase {
   }
 
   public renderText(bubbleElement: HTMLElement, text: string) {
-    bubbleElement.innerHTML = this._remarkable.render(text);
+    const processedText = RemarkableUtils.replaceNewlineWithDouble(text);
+    bubbleElement.innerHTML = this._remarkable.render(processedText);
     // there is a bug in remarkable where text with only numbers and full stop after them causes the creation
     // of a list which has no innert text and is instead prepended as a prefix in the start attribute (12.)
-    if (bubbleElement.innerText.trim().length === 0) bubbleElement.innerText = text;
+    if (bubbleElement.innerText.trim().length === 0) bubbleElement.innerText = processedText;
   }
 
   // this is mostly used for enabling highlight.js to highlight code if it downloads later
