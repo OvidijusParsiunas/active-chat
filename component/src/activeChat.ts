@@ -39,15 +39,6 @@ export class ActiveChat extends InternalHTML {
   @Property('object')
   requestBodyLimits?: RequestBodyLimits;
 
-  @Property('function')
-  requestInterceptor?: RequestInterceptor;
-
-  @Property('function')
-  responseInterceptor?: ResponseInterceptor;
-
-  @Property('function')
-  validateInput?: ValidateInput;
-
   @Property('object')
   chatStyle?: CustomStyle;
 
@@ -123,6 +114,9 @@ export class ActiveChat extends InternalHTML {
   @Property('object')
   htmlClassUtilities?: HTMLClassUtilities;
 
+  @Property('object')
+  demo?: Demo;
+
   getMessages: () => MessageContent[] = () => [];
 
   submitUserMessage: (content: UserContent) => void = () =>
@@ -152,9 +146,6 @@ export class ActiveChat extends InternalHTML {
 
   @Property('function')
   onError?: OnError;
-
-  @Property('object')
-  demo?: Demo;
 
   _hasBeenRendered = false;
 
