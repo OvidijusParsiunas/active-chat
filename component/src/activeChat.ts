@@ -39,6 +39,15 @@ export class ActiveChat extends InternalHTML {
   @Property('object')
   requestBodyLimits?: RequestBodyLimits;
 
+  @Property('function')
+  requestInterceptor?: RequestInterceptor;
+
+  @Property('function')
+  responseInterceptor?: ResponseInterceptor;
+
+  @Property('function')
+  validateInput?: ValidateInput;
+
   @Property('object')
   chatStyle?: CustomStyle;
 
