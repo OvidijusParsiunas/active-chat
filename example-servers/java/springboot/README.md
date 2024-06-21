@@ -11,7 +11,7 @@ This project is preconfigured to work with the example [UI project](https://gith
 If you are downloading the project via `git clone` - we advise you to use shallow cloning with the use of the [--depth 1](https://www.perforce.com/blog/vcs/git-beyond-basics-using-shallow-clones) option to reduce its size:
 
 ```
-git clone --depth 1 https://github.com/OvidijusParsiunas/deep-chat.git
+git clone --depth 1 https://github.com/OvidijusParsiunas/active-chat.git
 ```
 
 Navigate to this directory and run the following command to install the required modules:
