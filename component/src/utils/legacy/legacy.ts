@@ -1,3 +1,4 @@
+import {FilesServiceConfig} from '../../types/fileServiceConfigs';
 import {MessageContent, OnMessage} from '../../types/messages';
 import {ValidateInput} from '../../types/validateInput';
 import {MessageFile} from '../../types/messageFile';
@@ -101,10 +102,19 @@ export class Legacy {
   public static fireOnNewMessage(activeChat: ActiveChat, updateBody: {message: MessageContent; isHistory: boolean}) {
     const legacyActiveChat = activeChat as unknown as ActiveChat & LegacyActiveChat;
     if (legacyActiveChat.onNewMessage) {
-      console.error('The onNewMessage event has deprecated.');
+      console.error('The onNewMessage event is deprecated.');
       console.error('Please see the onMessage event: https://deepchat.dev/docs/events#onMessage');
       legacyActiveChat.onNewMessage?.(updateBody);
     }
     activeChat.dispatchEvent(new CustomEvent('new-message', {detail: updateBody}));
+  }
+
+  public static processFileConfigConnect(config: FilesServiceConfig) {
+    const legacyConfig = config as unknown as FilesServiceConfig & {request?: Connect};
+    if (legacyConfig.request) {
+      console.error('The request property is deprecated');
+      console.error('Please use the connect property instead: https://deepchat.dev/docs/files');
+      if (!legacyConfig.connect) legacyConfig.connect = legacyConfig.request;
+    }
   }
 }
