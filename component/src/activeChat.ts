@@ -144,6 +144,8 @@ export class ActiveChat extends InternalHTML {
 
   disableSubmitButton: DisableSubmitButton = () => {};
 
+  setPlaceholderText: (text: string) => void = () => {};
+
   @Property('function')
   onMessage?: OnMessage;
 
