@@ -237,6 +237,35 @@ chatElementRef.focusInput();
 
 <LineBreak></LineBreak>
 
+### `setPlaceholderText` {#setPlaceholderText}
+
+- Type: (`text: string`) => `void`
+
+Dynamically change the text input placeholder text. <br />
+This is useful for setting the placeholder text after the user sends a message.
+
+#### Example
+
+<ComponentContainerMethods propertyName={'setPlaceholderText'} argument={'New placeholder text'} displayResults={false}>
+  <DeepChatBrowser style={{borderRadius: '8px'}} demo={true}></DeepChatBrowser>
+</ComponentContainerMethods>
+
+<Tabs>
+<TabItem value="js" label="Code">
+
+```html
+chatElementRef.setPlaceholderText("New placeholder text");
+```
+
+</TabItem>
+</Tabs>
+
+:::info
+Default placeholder text should be set using the `placeholder` property in [`textInput`](/docs/styles/#textInput).
+:::
+
+<LineBreak></LineBreak>
+
 ### `disableSubmitButton` {#disableSubmitButton}
 
 - Type: (`override?: boolean`) => `void`
