@@ -9,12 +9,13 @@ import {ErrorMessageOverrides} from '../../../types/error';
 import {ResponseI} from '../../../types/responseInternal';
 import {TextToSpeech} from './textToSpeech/textToSpeech';
 import {Demo, DemoResponse} from '../../../types/demo';
+import {ErrorResp} from '../../../types/errorInternal';
 import {MessageStyleUtils} from './messageStyleUtils';
 import {IntroMessage} from '../../../types/messages';
 import {MessageStream} from './stream/messageStream';
-import {Legacy} from '../../../utils/legacy/legacy';
 import {IntroPanel} from '../introPanel/introPanel';
 import {FileMessageUtils} from './fileMessageUtils';
+import {MessagesHistory} from './messagesHistory';
 import {CustomStyle} from '../../../types/styles';
 import {HTMLMessages} from './html/htmlMessages';
 import {ActiveChat} from '../../../activeChat';
@@ -22,7 +23,6 @@ import {FileMessages} from './fileMessages';
 import {MessageUtils} from './messageUtils';
 import {MessagesBase} from './messagesBase';
 import {HTMLUtils} from './html/htmlUtils';
-import {ErrorResp} from '../../../types/errorInternal';
 
 export interface MessageElements {
   outerContainer: HTMLElement;
@@ -52,7 +52,7 @@ export class Messages extends MessagesBase {
       this.populateIntroPanel(panel, introPanelMarkUp, activeChat.introPanelStyle);
     }
     this.addIntroductoryMessage(activeChat, serviceIO);
-    this.populateHistory(activeChat);
+    new MessagesHistory(activeChat, this, serviceIO);
     this._displayServiceErrorMessages = activeChat.errorMessages?.displayServiceErrorMessages;
     activeChat.getMessages = () => JSON.parse(JSON.stringify(this.messages));
     activeChat.clearMessages = this.clearMessages.bind(this, serviceIO);
@@ -68,7 +68,6 @@ export class Messages extends MessagesBase {
         this.textToSpeech = processedConfig;
       });
     }
-    if (serviceIO.fetchHistory) this.fetchHistory(serviceIO.fetchHistory);
   }
 
   private static getDisplayLoadingMessage(activeChat: ActiveChat, serviceIO: ServiceIO) {
@@ -126,54 +125,34 @@ export class Messages extends MessagesBase {
     }
   }
 
-  private populateHistory(activeChat: ActiveChat) {
-    const history = activeChat.history || Legacy.processHistory(activeChat);
-    if (!history) return;
-    history.forEach((message) => {
-      Legacy.processHistoryFile(message);
-      this.addNewMessage(message, true);
-    });
-    // attempt to wait for the font file to be downloaded as otherwise text dimensions change after scroll
-    // the timeout is sometimes not long enough - see the following on how user's can fix it:
-    // https://github.com/OvidijusParsiunas/deep-chat/issues/84
-    setTimeout(() => ElementUtils.scrollToBottom(this.elementRef), 0);
-  }
-
-  private async fetchHistory(ioFetchHistory: Required<ServiceIO>['fetchHistory']) {
-    const history = await ioFetchHistory();
-    history.forEach((message) => this.addAnyMessage(message, true));
-    // https://github.com/OvidijusParsiunas/deep-chat/issues/84
-    setTimeout(() => ElementUtils.scrollToBottom(this.elementRef), 0);
-  }
-
-  private addAnyMessage(message: ResponseI, isHistory = false) {
+  public addAnyMessage(message: ResponseI, isHistory = false, isTop = false) {
     if (message.error) {
-      this.addNewErrorMessage('service', message.error);
-    } else {
-      this.addNewMessage(message, isHistory);
+      return this.addNewErrorMessage('service', message.error);
     }
+    return this.addNewMessage(message, isHistory, isTop);
   }
 
   // this should not be activated by streamed messages
-  public addNewMessage(data: ResponseI, isHistory = false) {
+  public addNewMessage(data: ResponseI, isHistory = false, isTop = false) {
     const message = Messages.createMessageContent(data);
     const overwrite: Overwrite = {status: data.overwrite}; // if did not overwrite, create a new message
     if (!data.ignoreText && message.text !== undefined && data.text !== null) {
-      this.addNewTextMessage(message.text, message.role, overwrite);
+      this.addNewTextMessage(message.text, message.role, overwrite, isTop);
       if (!isHistory && this.textToSpeech && message.role !== MessageUtils.USER_ROLE) {
         TextToSpeech.speak(message.text, this.textToSpeech);
       }
     }
     if (message.files && Array.isArray(message.files)) {
-      FileMessages.addMessages(this, message.files, message.role);
+      FileMessages.addMessages(this, message.files, message.role, isTop);
     }
     if (message.html !== undefined && message.html !== null) {
-      const elements = HTMLMessages.add(this, message.html, message.role, this.messageElementRefs, overwrite);
+      const elements = HTMLMessages.add(this, message.html, message.role, this.messageElementRefs, overwrite, isTop);
       if (HTMLActiveChatElements.isElementTemporary(elements)) delete message.html;
     }
-    if (this.isValidMessageContent(message)) {
+    if (this.isValidMessageContent(message) && !isTop) {
       this.updateStateOnMessage(message, data.overwrite, data.sendUpdate, isHistory);
     }
+    return message;
   }
 
   private isValidMessageContent(messageContent: MessageContentI) {

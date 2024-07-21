@@ -21,6 +21,7 @@ import {HTMLClassUtilities} from './types/html';
 import {ChatView} from './views/chat/chatView';
 import {ServiceIO} from './services/serviceIO';
 import {Legacy} from './utils/legacy/legacy';
+import {LoadHistory} from './types/history';
 import {TextInput} from './types/textInput';
 import style from './activeChat.css?inline';
 import {CustomStyle} from './types/styles';
@@ -47,6 +48,9 @@ export class ActiveChat extends InternalHTML {
 
   @Property('function')
   validateInput?: ValidateInput;
+
+  @Property('function')
+  loadHistory?: LoadHistory;
 
   @Property('object')
   chatStyle?: CustomStyle;
