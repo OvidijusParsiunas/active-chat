@@ -112,7 +112,7 @@ export class Legacy {
   public static processFileConfigConnect(config: FilesServiceConfig) {
     const legacyConfig = config as unknown as FilesServiceConfig & {request?: Connect};
     if (legacyConfig.request) {
-      console.error('The request property is deprecated');
+      console.error('The request property is deprecated.');
       console.error('Please use the connect property instead: https://deepchat.dev/docs/files');
       if (!legacyConfig.connect) legacyConfig.connect = legacyConfig.request;
     }
