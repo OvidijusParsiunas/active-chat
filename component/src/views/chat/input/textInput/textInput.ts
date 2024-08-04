@@ -8,11 +8,11 @@ import {CustomStyle} from '../../../../types/styles';
 import {TextInputEvents} from './textInputEvents';
 import {ActiveChat} from '../../../../activeChat';
 import {PasteUtils} from './pasteUtils';
+import {FocusUtils} from './focusUtils';
 
 // TO-DO state for focused (like input)
 export class TextInputEl {
   public static TEXT_INPUT_ID = 'text-input';
-  public static PLACEHOLDER_TEXT_CLASS = 'text-input-placeholder';
   readonly elementRef: HTMLElement;
   readonly inputElementRef: HTMLElement;
   private readonly _config: TextInput;
@@ -22,15 +22,15 @@ export class TextInputEl {
   constructor(activeChat: ActiveChat, serviceIO: ServiceIO, fileAts: FileAttachments) {
     const processedConfig = TextInputEl.processConfig(serviceIO, activeChat.textInput);
     this.elementRef = TextInputEl.createContainerElement(processedConfig?.styles?.container);
-    this.inputElementRef = this.createInputElement(processedConfig);
     this._config = processedConfig;
+    this.inputElementRef = this.createInputElement();
     this.elementRef.appendChild(this.inputElementRef);
-    activeChat.setPlaceholderText = this.setPlaceholderText.bind(this, activeChat);
-    activeChat.setPlaceholderText(activeChat.textInput?.placeholder?.text || 'Ask me anything!');
+    activeChat.setPlaceholderText = this.setPlaceholderText.bind(this);
+    activeChat.setPlaceholderText(this._config.placeholder?.text || 'Ask me anything!');
     setTimeout(() => {
       // in a timeout as activeChat._validationHandler initialised later
       TextInputEvents.add(
-        this.inputElementRef, fileAts, activeChat.textInput?.characterLimit, activeChat._validationHandler);
+        this.inputElementRef, fileAts, this._config.characterLimit, activeChat._validationHandler);
     });
   }
 
@@ -40,6 +40,13 @@ export class TextInputEl {
     textInput.placeholder ??= {};
     textInput.placeholder.text ??= serviceIO.textInputPlaceholderText;
     return textInput;
+  }
+
+  private static createContainerElement(containerStyle?: CustomStyle) {
+    const contentContainerElement = document.createElement('div');
+    contentContainerElement.id = 'text-input-container';
+    Object.assign(contentContainerElement.style, containerStyle);
+    return contentContainerElement;
   }
 
   // this is is a bug fix where if the browser is scrolled down and the user types in text that creates new line
@@ -54,78 +61,54 @@ export class TextInputEl {
   }
 
   // this also similarly prevents scroll up
-  public static clear(inputElement: HTMLElement) {
+  public clear() {
     const scrollY = window.scrollY;
-    if (!inputElement.classList.contains('text-input-disabled')) inputElement.textContent = '';
+    if (!this.inputElementRef.classList.contains('text-input-disabled')) {
+      Object.assign(this.inputElementRef.style, this._config.placeholder?.style);
+      this.inputElementRef.textContent = '';
+      FocusUtils.focusEndOfInput(this.inputElementRef);
+    }
     if (Browser.IS_CHROMIUM) window.scrollTo({top: scrollY});
   }
 
-  private createInputElement(textInput?: TextInput) {
+  private createInputElement() {
     const inputElement = document.createElement('div');
     inputElement.id = TextInputEl.TEXT_INPUT_ID;
-    inputElement.classList.add('text-input-styling', TextInputEl.PLACEHOLDER_TEXT_CLASS);
+    inputElement.classList.add('text-input-styling');
     if (Browser.IS_CHROMIUM) TextInputEl.preventAutomaticScrollUpOnNewLine(inputElement);
-    if (typeof textInput?.disabled === 'boolean' && textInput.disabled === true) {
+    if (typeof this._config.disabled === 'boolean' && this._config.disabled === true) {
       inputElement.contentEditable = 'false';
       inputElement.classList.add('text-input-disabled');
     } else {
       inputElement.contentEditable = 'true';
-      this.addEventListeners(inputElement, textInput);
+      this.addEventListeners(inputElement);
     }
-    Object.assign(inputElement.style, textInput?.styles?.text);
-    Object.assign(inputElement.style, textInput?.placeholder?.style);
+    Object.assign(inputElement.style, this._config.styles?.text);
+    Object.assign(inputElement.style, this._config.placeholder?.style);
+    if (!this._config.placeholder?.style?.color) inputElement.setAttribute('textcolor', '');
     return inputElement;
   }
 
-  public removeTextIfPlaceholder() {
-    if (
-      this.inputElementRef.classList.contains(TextInputEl.PLACEHOLDER_TEXT_CLASS) &&
-      !this.inputElementRef.classList.contains('text-input-disabled')
-    ) {
-      if (this._config.placeholder?.style) {
-        StyleUtils.unsetStyle(this.inputElementRef, this._config.placeholder?.style);
-        Object.assign(this.inputElementRef.style, this._config?.styles?.text);
-      }
-      TextInputEl.clear(this.inputElementRef);
-      this.inputElementRef.classList.remove(TextInputEl.PLACEHOLDER_TEXT_CLASS);
+  public removePlaceholderStyle() {
+    if (!this.inputElementRef.classList.contains('text-input-disabled') && this._config.placeholder?.style) {
+      StyleUtils.unsetStyle(this.inputElementRef, this._config.placeholder?.style);
+      Object.assign(this.inputElementRef.style, this._config?.styles?.text);
     }
   }
 
-  public static toggleEditability(inputElement: HTMLElement, isEditable: boolean) {
-    inputElement.contentEditable = isEditable ? 'true' : 'false';
-  }
-
-  private addEventListeners(inputElement: HTMLElement, textInput?: TextInput) {
-    inputElement.onfocus = this.onFocus.bind(this, textInput?.styles?.focus);
-    if (textInput?.styles?.focus) {
-      inputElement.onblur = this.onBlur.bind(this, textInput.styles.focus, textInput?.styles?.container);
+  private addEventListeners(inputElement: HTMLElement) {
+    if (this._config.styles?.focus) {
+      inputElement.onfocus = () => Object.assign(this.elementRef.style, this._config.styles?.focus);
+      inputElement.onblur = this.onBlur.bind(this, this._config.styles.focus, this._config.styles?.container);
     }
     inputElement.addEventListener('keydown', this.onKeydown.bind(this));
+    inputElement.addEventListener('input', this.onInput.bind(this));
     inputElement.addEventListener('paste', PasteUtils.sanitizePastedTextContent);
-  }
-
-  private onFocus(focusStyle?: CustomStyle) {
-    if (Browser.IS_SAFARI) {
-      // timeout used for a bug fix where the user clicks on placeholder text but cursor will not be there
-      setTimeout(() => {
-        this.removeTextIfPlaceholder();
-      });
-    } else {
-      this.removeTextIfPlaceholder();
-    }
-    Object.assign(this.elementRef.style, focusStyle);
   }
 
   private onBlur(focusStyle: CustomStyle, containerStyle?: CustomStyle) {
     StyleUtils.unsetStyle(this.elementRef, focusStyle);
     if (containerStyle) Object.assign(this.elementRef.style, containerStyle);
-  }
-
-  private static createContainerElement(containerStyle?: CustomStyle) {
-    const contentContainerElement = document.createElement('div');
-    contentContainerElement.id = 'text-input-container';
-    Object.assign(contentContainerElement.style, containerStyle);
-    return contentContainerElement;
   }
 
   private onKeydown(event: KeyboardEvent) {
@@ -136,13 +119,19 @@ export class TextInputEl {
     }
   }
 
-  private setPlaceholderText(activeChat: ActiveChat, text: string) {
-    if (document.activeElement === activeChat) return;
-    if (this.inputElementRef.textContent === '') {
-      this.inputElementRef.classList.add(TextInputEl.PLACEHOLDER_TEXT_CLASS);
+  private onInput() {
+    if (!this.isTextInputEmpty()) {
+      this.removePlaceholderStyle();
+    } else {
+      Object.assign(this.inputElementRef.style, this._config.placeholder?.style);
     }
-    if (this.inputElementRef.classList.contains(TextInputEl.PLACEHOLDER_TEXT_CLASS)) {
-      this.inputElementRef.textContent = text;
-    }
+  }
+
+  private setPlaceholderText(text: string) {
+    this.inputElementRef.setAttribute('deep-chat-placeholder-text', text);
+  }
+
+  public isTextInputEmpty() {
+    return this.inputElementRef.textContent === '';
   }
 }

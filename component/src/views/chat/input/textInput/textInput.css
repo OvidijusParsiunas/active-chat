@@ -72,3 +72,12 @@
 .text-input-placeholder {
   color: grey;
 }
+
+[contenteditable]:empty:before {
+  content: attr(deep-chat-placeholder-text);
+  pointer-events: none;
+}
+
+[contenteditable][textcolor]:empty:before {
+  color: grey;
+}

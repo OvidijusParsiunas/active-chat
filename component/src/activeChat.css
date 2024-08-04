@@ -1,4 +1,5 @@
 @import url('./views/error/errorView.css');
+@import url('./utils/loading/loading.css');
 @import url('./views/chat/chatView.css');
 
 :host {

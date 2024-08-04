@@ -37,7 +37,7 @@ export class Input {
     if (activeChat.speechToText && !buttons.microphone) {
       buttons.microphone = {button: new SpeechToText(activeChat, textInput, messages.addNewErrorMessage.bind(messages))};
     }
-    const submitButton = new SubmitButton(activeChat, textInput.inputElementRef, messages, serviceIO, fileAts, buttons);
+    const submitButton = new SubmitButton(activeChat, textInput, messages, serviceIO, fileAts, buttons);
     textInput.submit = submitButton.submitFromInput.bind(submitButton);
     ValidationHandler.attach(activeChat, serviceIO, textInput, fileAts, submitButton);
     activeChat.submitUserMessage = submitButton.programmaticSubmit.bind(submitButton);
