@@ -16,7 +16,6 @@ import {IntroMessage} from '../../../types/messages';
 import {MessageStream} from './stream/messageStream';
 import {IntroPanel} from '../introPanel/introPanel';
 import {FileMessageUtils} from './fileMessageUtils';
-import {MessagesHistory} from './messagesHistory';
 import {CustomStyle} from '../../../types/styles';
 import {HTMLMessages} from './html/htmlMessages';
 import {ActiveChat} from '../../../activeChat';
@@ -24,6 +23,7 @@ import {FileMessages} from './fileMessages';
 import {MessageUtils} from './messageUtils';
 import {MessagesBase} from './messagesBase';
 import {HTMLUtils} from './html/htmlUtils';
+import {History} from './history/history';
 
 export interface MessageElements {
   outerContainer: HTMLElement;
@@ -53,7 +53,7 @@ export class Messages extends MessagesBase {
       this.populateIntroPanel(panel, introPanelMarkUp, activeChat.introPanelStyle);
     }
     this.addIntroductoryMessage(activeChat, serviceIO);
-    new MessagesHistory(activeChat, this, serviceIO);
+    new History(activeChat, this, serviceIO);
     this._displayServiceErrorMessages = activeChat.errorMessages?.displayServiceErrorMessages;
     activeChat.getMessages = () => JSON.parse(JSON.stringify(this.messages));
     activeChat.clearMessages = this.clearMessages.bind(this, serviceIO);
@@ -176,20 +176,19 @@ export class Messages extends MessagesBase {
   }
 
   // prettier-ignore
-  public addNewErrorMessage(type: keyof Omit<ErrorMessageOverrides, 'default'>, message?: ErrorResp) {
+  public addNewErrorMessage(type: keyof Omit<ErrorMessageOverrides, 'default'>, message?: ErrorResp, isTop = false) {
     this.removeMessageOnError();
-    const messageElements = Messages.createBaseElements();
-    const {outerContainer, bubbleElement} = messageElements;
-    bubbleElement.classList.add('error-message-text');
     const text = this.getPermittedMessage(message) || this._errorMessageOverrides?.[type]
       || this._errorMessageOverrides?.default || 'Error, please try again.';
+    const messageElements = this.createMessageElementsOnOrientation(text, '', isTop);
+    const {bubbleElement, outerContainer} = messageElements;
+    bubbleElement.classList.add('error-message-text');
     this.renderText(bubbleElement, text);
     const fontElementStyles = MessageStyleUtils.extractParticularSharedStyles(['fontSize', 'fontFamily'],
       this.messageStyles?.default);
     MessageStyleUtils.applyCustomStylesToElements(messageElements, false, fontElementStyles);
     MessageStyleUtils.applyCustomStylesToElements(messageElements, false, this.messageStyles?.error);
-    this.elementRef.appendChild(outerContainer);
-    ElementUtils.scrollToBottom(this.elementRef);
+    if (!isTop) this.elementRef.appendChild(outerContainer);
     if (this.textToSpeech) TextToSpeech.speak(text, this.textToSpeech);
     this._onError?.(text);
   }

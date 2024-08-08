@@ -1,5 +1,6 @@
 import {CompletionsHandlers, ServiceFileTypes, RequestContents, StreamHandlers, ServiceIO} from '../serviceIO';
 import {CameraFilesServiceConfig, MicrophoneFilesServiceConfig} from '../../types/fileServiceConfigs';
+import {History} from '../../views/chat/messages/history/history';
 import {MessageContentI} from '../../types/messagesInternal';
 import {Messages} from '../../views/chat/messages/messages';
 import {RequestUtils} from '../../utils/HTTP/requestUtils';
@@ -46,6 +47,7 @@ export class BaseServiceIO implements ServiceIO {
     if (this.demo) this.connectSettings.url ??= Demo.URL;
     if (this.connectSettings.websocket) Websocket.setup(this);
     this.stream = this.activeChat.connect?.stream || Legacy.checkForStream(this.activeChat);
+    if (activeChat.loadHistory) History.addErrorPrefix(this);
   }
 
   private static canSendMessage(text?: string, files?: File[], isProgrammatic?: boolean) {
