@@ -1,7 +1,3 @@
-<br />
-
-![Active Chat](./assets/readme/banner-2.png)
-
 <b>Active Chat</b> is a fully customizable chat component that can be injected into your website with minimal to no effort. It is a close sibling to the [Deep Chat](https://deepchat.dev/) component that carries all of its great benefits without the AI related features, making it more lean and quicker to download.
 
 ### :rocket: Main Features
