@@ -2,6 +2,7 @@ import {MessageElementsStyles, MessageRoleStyles, MessageStyles, UserContent} fr
 import {MessageContentI, Overwrite} from '../../../types/messagesInternal';
 import {ProcessedTextToSpeechConfig} from './textToSpeech/textToSpeech';
 import {HTMLActiveChatElements} from './html/htmlActiveChatElements';
+import {LoadingStyle} from '../../../utils/loading/loadingStyle';
 import {ElementUtils} from '../../../utils/element/elementUtils';
 import {RemarkableConfig} from './remarkable/remarkableConfig';
 import {FireEvents} from '../../../utils/events/fireEvents';
@@ -115,10 +116,7 @@ export class MessagesBase {
   }
 
   protected static isTemporaryElement(elements: MessageElements) {
-    return (
-      elements?.bubbleElement.classList.contains('loading-message-text') ||
-      HTMLActiveChatElements.isElementTemporary(elements)
-    );
+    return MessagesBase.isLoadingMessage(elements) || HTMLActiveChatElements.isElementTemporary(elements);
   }
 
   public createMessageElements(text: string, role: string, isTop = false) {
@@ -188,6 +186,10 @@ export class MessagesBase {
 
   public isLastMessageError() {
     return MessageUtils.getLastMessageBubbleElement(this.elementRef)?.classList.contains('error-message-text');
+  }
+
+  public static isLoadingMessage(elements?: MessageElements) {
+    return elements?.bubbleElement.classList.contains(LoadingStyle.BUBBLE_CLASS);
   }
 
   public sendClientUpdate(message: MessageContentI, isHistory = false) {

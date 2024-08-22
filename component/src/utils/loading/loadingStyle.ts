@@ -2,6 +2,8 @@ import {MessageStyles} from '../../types/messages';
 import {CustomStyle} from '../../types/styles';
 
 export class LoadingStyle {
+  public static readonly BUBBLE_CLASS = 'deep-chat-loading-message-bubble';
+
   private static colorToHex(color: string) {
     const dummyElement = document.createElement('div');
     dummyElement.style.color = color;
@@ -35,6 +37,6 @@ export class LoadingStyle {
     bubbleElement.style.setProperty('--loading-history-height', height || '57px');
     bubbleElement.style.setProperty('--loading-history-width', width || '57px');
     bubbleElement.style.setProperty('--loading-history-margin', margin || '7px');
-    bubbleElement.style.setProperty('--loading-history-border', border || '5px');
+    bubbleElement.style.setProperty('--loading-history-border', border || '6px');
   }
 }
