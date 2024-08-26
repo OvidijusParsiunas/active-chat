@@ -74,7 +74,8 @@
 }
 
 [contenteditable]:empty:before {
-  content: attr(deep-chat-placeholder-text);
+  /* Has to be an attribute to be accessed by contenteditable pseusod element and pseudo classes */
+  content: attr(active-chat-placeholder-text);
   pointer-events: none;
 }
 

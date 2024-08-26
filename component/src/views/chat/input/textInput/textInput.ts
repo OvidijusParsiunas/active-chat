@@ -128,7 +128,7 @@ export class TextInputEl {
   }
 
   private setPlaceholderText(text: string) {
-    this.inputElementRef.setAttribute('deep-chat-placeholder-text', text);
+    this.inputElementRef.setAttribute('active-chat-placeholder-text', text);
   }
 
   public isTextInputEmpty() {
