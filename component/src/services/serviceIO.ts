@@ -4,7 +4,7 @@ import {Messages} from '../views/chat/messages/messages';
 import {InterfacesUnion} from '../types/utilityTypes';
 import {FetchFunc} from '../utils/HTTP/requestUtils';
 import {IntroMessage} from '../types/messages';
-import {FILE_TYPES} from '../types/fileTypes';
+import {FILE_TYPE} from '../types/fileTypes';
 import {Response} from '../types/response';
 import {Connect} from '../types/connect';
 import {Signals} from '../types/handler';
@@ -42,7 +42,7 @@ export type FileServiceIO = FilesServiceConfig & {infoModalTextMarkUp?: string};
 export type CustomErrors = string[];
 
 export type ServiceFileTypes = {
-  [key in FILE_TYPES]?: FileServiceIO;
+  [key in FILE_TYPE]?: FileServiceIO;
 };
 
 export interface ServiceIO {
