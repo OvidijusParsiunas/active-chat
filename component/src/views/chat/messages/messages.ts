@@ -62,7 +62,6 @@ export class Messages extends MessagesBase {
     activeChat.addMessage = (message: ResponseI, isUpdate?: boolean) => {
       this.addAnyMessage({...message, sendUpdate: !!isUpdate}, !isUpdate);
     };
-    activeChat.updateHTMLMessage = this.updateHTMLMessage.bind(this);
     serviceIO.setUpMessagesForService?.(this);
     if (demo) this.prepareDemo(demo);
     if (activeChat.textToSpeech) {
@@ -161,10 +160,6 @@ export class Messages extends MessagesBase {
     if (message.html !== undefined && message.html !== null) {
       const elements = HTMLMessages.add(this, message.html, message.role, this.messageElementRefs, overwrite, isTop);
       if (HTMLActiveChatElements.isElementTemporary(elements)) delete message.html;
-      if (message.html) {
-        const htmlElements: [MessageElements, MessageContentI] = [elements, message];
-        MessageUtils.updateRefArr(this.htmlElementsToMessage, htmlElements, isTop);
-      }
     }
     if (this.isValidMessageContent(message) && !isTop) {
       this.updateStateOnMessage(message, data.overwrite, data.sendUpdate, isHistory);
@@ -356,26 +351,5 @@ export class Messages extends MessagesBase {
     this.textElementsToText = retainedTextElements;
     this._onClearMessages?.();
     delete serviceIO.sessionId;
-  }
-
-  private updateHTMLMessage(html: string, index: number) {
-    if (html === undefined || typeof html !== 'string') {
-      return console.error('The first argument of updateHTMLMessage must be of type String');
-    }
-    if (index === undefined || typeof index !== 'number') {
-      return console.error('The second argument of updateHTMLMessage must be of type Number');
-    }
-    const processedIndex = Math.floor(index);
-    const message = this.messageToElements[processedIndex][0];
-    if (!message?.html) {
-      return console.error(`The message at index ${processedIndex} does not contain a 'html' message`);
-    }
-    const elToMessage = this.htmlElementsToMessage.find((htmlElementToMessage) => htmlElementToMessage[1] === message);
-    if (elToMessage) {
-      HTMLMessages.overwrite(this, html, elToMessage[0]);
-      elToMessage[1].html = html;
-    } else {
-      return console.error('Active Chat error - HTML message was not found');
-    }
   }
 }
