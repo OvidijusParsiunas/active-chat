@@ -10,6 +10,7 @@ import {LoadingHistory} from './history/loadingHistory';
 import {HTMLClassUtilities} from '../../../types/html';
 import {MessageStyleUtils} from './messageStyleUtils';
 import {IntroPanel} from '../introPanel/introPanel';
+import {Legacy} from '../../../utils/legacy/legacy';
 import {Response} from '../../../types/response';
 import {ActiveChat} from '../../../activeChat';
 import {Avatars} from '../../../types/avatars';
@@ -35,7 +36,7 @@ export class MessagesBase {
 
   constructor(activeChat: ActiveChat) {
     this.elementRef = MessagesBase.createContainerElement();
-    this.messageStyles = activeChat.messageStyles;
+    this.messageStyles = Legacy.processMessageStyles(activeChat.messageStyles);
     this._remarkable = RemarkableConfig.createNew();
     this._avatars = activeChat.avatars;
     this._names = activeChat.names;
