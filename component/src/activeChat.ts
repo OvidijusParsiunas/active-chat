@@ -15,6 +15,7 @@ import {ErrorMessages, OnError} from './types/error';
 import {RequestBodyLimits} from './types/chatLimits';
 import {Property} from './utils/decorators/property';
 import {FireEvents} from './utils/events/fireEvents';
+import {MessageBody} from './types/messagesInternal';
 import {ValidateInput} from './types/validateInput';
 import {DropupStyles} from './types/dropupStyles';
 import {HTMLClassUtilities} from './types/html';
@@ -143,6 +144,8 @@ export class ActiveChat extends InternalHTML {
   refreshMessages: () => void = () => {};
 
   clearMessages: (isReset?: boolean) => void = () => {};
+
+  changeMessage: (index: number, newContent: MessageBody) => void = () => {};
 
   scrollToBottom: () => void = () => {};
 
