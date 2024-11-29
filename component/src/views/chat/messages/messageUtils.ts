@@ -1,9 +1,8 @@
-import {MessageBodyElements, MessageContentI, MessageToElements} from '../../../types/messagesInternal';
+import {MessageBody, MessageBodyElements, MessageContentI, MessageToElements} from '../../../types/messagesInternal';
 import {LoadingStyle} from '../../../utils/loading/loadingStyle';
 import {MessageContent} from '../../../types/messages';
 import {FileMessageUtils} from './fileMessageUtils';
 import {HTMLMessages} from './html/htmlMessages';
-import {Response} from '../../../types/response';
 import {Avatars} from '../../../types/avatars';
 import {MessagesBase} from './messagesBase';
 import {MessageElements} from './messages';
@@ -202,15 +201,19 @@ export class MessageUtils {
       msg.renderText(messageToEls[1].text.bubbleElement, newText);
     } else {
       const messageElements = msg.createElements(newText, messageToEls[0].role);
-      msg.elementRef.insertBefore(messageElements.outerContainer, msg.elementRef.firstChild);
+      const nextElements = (messageToEls[1].html || messageToEls[1].files?.[0]) as MessageElements;
+      msg.elementRef.insertBefore(messageElements.outerContainer, nextElements.outerContainer);
+      const nextMsgElsIndex = msg.messageElementRefs.findIndex((messageElements) => messageElements === nextElements);
+      msg.messageElementRefs.splice(nextMsgElsIndex, 0, messageElements);
       messageToEls[1].text = messageElements;
     }
     messageToEls[0].text = newText;
   }
-  public static changeMessage(msg: MessagesBase, messageToEls: MessageToElements[0], newContent: Response) {
+
+  public static changeMessage(msg: MessagesBase, messageToEls: MessageToElements[0], messageBody: MessageBody) {
     if (messageToEls) {
-      if (newContent.text) {
-        MessageUtils.changeText(msg, messageToEls, newContent.text);
+      if (messageBody.text) {
+        MessageUtils.changeText(msg, messageToEls, messageBody.text);
       }
     } else {
       console.error('Message index not found. Please use the `getMessages` method to find the correct index');
