@@ -145,7 +145,7 @@ export class ActiveChat extends InternalHTML {
 
   clearMessages: (isReset?: boolean) => void = () => {};
 
-  changeMessage: (index: number, messageBody: MessageBody) => void = () => {};
+  updateMessage: (index: number, messageBody: MessageBody) => void = () => {};
 
   scrollToBottom: () => void = () => {};
 

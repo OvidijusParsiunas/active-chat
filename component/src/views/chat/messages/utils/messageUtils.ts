@@ -1,24 +1,22 @@
-import {MessageBody, MessageBodyElements, MessageContentI, MessageToElements} from '../../../types/messagesInternal';
-import {MessageContent, MessageStyles} from '../../../types/messages';
-import {LoadingStyle} from '../../../utils/loading/loadingStyle';
-import {MessageFile} from '../../../types/messageFile';
+import {MessageBodyElements, MessageContentI, MessageToElements} from '../../../../types/messagesInternal';
+import {LoadingStyle} from '../../../../utils/loading/loadingStyle';
+import {MessageContent} from '../../../../types/messages';
 import {FileMessageUtils} from './fileMessageUtils';
-import {HTMLMessages} from './html/htmlMessages';
-import {Avatars} from '../../../types/avatars';
-import {MessagesBase} from './messagesBase';
-import {FileMessages} from './fileMessages';
-import {MessageElements} from './messages';
-import {Names} from '../../../types/names';
-import {Avatar} from './avatar';
-import {Name} from './name';
+import {HTMLMessages} from '../html/htmlMessages';
+import {Avatars} from '../../../../types/avatars';
+import {Names} from '../../../../types/names';
+import {MessagesBase} from '../messagesBase';
+import {MessageElements} from '../messages';
+import {Avatar} from '../avatar';
+import {Name} from '../name';
 
 export class MessageUtils {
   public static readonly AI_ROLE = 'ai';
   public static readonly USER_ROLE = 'user';
   private static readonly EMPTY_MESSAGE_CLASS = 'empty-message';
-  private static readonly POSITION_TOP_MESSAGE_CLASS = 'deep-chat-top-message';
-  private static readonly POSITION_MIDDLE_MESSAGE_CLASS = 'deep-chat-middle-message';
-  private static readonly POSITION_BOTTOM_MESSAGE_CLASS = 'deep-chat-bottom-message';
+  private static readonly POSITION_TOP_MESSAGE_CLASS = 'active-chat-top-message';
+  private static readonly POSITION_MIDDLE_MESSAGE_CLASS = 'active-chat-middle-message';
+  private static readonly POSITION_BOTTOM_MESSAGE_CLASS = 'active-chat-bottom-message';
 
   public static getLastElementsByClass(messagesElements: MessageElements[], classes: string[], avoidedClasses?: string[]) {
     for (let i = messagesElements.length - 1; i >= 0; i -= 1) {
@@ -126,7 +124,7 @@ export class MessageUtils {
   }
 
   public static buildRoleContainerClass(role: string) {
-    return `deep-chat-${role}-container`;
+    return `active-chat-${role}-container`;
   }
 
   private static addNewPositionClasses(messageEls: MessageElements, classes: string[]) {
@@ -196,92 +194,5 @@ export class MessageUtils {
         }
       }
     });
-  }
-
-  private static removeTextHTMLMessage(msg: MessagesBase, messageToEls: MessageToElements[0], type: 'text' | 'html') {
-    const elemsToRemove = messageToEls[1][type];
-    const removalElsIndex = msg.messageElementRefs.findIndex((messageElements) => messageElements === elemsToRemove);
-    msg.messageElementRefs.splice(removalElsIndex, 1);
-    elemsToRemove?.outerContainer.remove();
-    delete messageToEls[0][type];
-    delete messageToEls[1][type];
-  }
-
-  private static changeHTMLMessage(msg: MessagesBase, messageToEls: MessageToElements[0], newHTML: string) {
-    if (messageToEls[1].html) {
-      HTMLMessages.overwriteElements(msg, newHTML, messageToEls[1].html);
-    } else {
-      const messageElements = HTMLMessages.create(msg, newHTML, messageToEls[0].role);
-      const previousElements = (messageToEls[1].files?.[messageToEls[1].files?.length - 1] ||
-        messageToEls[1].text) as MessageElements;
-      msg.elementRef.insertBefore(messageElements.outerContainer, previousElements.outerContainer.nextSibling);
-      const prevMsgElsIndex = msg.messageElementRefs.findIndex((messageElements) => messageElements === previousElements);
-      msg.messageElementRefs.splice(prevMsgElsIndex + 1, 0, messageElements);
-      messageToEls[1].html = messageElements;
-    }
-    messageToEls[0].html = newHTML;
-  }
-
-  // finds beforeElement, creates new elements, remove old and adds new ones
-  private static changeFileMessages(msg: MessagesBase, messageToEls: MessageToElements[0], newFiles: MessageFile[]) {
-    const role = messageToEls[0].role;
-    const typeToElements = FileMessages.createMessages(msg, newFiles, role);
-    const beforeElement =
-      messageToEls[1].html?.outerContainer ||
-      messageToEls[1].files?.[messageToEls[1].files?.length - 1].outerContainer?.nextSibling ||
-      messageToEls[1].text?.outerContainer?.nextSibling;
-    typeToElements.forEach(({type, elements}) => {
-      FileMessageUtils.setElementProps(msg, elements, type as keyof MessageStyles, role);
-      msg.elementRef.insertBefore(elements.outerContainer, beforeElement as Node);
-    });
-    if (messageToEls[1].files) {
-      messageToEls[1].files?.forEach((file) => {
-        const removalElsIndex = msg.messageElementRefs.findIndex((messageElements) => messageElements === file);
-        msg.messageElementRefs.splice(removalElsIndex, 1);
-        file.outerContainer.remove();
-      });
-      delete messageToEls[0].files;
-      delete messageToEls[1].files;
-    }
-    messageToEls[1].files = typeToElements.map(({elements}) => elements);
-    messageToEls[0].files = newFiles;
-  }
-
-  private static changeTextMessage(msg: MessagesBase, messageToEls: MessageToElements[0], newText: string) {
-    if (messageToEls[1].text) {
-      msg.renderText(messageToEls[1].text.bubbleElement, newText);
-    } else {
-      const messageElements = msg.createElements(newText, messageToEls[0].role);
-      const nextElements = (messageToEls[1].files?.[0] || messageToEls[1].html) as MessageElements;
-      msg.elementRef.insertBefore(messageElements.outerContainer, nextElements.outerContainer);
-      const nextMsgElsIndex = msg.messageElementRefs.findIndex((messageElements) => messageElements === nextElements);
-      msg.messageElementRefs.splice(nextMsgElsIndex, 0, messageElements);
-      messageToEls[1].text = messageElements;
-    }
-    messageToEls[0].text = newText;
-  }
-
-  public static changeMessage(msg: MessagesBase, messageToEls: MessageToElements[0], messageBody: MessageBody) {
-    if (messageToEls) {
-      if (messageBody.text) {
-        MessageUtils.changeTextMessage(msg, messageToEls, messageBody.text);
-      }
-      if (messageBody.html) {
-        MessageUtils.changeHTMLMessage(msg, messageToEls, messageBody.html);
-      }
-      // adds and removes
-      if (messageBody.files) {
-        MessageUtils.changeFileMessages(msg, messageToEls, messageBody.files);
-      }
-      // Important to remove after elements are changed as existing element indexes are used
-      if (!messageBody.text && messageToEls[1].text) {
-        MessageUtils.removeTextHTMLMessage(msg, messageToEls, 'text');
-      }
-      if (!messageBody.html && messageToEls[1].html) {
-        MessageUtils.removeTextHTMLMessage(msg, messageToEls, 'html');
-      }
-    } else {
-      console.error('Message index not found. Please use the `getMessages` method to find the correct index');
-    }
   }
 }

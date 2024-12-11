@@ -4,9 +4,9 @@ import {MessageContentI} from '../../../../types/messagesInternal';
 import {MessageContent} from '../../../../types/messages';
 import {ServiceIO} from '../../../../services/serviceIO';
 import {Legacy} from '../../../../utils/legacy/legacy';
+import {MessageUtils} from '../utils/messageUtils';
 import {ActiveChat} from '../../../../activeChat';
 import {LoadingHistory} from './loadingHistory';
-import {MessageUtils} from '../messageUtils';
 import {Messages} from '../messages';
 
 export class History {

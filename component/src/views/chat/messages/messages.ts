@@ -5,22 +5,22 @@ import {CustomErrors, ServiceIO} from '../../../services/serviceIO';
 import {LoadingStyle} from '../../../utils/loading/loadingStyle';
 import {ElementUtils} from '../../../utils/element/elementUtils';
 import {FireEvents} from '../../../utils/events/fireEvents';
+import {MessageStyleUtils} from './utils/messageStyleUtils';
 import {ErrorMessageOverrides} from '../../../types/error';
 import {ResponseI} from '../../../types/responseInternal';
+import {FileMessageUtils} from './utils/fileMessageUtils';
 import {TextToSpeech} from './textToSpeech/textToSpeech';
 import {LoadingHistory} from './history/loadingHistory';
 import {Demo, DemoResponse} from '../../../types/demo';
 import {ErrorResp} from '../../../types/errorInternal';
-import {MessageStyleUtils} from './messageStyleUtils';
 import {IntroMessage} from '../../../types/messages';
 import {MessageStream} from './stream/messageStream';
 import {IntroPanel} from '../introPanel/introPanel';
-import {FileMessageUtils} from './fileMessageUtils';
 import {CustomStyle} from '../../../types/styles';
+import {MessageUtils} from './utils/messageUtils';
 import {HTMLMessages} from './html/htmlMessages';
 import {ActiveChat} from '../../../activeChat';
 import {FileMessages} from './fileMessages';
-import {MessageUtils} from './messageUtils';
 import {MessagesBase} from './messagesBase';
 import {HTMLUtils} from './html/htmlUtils';
 import {History} from './history/history';
@@ -304,7 +304,8 @@ export class Messages extends MessagesBase {
     );
   }
 
-  private static isActiveElement(bubbleClasslist: DOMTokenList) {
+  public static isActiveElement(bubbleClasslist?: DOMTokenList) {
+    if (!bubbleClasslist) return false;
     return (
       bubbleClasslist.contains(LoadingStyle.BUBBLE_CLASS) ||
       bubbleClasslist.contains(LoadingHistory.CLASS) ||

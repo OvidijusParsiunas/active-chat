@@ -1,6 +1,6 @@
 import {MessageStream} from '../../views/chat/messages/stream/messageStream';
+import {MessageUtils} from '../../views/chat/messages/utils/messageUtils';
 import {MessagesBase} from '../../views/chat/messages/messagesBase';
-import {MessageUtils} from '../../views/chat/messages/messageUtils';
 import {ErrorMessages} from '../errorMessages/errorMessages';
 import {Messages} from '../../views/chat/messages/messages';
 import {RequestDetails} from '../../types/interceptors';
