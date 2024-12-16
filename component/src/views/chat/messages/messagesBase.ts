@@ -1,5 +1,5 @@
 import {MessageElementsStyles, MessageRoleStyles, MessageStyles, UserContent} from '../../../types/messages';
-import {MessageBody, MessageContentI, MessageToElements, Overwrite} from '../../../types/messagesInternal';
+import {MessageContentI, MessageToElements, Overwrite} from '../../../types/messagesInternal';
 import {ProcessedTextToSpeechConfig} from './textToSpeech/textToSpeech';
 import {HTMLActiveChatElements} from './html/htmlActiveChatElements';
 import {LoadingStyle} from '../../../utils/loading/loadingStyle';
@@ -11,7 +11,6 @@ import {LoadingHistory} from './history/loadingHistory';
 import {HTMLClassUtilities} from '../../../types/html';
 import {IntroPanel} from '../introPanel/introPanel';
 import {Legacy} from '../../../utils/legacy/legacy';
-import {UpdateMessage} from './utils/updateMessage';
 import {MessageUtils} from './utils/messageUtils';
 import {Response} from '../../../types/response';
 import {ActiveChat} from '../../../activeChat';
@@ -43,7 +42,6 @@ export class MessagesBase {
     this._names = activeChat.names;
     this._onMessage = FireEvents.onMessage.bind(this, activeChat);
     if (activeChat.htmlClassUtilities) this.htmlClassUtilities = activeChat.htmlClassUtilities;
-    activeChat.updateMessage = (index: number, messageBody: MessageBody) => UpdateMessage.update(this, index, messageBody);
     setTimeout(() => {
       this.submitUserMessage = activeChat.submitUserMessage; // wait for it to be available in input.ts
     });

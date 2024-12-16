@@ -127,6 +127,7 @@ export class SubmitButton extends InputButton<Styles> {
     if (this._customStyles?.submit?.svg
         || this._customStyles?.loading?.svg?.content || this._customStyles?.loading?.text?.content) return;
     if (activeChat.displayLoadingBubble === undefined || activeChat.displayLoadingBubble === true) {
+      // this gets triggered when alwaysEnabled is set to true
       const styleElement = document.createElement('style');
       styleElement.textContent = `
         .loading-button > * {

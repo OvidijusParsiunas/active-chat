@@ -1,4 +1,4 @@
-import {MessageContentI, Overwrite} from '../../../types/messagesInternal';
+import {MessageBody, MessageContentI, Overwrite} from '../../../types/messagesInternal';
 import {MessageFile, MessageFileType} from '../../../types/messageFile';
 import {HTMLActiveChatElements} from './html/htmlActiveChatElements';
 import {CustomErrors, ServiceIO} from '../../../services/serviceIO';
@@ -15,6 +15,7 @@ import {Demo, DemoResponse} from '../../../types/demo';
 import {ErrorResp} from '../../../types/errorInternal';
 import {IntroMessage} from '../../../types/messages';
 import {MessageStream} from './stream/messageStream';
+import {UpdateMessage} from './utils/updateMessage';
 import {IntroPanel} from '../introPanel/introPanel';
 import {CustomStyle} from '../../../types/styles';
 import {MessageUtils} from './utils/messageUtils';
@@ -62,6 +63,7 @@ export class Messages extends MessagesBase {
     activeChat.addMessage = (message: ResponseI, isUpdate?: boolean) => {
       this.addAnyMessage({...message, sendUpdate: !!isUpdate}, !isUpdate);
     };
+    activeChat.updateMessage = (index: number, messageBody: MessageBody) => UpdateMessage.update(this, index, messageBody);
     serviceIO.setUpMessagesForService?.(this);
     if (demo) this.prepareDemo(demo);
     if (activeChat.textToSpeech) {
