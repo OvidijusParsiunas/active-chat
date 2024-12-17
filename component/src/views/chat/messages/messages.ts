@@ -17,6 +17,7 @@ import {IntroMessage} from '../../../types/messages';
 import {MessageStream} from './stream/messageStream';
 import {UpdateMessage} from './utils/updateMessage';
 import {IntroPanel} from '../introPanel/introPanel';
+import {Legacy} from '../../../utils/legacy/legacy';
 import {CustomStyle} from '../../../types/styles';
 import {MessageUtils} from './utils/messageUtils';
 import {HTMLMessages} from './html/htmlMessages';
@@ -58,14 +59,14 @@ export class Messages extends MessagesBase {
     this._displayServiceErrorMessages = activeChat.errorMessages?.displayServiceErrorMessages;
     activeChat.getMessages = () => JSON.parse(JSON.stringify(this.messageToElements.map(([msg]) => msg)));
     activeChat.clearMessages = this.clearMessages.bind(this, serviceIO);
-    activeChat.refreshMessages = this.refreshTextMessages.bind(this);
+    activeChat.refreshMessages = this.refreshTextMessages.bind(this, activeChat.remarkable);
     activeChat.scrollToBottom = ElementUtils.scrollToBottom.bind(this, this.elementRef);
     activeChat.addMessage = (message: ResponseI, isUpdate?: boolean) => {
       this.addAnyMessage({...message, sendUpdate: !!isUpdate}, !isUpdate);
     };
-    activeChat.updateMessage = (index: number, messageBody: MessageBody) => UpdateMessage.update(this, index, messageBody);
+    activeChat.updateMessage = (messageBody: MessageBody, index: number) => UpdateMessage.update(this, messageBody, index);
     serviceIO.setUpMessagesForService?.(this);
-    if (demo) this.prepareDemo(demo);
+    if (demo) this.prepareDemo(Legacy.processDemo(demo));
     if (activeChat.textToSpeech) {
       TextToSpeech.processConfig(activeChat.textToSpeech, (processedConfig) => {
         this.textToSpeech = processedConfig;
@@ -78,16 +79,22 @@ export class Messages extends MessagesBase {
     return activeChat.displayLoadingBubble ?? true;
   }
 
-  private prepareDemo(demo: Demo) {
+  private prepareDemo(demo: Demo): void {
     if (typeof demo === 'object') {
+      // added here to not overlay error message and loading message bubbles
+      if (demo.displayLoading?.history?.full) LoadingHistory.addMessage(this);
       if (demo.response) this.customDemoResponse = demo.response;
       if (demo.displayErrors) {
         if (demo.displayErrors.default) this.addNewErrorMessage('' as 'service', '');
         if (demo.displayErrors.service) this.addNewErrorMessage('service', '');
         if (demo.displayErrors.speechToText) this.addNewErrorMessage('speechToText', '');
       }
-      if (demo.displayLoadingBubble) {
-        this.addLoadingMessage();
+      // Needs to be here for message loading bubble to not disappear after error
+      if (demo.displayLoading) {
+        const {history} = demo.displayLoading;
+        // check used to make sure that not creating another small loading message
+        if (history?.small && !history.full) LoadingHistory.addMessage(this, false);
+        if (demo.displayLoading.message) this.addLoadingMessage();
       }
     }
   }
@@ -127,13 +134,13 @@ export class Messages extends MessagesBase {
     }
     if (elements) {
       this.applyCustomStyles(elements, MessageUtils.AI_ROLE, false, this.messageStyles?.intro);
-      elements.outerContainer.classList.add('active-chat-intro');
+      elements.outerContainer.classList.add(MessagesBase.INTRO_CLASS);
     }
   }
 
   public removeIntroductoryMessage() {
     const introMessage = this.messageElementRefs[0];
-    if (introMessage.outerContainer.classList.contains('active-chat-intro')) {
+    if (introMessage.outerContainer.classList.contains(MessagesBase.INTRO_CLASS)) {
       introMessage.outerContainer.remove();
       this.messageElementRefs.shift();
     }

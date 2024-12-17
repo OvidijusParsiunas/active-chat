@@ -5,6 +5,7 @@ import {HTMLActiveChatElements} from './html/htmlActiveChatElements';
 import {LoadingStyle} from '../../../utils/loading/loadingStyle';
 import {ElementUtils} from '../../../utils/element/elementUtils';
 import {RemarkableConfig} from './remarkable/remarkableConfig';
+import {RemarkableOptions} from '../../../types/remarkable';
 import {FireEvents} from '../../../utils/events/fireEvents';
 import {MessageStyleUtils} from './utils/messageStyleUtils';
 import {LoadingHistory} from './history/loadingHistory';
@@ -33,11 +34,12 @@ export class MessagesBase {
   private _remarkable: Remarkable;
   private readonly _onMessage?: (message: MessageContentI, isHistory: boolean) => void;
   public static readonly TEXT_BUBBLE_CLASS = 'text-message';
+  public static readonly INTRO_CLASS = 'active-chat-intro';
 
   constructor(activeChat: ActiveChat) {
     this.elementRef = MessagesBase.createContainerElement();
     this.messageStyles = Legacy.processMessageStyles(activeChat.messageStyles);
-    this._remarkable = RemarkableConfig.createNew();
+    this._remarkable = RemarkableConfig.createNew(activeChat.remarkable);
     this._avatars = activeChat.avatars;
     this._names = activeChat.names;
     this._onMessage = FireEvents.onMessage.bind(this, activeChat);
@@ -85,7 +87,7 @@ export class MessagesBase {
 
   private createAndPrependNewMessageElement(text: string, role: string, isTop: boolean) {
     const messageElements = this.createNewMessageElement(text, role, isTop);
-    if (isTop && (this.elementRef.firstChild as HTMLElement)?.classList.contains('deep-chat-intro')) {
+    if (isTop && (this.elementRef.firstChild as HTMLElement)?.classList.contains(MessagesBase.INTRO_CLASS)) {
       (this.elementRef.firstChild as HTMLElement).insertAdjacentElement('afterend', messageElements.outerContainer);
       // swapping to place intro refs into correct position
       const introRefs = this.messageElementRefs[0];
@@ -223,8 +225,8 @@ export class MessagesBase {
   }
 
   // this is mostly used for enabling highlight.js to highlight code if it downloads later
-  protected refreshTextMessages() {
-    this._remarkable = RemarkableConfig.createNew();
+  protected refreshTextMessages(customConfig?: RemarkableOptions) {
+    this._remarkable = RemarkableConfig.createNew(customConfig);
     this.messageToElements.forEach((msgToEls) => {
       if (msgToEls[1].text && msgToEls[0].text) this.renderText(msgToEls[1].text.bubbleElement, msgToEls[0].text);
     });

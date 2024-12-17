@@ -6,6 +6,7 @@ import {CustomStyle} from '../../types/styles';
 import {Connect} from '../../types/connect';
 import {ActiveChat} from '../../activeChat';
 import {Stream} from '../../types/stream';
+import {Demo} from '../../types/demo';
 
 interface LegacyActiveChat {
   request?: Connect;
@@ -128,5 +129,15 @@ export class Legacy {
       messageStylesCp.loading = {message: {styles: loadingStyles}};
     }
     return messageStylesCp;
+  }
+
+  public static processDemo(demo: Demo) {
+    if (typeof demo === 'boolean') return demo;
+    if ((demo as unknown as {displayLoadingBubble?: boolean}).displayLoadingBubble) {
+      console.error('The demo displayLoadingBubble property is deprecated.');
+      console.error('Please use displayLoading instead: https://deepchat.dev/docs/messages/styles#LoadingMessageStyles');
+      demo.displayLoading = {message: true};
+    }
+    return demo;
   }
 }

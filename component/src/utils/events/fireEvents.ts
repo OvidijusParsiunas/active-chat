@@ -1,4 +1,4 @@
-import {FileMessageUtils} from '../../views/chat/messages/fileMessageUtils';
+import {FileMessageUtils} from '../../views/chat/messages/utils/fileMessageUtils';
 import {MessageContentI} from '../../types/messagesInternal';
 import {ActiveChat} from '../../activeChat';
 import {Legacy} from '../legacy/legacy';

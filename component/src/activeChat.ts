@@ -11,6 +11,7 @@ import {ValidationHandler} from './types/validationHandler';
 import {GoogleFont} from './utils/webComponent/googleFont';
 import {TextToSpeechConfig} from './types/textToSpeech';
 import {SpeechToTextConfig} from './types/microphone';
+import {RemarkableOptions} from './types/remarkable';
 import {ErrorMessages, OnError} from './types/error';
 import {RequestBodyLimits} from './types/chatLimits';
 import {Property} from './utils/decorators/property';
@@ -129,7 +130,7 @@ export class ActiveChat extends InternalHTML {
   htmlClassUtilities?: HTMLClassUtilities;
 
   @Property('object')
-  demo?: Demo;
+  remarkable?: RemarkableOptions;
 
   getMessages: () => MessageContent[] = () => [];
 
@@ -139,13 +140,13 @@ export class ActiveChat extends InternalHTML {
   addMessage: (message: Response, isUpdate?: boolean) => void = () =>
     console.warn('addMessage failed - please wait for chat view to render before calling this property.');
 
-  focusInput: () => void = () => FocusUtils.focusFromParentElement(this._elementRef);
-
-  refreshMessages: () => void = () => {};
+  updateMessage: (messageBody: MessageBody, index: number) => void = () => {};
 
   clearMessages: (isReset?: boolean) => void = () => {};
 
-  updateMessage: (index: number, messageBody: MessageBody) => void = () => {};
+  focusInput: () => void = () => FocusUtils.focusFromParentElement(this._elementRef);
+
+  refreshMessages: () => void = () => {};
 
   scrollToBottom: () => void = () => {};
 
@@ -164,6 +165,9 @@ export class ActiveChat extends InternalHTML {
 
   @Property('function')
   onError?: OnError;
+
+  @Property('object')
+  demo?: Demo;
 
   _hasBeenRendered = false;
 

@@ -88,7 +88,7 @@ export class UpdateMessage {
     );
   }
 
-  public static update(msg: MessagesBase, index: number, messageBody: MessageBody) {
+  public static update(msg: MessagesBase, messageBody: MessageBody, index: number) {
     const messageToEls = msg.messageToElements[index];
     if (messageToEls) {
       if (UpdateMessage.isElementActive(messageToEls[1])) {

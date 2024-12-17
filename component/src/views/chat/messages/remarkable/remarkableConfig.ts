@@ -1,3 +1,4 @@
+import {RemarkableOptions} from '../../../../types/remarkable';
 import {Remarkable} from 'remarkable';
 import hljs from 'highlight.js';
 
@@ -8,9 +9,11 @@ declare global {
 }
 
 export class RemarkableConfig {
-  private static instantiate() {
-    const hljsModule = window.hljs;
-    if (hljsModule) {
+  private static instantiate(customConfig?: RemarkableOptions) {
+    if (customConfig) {
+      return new Remarkable(customConfig);
+    } else if (window.hljs) {
+      const hljsModule = window.hljs;
       return new Remarkable({
         highlight: function (str, lang) {
           if (lang && hljsModule.getLanguage(lang)) {
@@ -42,8 +45,8 @@ export class RemarkableConfig {
     }
   }
 
-  public static createNew() {
-    const remarkable = RemarkableConfig.instantiate();
+  public static createNew(customConfig?: RemarkableOptions) {
+    const remarkable = RemarkableConfig.instantiate(customConfig);
     remarkable.inline.validateLink = () => true;
     return remarkable;
   }
