@@ -10,8 +10,10 @@ import {FireEvents} from '../../../utils/events/fireEvents';
 import {MessageStyleUtils} from './utils/messageStyleUtils';
 import {LoadingHistory} from './history/loadingHistory';
 import {HTMLClassUtilities} from '../../../types/html';
+import {FocusModeUtils} from './utils/focusModeUtils';
 import {IntroPanel} from '../introPanel/introPanel';
 import {Legacy} from '../../../utils/legacy/legacy';
+import {FocusMode} from '../../../types/focusMode';
 import {MessageUtils} from './utils/messageUtils';
 import {Response} from '../../../types/response';
 import {ActiveChat} from '../../../activeChat';
@@ -25,16 +27,19 @@ export class MessagesBase {
   textToSpeech?: ProcessedTextToSpeechConfig;
   submitUserMessage?: (content: UserContent) => void;
   readonly elementRef: HTMLElement;
+  readonly focusMode?: FocusMode;
   readonly messageStyles?: MessageStyles;
   readonly htmlClassUtilities: HTMLClassUtilities = {};
   readonly messageToElements: MessageToElements = [];
   protected _introPanel?: IntroPanel;
+  private _remarkable: Remarkable;
   protected readonly _avatars?: Avatars;
   protected readonly _names?: Names;
-  private _remarkable: Remarkable;
+  private _lastGroupMessagesElement?: HTMLElement;
   private readonly _onMessage?: (message: MessageContentI, isHistory: boolean) => void;
   public static readonly TEXT_BUBBLE_CLASS = 'text-message';
   public static readonly INTRO_CLASS = 'active-chat-intro';
+  public static readonly LAST_GROUP_MESSAGES_ACTIVE = 'active-chat-last-group-messages-active';
 
   constructor(activeChat: ActiveChat) {
     this.elementRef = MessagesBase.createContainerElement();
@@ -44,6 +49,11 @@ export class MessagesBase {
     this._names = activeChat.names;
     this._onMessage = FireEvents.onMessage.bind(this, activeChat);
     if (activeChat.htmlClassUtilities) this.htmlClassUtilities = activeChat.htmlClassUtilities;
+    this.focusMode = activeChat.focusMode;
+    if (!this.focusMode) this._lastGroupMessagesElement = document.createElement('div');
+    if (typeof this.focusMode !== 'boolean' && this.focusMode?.fade) {
+      FocusModeUtils.setFade(this.elementRef, this.focusMode.fade);
+    }
     setTimeout(() => {
       this.submitUserMessage = activeChat.submitUserMessage; // wait for it to be available in input.ts
     });
@@ -79,10 +89,43 @@ export class MessagesBase {
   }
 
   protected createAndAppendNewMessageElement(text: string, role: string) {
+    if (this.focusMode) {
+      return this.appendNewMessageElementFocusMode(text, role);
+    }
+    return this.createAndAppendNewMessageElementDefault(text, role);
+  }
+
+  private appendNewMessageElementFocusMode(text: string, role: string) {
+    if (role === 'user') {
+      this._lastGroupMessagesElement?.classList.remove(MessagesBase.LAST_GROUP_MESSAGES_ACTIVE);
+      const lastGroupMessageElement = document.createElement('div');
+      // first group should not have height 100% to not create a partial chat scroll bar
+      if (this._lastGroupMessagesElement) lastGroupMessageElement.classList.add(MessagesBase.LAST_GROUP_MESSAGES_ACTIVE);
+      this._lastGroupMessagesElement = lastGroupMessageElement;
+    }
     const messageElements = this.createNewMessageElement(text, role);
-    this.elementRef.appendChild(messageElements.outerContainer);
+    this.appendOuterContainerElemet(messageElements.outerContainer);
+    if (role === 'user') {
+      const isAnimation = typeof this.focusMode !== 'boolean' && this.focusMode?.isScroll;
+      // timeout neeed when bubble font is large
+      setTimeout(() => ElementUtils.scrollToBottom(this.elementRef, isAnimation));
+    } else {
+      // prevents a browser bug where a long response from AI would sometimes scroll down
+      this.messageElementRefs[this.messageElementRefs.length - 2]?.outerContainer.scrollIntoView();
+    }
+    return messageElements;
+  }
+
+  private createAndAppendNewMessageElementDefault(text: string, role: string) {
+    const messageElements = this.createNewMessageElement(text, role);
+    this.appendOuterContainerElemet(messageElements.outerContainer);
     setTimeout(() => ElementUtils.scrollToBottom(this.elementRef)); // timeout neeed when bubble font is large
     return messageElements;
+  }
+
+  public appendOuterContainerElemet(outerContainer: HTMLElement) {
+    this._lastGroupMessagesElement?.appendChild(outerContainer);
+    this.elementRef.appendChild(this._lastGroupMessagesElement as HTMLElement);
   }
 
   private createAndPrependNewMessageElement(text: string, role: string, isTop: boolean) {
@@ -109,8 +152,7 @@ export class MessagesBase {
     LoadingHistory.changeFullViewToSmall(this);
     if (MessagesBase.isTemporaryElement(lastMessageElements)) {
       this.revealRoleElementsIfTempRemoved(lastMessageElements, role); // readding role elements to previous message
-      lastMessageElements.outerContainer.remove();
-      this.messageElementRefs.pop();
+      this.removeLastMessage();
     }
     return this.createMessageElements(text, role, isTop);
   }

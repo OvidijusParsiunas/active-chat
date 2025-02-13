@@ -18,6 +18,7 @@ import {MessageStream} from './stream/messageStream';
 import {UpdateMessage} from './utils/updateMessage';
 import {IntroPanel} from '../introPanel/introPanel';
 import {Legacy} from '../../../utils/legacy/legacy';
+import {LoadHistory} from '../../../types/history';
 import {CustomStyle} from '../../../types/styles';
 import {MessageUtils} from './utils/messageUtils';
 import {HTMLMessages} from './html/htmlMessages';
@@ -37,7 +38,7 @@ export class Messages extends MessagesBase {
   private readonly _errorMessageOverrides?: ErrorMessageOverrides;
   private readonly _onClearMessages?: () => void;
   private readonly _onError?: (error: string) => void;
-  private readonly _displayLoadingMessage?: boolean;
+  private readonly _isLoadingMessageAllowed?: boolean;
   private readonly _permittedErrorPrefixes?: CustomErrors;
   private readonly _displayServiceErrorMessages?: boolean;
   private _introMessage?: IntroMessage | IntroMessage[];
@@ -49,11 +50,15 @@ export class Messages extends MessagesBase {
     this._errorMessageOverrides = activeChat.errorMessages?.overrides;
     this._onClearMessages = FireEvents.onClearMessages.bind(this, activeChat);
     this._onError = FireEvents.onError.bind(this, activeChat);
-    this._displayLoadingMessage = Messages.getDisplayLoadingMessage(activeChat, serviceIO);
+    this._isLoadingMessageAllowed = Messages.getDefaultDisplayLoadingMessage(activeChat, serviceIO);
+    if (typeof activeChat.displayLoadingBubble === 'object' && !!activeChat.displayLoadingBubble.toggleLoading) {
+      activeChat.displayLoadingBubble.toggleLoading = this.setToggleLoading.bind(this);
+    }
     this._permittedErrorPrefixes = permittedErrorPrefixes;
     if (!this.addSetupMessageIfNeeded(activeChat)) {
       this.populateIntroPanel(panel, introPanelMarkUp, activeChat.introPanelStyle);
     }
+    if (demo) this.prepareDemo(Legacy.processDemo(demo), activeChat.loadHistory); // before intro/history for load spinner
     this.addIntroductoryMessages(activeChat, serviceIO);
     new History(activeChat, this, serviceIO);
     this._displayServiceErrorMessages = activeChat.errorMessages?.displayServiceErrorMessages;
@@ -66,7 +71,6 @@ export class Messages extends MessagesBase {
     };
     activeChat.updateMessage = (messageBody: MessageBody, index: number) => UpdateMessage.update(this, messageBody, index);
     serviceIO.setUpMessagesForService?.(this);
-    if (demo) this.prepareDemo(Legacy.processDemo(demo));
     if (activeChat.textToSpeech) {
       TextToSpeech.processConfig(activeChat.textToSpeech, (processedConfig) => {
         this.textToSpeech = processedConfig;
@@ -74,28 +78,38 @@ export class Messages extends MessagesBase {
     }
   }
 
-  private static getDisplayLoadingMessage(activeChat: ActiveChat, serviceIO: ServiceIO) {
-    if (serviceIO.websocket) return false;
-    return activeChat.displayLoadingBubble ?? true;
+  private static getDefaultDisplayLoadingMessage(activeChat: ActiveChat, serviceIO: ServiceIO) {
+    // if displayLoadingBubble is {} then treat it as true.
+    if (serviceIO.websocket) {
+      return !!activeChat.displayLoadingBubble;
+    }
+    return (typeof activeChat.displayLoadingBubble === 'object' || activeChat.displayLoadingBubble) ?? true;
   }
 
-  private prepareDemo(demo: Demo): void {
+  private setToggleLoading() {
+    const lastMessageEls = this.messageElementRefs[this.messageElementRefs.length - 1];
+    if (MessagesBase.isLoadingMessage(lastMessageEls)) {
+      this.removeLastMessage();
+    } else {
+      this.addLoadingMessage(true);
+    }
+  }
+
+  private prepareDemo(demo: Demo, loadHistory?: LoadHistory): void {
     if (typeof demo === 'object') {
-      // added here to not overlay error message and loading message bubbles
-      if (demo.displayLoading?.history?.full) LoadingHistory.addMessage(this);
-      if (demo.response) this.customDemoResponse = demo.response;
+      if (!loadHistory && demo.displayLoading) {
+        const {history} = demo.displayLoading;
+        if (history?.small) LoadingHistory.addMessage(this, false);
+        if (history?.full) LoadingHistory.addMessage(this);
+      }
       if (demo.displayErrors) {
         if (demo.displayErrors.default) this.addNewErrorMessage('' as 'service', '');
         if (demo.displayErrors.service) this.addNewErrorMessage('service', '');
         if (demo.displayErrors.speechToText) this.addNewErrorMessage('speechToText', '');
       }
-      // Needs to be here for message loading bubble to not disappear after error
-      if (demo.displayLoading) {
-        const {history} = demo.displayLoading;
-        // check used to make sure that not creating another small loading message
-        if (history?.small && !history.full) LoadingHistory.addMessage(this, false);
-        if (demo.displayLoading.message) this.addLoadingMessage();
-      }
+      // needs to be here for message loading bubble to not disappear after error
+      if (demo.displayLoading?.message) this.addLoadingMessage();
+      if (demo.response) this.customDemoResponse = demo.response;
     }
   }
 
@@ -111,21 +125,20 @@ export class Messages extends MessagesBase {
   // WORK - const file for active chat classes
   private addIntroductoryMessages(activeChat?: ActiveChat, serviceIO?: ServiceIO) {
     if (activeChat?.shadowRoot) this._introMessage = activeChat.introMessage;
-    let introMessage = this._introMessage;
-    if (serviceIO?.getServiceIntroMessage) introMessage ??= serviceIO.getServiceIntroMessage(introMessage);
-    if (introMessage) {
-      if (Array.isArray(introMessage)) {
-        introMessage.forEach((intro, index) => {
+    const shouldHide = !activeChat?.history && !!(activeChat?.loadHistory || serviceIO?.fetchHistory);
+    if (this._introMessage) {
+      if (Array.isArray(this._introMessage)) {
+        this._introMessage.forEach((intro, index) => {
           if (index !== 0) MessageUtils.hideRoleElements(this.messageElementRefs, !!this._avatars, !!this._names);
-          this.addIntroductoryMessage(intro);
+          this.addIntroductoryMessage(intro, shouldHide);
         });
       } else {
-        this.addIntroductoryMessage(introMessage);
+        this.addIntroductoryMessage(this._introMessage, shouldHide);
       }
     }
   }
 
-  private addIntroductoryMessage(introMessage: IntroMessage) {
+  private addIntroductoryMessage(introMessage: IntroMessage, shouldHide: boolean) {
     let elements;
     if (introMessage?.text) {
       elements = this.createAndAppendNewMessageElement(introMessage.text, MessageUtils.AI_ROLE);
@@ -135,7 +148,9 @@ export class Messages extends MessagesBase {
     if (elements) {
       this.applyCustomStyles(elements, MessageUtils.AI_ROLE, false, this.messageStyles?.intro);
       elements.outerContainer.classList.add(MessagesBase.INTRO_CLASS);
+      if (shouldHide) elements.outerContainer.style.display = 'none';
     }
+    return elements;
   }
 
   public removeIntroductoryMessage() {
@@ -212,7 +227,7 @@ export class Messages extends MessagesBase {
       this.messageStyles?.default);
     MessageStyleUtils.applyCustomStylesToElements(messageElements, false, fontElementStyles);
     MessageStyleUtils.applyCustomStylesToElements(messageElements, false, this.messageStyles?.error);
-    if (!isTop) this.elementRef.appendChild(outerContainer);
+    if (!isTop) this.appendOuterContainerElemet(outerContainer);
     if (this.textToSpeech) TextToSpeech.speak(text, this.textToSpeech);
     this._onError?.(text);
   }
@@ -272,16 +287,17 @@ export class Messages extends MessagesBase {
     return messageElements;
   }
 
-  public addLoadingMessage() {
-    if (!this._displayLoadingMessage) return;
+  public addLoadingMessage(override = false) {
+    const lastMessageEls = this.messageElementRefs[this.messageElementRefs.length - 1];
+    if (MessagesBase.isLoadingMessage(lastMessageEls) || (!override && !this._isLoadingMessageAllowed)) return;
     const html = this.messageStyles?.loading?.message?.html;
     const messageElements = html
       ? HTMLMessages.createElements(this, html, MessageUtils.AI_ROLE, false)
       : this.addDefaultLoadingMessage();
-    this.elementRef.appendChild(messageElements.outerContainer);
+    this.appendOuterContainerElemet(messageElements.outerContainer);
     messageElements.bubbleElement.classList.add(LoadingStyle.BUBBLE_CLASS);
     this.applyCustomStyles(messageElements, MessageUtils.AI_ROLE, false, this.messageStyles?.loading?.message?.styles);
-    ElementUtils.scrollToBottom(this.elementRef);
+    if (!this.focusMode) ElementUtils.scrollToBottom(this.elementRef);
   }
 
   private populateIntroPanel(childElement?: HTMLElement, introPanelMarkUp?: string, introPanelStyle?: CustomStyle) {

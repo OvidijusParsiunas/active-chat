@@ -3,7 +3,6 @@ import {IWebsocketHandler} from '../utils/HTTP/customHandler';
 import {Messages} from '../views/chat/messages/messages';
 import {InterfacesUnion} from '../types/utilityTypes';
 import {FetchFunc} from '../utils/HTTP/requestUtils';
-import {IntroMessage} from '../types/messages';
 import {FILE_TYPE} from '../types/fileTypes';
 import {Response} from '../types/response';
 import {Connect} from '../types/connect';
@@ -109,8 +108,6 @@ export interface ServiceIO {
   isLoadingMessage: boolean;
 
   setUpMessagesForService?: (messages: Messages) => void;
-
-  getServiceIntroMessage?: (custom?: IntroMessage) => IntroMessage | undefined;
 
   // add it to a DeepChat interface
 

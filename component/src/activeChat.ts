@@ -17,6 +17,7 @@ import {RequestBodyLimits} from './types/chatLimits';
 import {Property} from './utils/decorators/property';
 import {FireEvents} from './utils/events/fireEvents';
 import {MessageBody} from './types/messagesInternal';
+import {DisplayLoadingBubble} from './types/loading';
 import {ValidateInput} from './types/validateInput';
 import {DropupStyles} from './types/dropupStyles';
 import {HTMLClassUtilities} from './types/html';
@@ -26,6 +27,7 @@ import {Legacy} from './utils/legacy/legacy';
 import {LoadHistory} from './types/history';
 import {TextInput} from './types/textInput';
 import style from './activeChat.css?inline';
+import {FocusMode} from './types/focusMode';
 import {CustomStyle} from './types/styles';
 import {Response} from './types/response';
 import {Connect} from './types/connect';
@@ -87,8 +89,8 @@ export class ActiveChat extends InternalHTML {
   @Property('object')
   names?: Names;
 
-  @Property('boolean')
-  displayLoadingBubble?: boolean;
+  @Property('object')
+  displayLoadingBubble?: DisplayLoadingBubble;
 
   @Property('object')
   errorMessages?: ErrorMessages;
@@ -131,6 +133,9 @@ export class ActiveChat extends InternalHTML {
 
   @Property('object')
   remarkable?: RemarkableOptions;
+
+  @Property('boolean')
+  focusMode?: FocusMode;
 
   getMessages: () => MessageContent[] = () => [];
 
@@ -210,8 +215,8 @@ export class ActiveChat extends InternalHTML {
     // assigning to variable as it is added to panel and is no longer child (test in official website)
     this._childElement ??= this.children[0] as HTMLElement | undefined;
     ChatView.render(this, this._elementRef, this._activeService, this._childElement);
+    if (!this._hasBeenRendered) FireEvents.onRender(this);
     this._hasBeenRendered = true;
-    FireEvents.onRender(this);
   }
 }
 
