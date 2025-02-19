@@ -13,11 +13,12 @@ export class SetupMessages {
       // don't forget that when Demo mode is enabled - url is set to 'active-chat-demo'
       if (!activeChat.connect.url && !activeChat.connect.handler) {
         if (activeChat.demo) {
-          if (!activeChat.connect.stream) {
+          if (!activeChat.connect.stream && !activeChat.connect.websocket) {
             return (
               'When [demo](https://deepchat.dev/docs/demo) mode is enabled - ' +
               'the [connect](https://deepchat.dev/docs/connect#connect-1) ' +
-              'object can only accept the [stream](https://deepchat.dev/docs/connect#Stream) property.'
+              'object can only accept the [stream](https://deepchat.dev/docs/connect#Stream) ' +
+              'and [websocket](https://deepchat.dev/docs/connect#Websocket) properties.'
             );
           }
           return null;
