@@ -1,11 +1,10 @@
 import {FileAttachmentsType} from '../../fileAttachments/fileAttachmentTypes/fileAttachmentsType';
 import {GenericInputButtonStyles} from '../../../../../types/genericInputButton';
 import {DefinedButtonStateStyles} from '../../../../../types/buttonInternal';
-import {CustomButtonInnerElements} from '../customButtonInnerElements';
 import {FileAttachments} from '../../fileAttachments/fileAttachments';
 import {SVGIconUtils} from '../../../../../utils/svg/svgIconUtils';
 import {FileServiceIO} from '../../../../../services/serviceIO';
-import {ButtonAccessibility} from '../buttonAccessility';
+import {ButtonInnerElements} from '../buttonInnerElements';
 import {Modal} from '../../fileAttachments/modal/modal';
 import {InputButton} from '../inputButton';
 
@@ -36,7 +35,7 @@ export class UploadFileButton extends InputButton<Styles> {
   private createInnerElements(iconId: string, iconSVGString: string, customStyles?: Styles, isDropup = false) {
     const baseIcon = UploadFileButton.createSVGIconElement(iconId, iconSVGString);
     return {
-      styles: CustomButtonInnerElements.createInnerElement(this.elementRef, baseIcon, 'styles', customStyles, isDropup),
+      styles: ButtonInnerElements.createInnerElement(this.elementRef, baseIcon, 'styles', customStyles, isDropup),
     };
   }
 
@@ -62,7 +61,6 @@ export class UploadFileButton extends InputButton<Styles> {
   private static createButtonElement() {
     const buttonElement = document.createElement('div');
     buttonElement.classList.add('input-button', 'upload-file-button');
-    ButtonAccessibility.addAttributes(buttonElement);
     return buttonElement;
   }
 

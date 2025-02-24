@@ -1,10 +1,9 @@
 import {DefinedButtonInnerElements, DefinedButtonStateStyles} from '../../../../../types/buttonInternal';
 import {MICROPHONE_ICON_STRING} from '../../../../../icons/microphone';
-import {CustomButtonInnerElements} from '../customButtonInnerElements';
 import {SVGIconUtils} from '../../../../../utils/svg/svgIconUtils';
 import {MicrophoneStyles} from '../../../../../types/microphone';
+import {ButtonInnerElements} from '../buttonInnerElements';
 import {ButtonStyles} from '../../../../../types/button';
-import {ButtonAccessibility} from '../buttonAccessility';
 import {InputButton} from '../inputButton';
 
 // commandMode is used for speech to text
@@ -37,14 +36,13 @@ export class MicrophoneButton extends InputButton<Styles> {
   // prettier-ignore
   private createInnerElement(baseButton: SVGGraphicsElement,
       state: keyof MicrophoneButton['_innerElements'], customStyles?: Styles) {
-    return CustomButtonInnerElements.createSpecificStateElement(this.elementRef, state, customStyles) || baseButton;
+    return ButtonInnerElements.createSpecificStateElement(this.elementRef, state, customStyles) || baseButton;
   }
 
   private static createMicrophoneElement() {
     const buttonElement = document.createElement('div');
     buttonElement.id = 'microphone-button';
     buttonElement.classList.add('input-button');
-    ButtonAccessibility.addAttributes(buttonElement);
     return buttonElement;
   }
 
