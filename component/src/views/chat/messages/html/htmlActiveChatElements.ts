@@ -74,7 +74,7 @@ export class HTMLActiveChatElements {
       customStyles.unshift(stylesCp); // add it to the front to be primary
     }
     const mergedStyles = StyleUtils.mergeStatefulStyles(customStyles);
-    return StyleUtils.processStateful(mergedStyles, {}, {});
+    return StyleUtils.processStateful(mergedStyles);
   }
 
   public static applyActiveChatUtilities(messages: MessagesBase, utilities: HTMLClassUtilities, element: HTMLElement) {

@@ -21,8 +21,8 @@ export class CustomHandler {
     const onResponse = async (response: Response | Response[]) => {
       if (!isHandlerActive) return;
       isHandlerActive = false; // need to set it here due to asynchronous code below
-      const result = (await io.activeChat.responseInterceptor?.(response)) || response;
-      if (!RequestUtils.validateResponseFormat(result, !!io.stream)) {
+      const result = await RequestUtils.basicResponseProcessing(messages, response, {io, displayError: false});
+      if (!result) {
         console.error(ErrorMessages.INVALID_RESPONSE(response, 'server', !!io.activeChat.responseInterceptor, result));
         messages.addNewErrorMessage('service', 'Error in server message');
         io.completionsHandlers.onFinish();
@@ -78,9 +78,8 @@ export class CustomHandler {
     };
     const onResponse = async (response: Response | Response[]) => {
       if (!isHandlerActive) return;
-       // array not supported
-      const result = ((await io.activeChat.responseInterceptor?.(response)) || response) as Response;
-      if (!RequestUtils.validateResponseFormat(result, !!io.stream)) {
+      const result = await RequestUtils.basicResponseProcessing(messages, response, {io, displayError: false}) as Response;
+      if (!result) {
         const error = ErrorMessages.INVALID_RESPONSE(response, 'server', !!io.activeChat.responseInterceptor, result);
         CustomHandler.streamError(error, stream, io, messages);
         isHandlerActive = false;
@@ -121,8 +120,8 @@ export class CustomHandler {
     };
     const onResponse = async (response: Response | Response[]) => {
       if (!internalConfig.isOpen) return;
-      const result = (await io.activeChat.responseInterceptor?.(response)) || response;
-      if (!RequestUtils.validateResponseFormat(result, !!io.stream)) {
+      const result = await RequestUtils.basicResponseProcessing(messages, response, {io, displayError: false});
+      if (!result) {
         console.error(ErrorMessages.INVALID_RESPONSE(response, 'server', !!io.activeChat.responseInterceptor, result));
         messages.addNewErrorMessage('service', 'Error in server message');
       } else {

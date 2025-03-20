@@ -45,7 +45,7 @@ export class History {
       .map((message) => {
         const messageContent = this._messages.addAnyMessage({...message, sendUpdate: true}, true, true);
         if (messageContent) {
-          const messageBody = MessageUtils.generateMessageBody(messageContent, messageElementRefs);
+          const messageBody = MessageUtils.generateMessageBody(messageContent, messageElementRefs, true);
           messageToElements.unshift([messageContent, messageBody]);
         }
         return messageContent;
@@ -61,6 +61,8 @@ export class History {
     this._isPaginationComplete = messages.findIndex((message) => !message) < 0;
     const messageContent = messages.filter((message) => !!message);
     this.processLoadedHistory(messageContent);
+    const {messageElementRefs, avatars, names} = this._messages;
+    MessageUtils.resetAllRoleElements(messageElementRefs, !!avatars, !!names);
   }
 
   private async setupLoadHistoryOnScroll(loadHistory: LoadHistory) {
@@ -85,7 +87,7 @@ export class History {
   private populateInitialHistory(history: MessageContent[]) {
     history.forEach((message) => {
       Legacy.processHistoryFile(message);
-      this._messages.addNewMessage(message, true);
+      this._messages.addAnyMessage(message, true);
     });
   }
 

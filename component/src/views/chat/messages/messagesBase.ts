@@ -31,10 +31,10 @@ export class MessagesBase {
   readonly messageStyles?: MessageStyles;
   readonly htmlClassUtilities: HTMLClassUtilities = {};
   readonly messageToElements: MessageToElements = [];
+  readonly avatars?: Avatars;
+  readonly names?: Names;
   protected _introPanel?: IntroPanel;
   private _remarkable: Remarkable;
-  protected readonly _avatars?: Avatars;
-  protected readonly _names?: Names;
   private _lastGroupMessagesElement?: HTMLElement;
   private readonly _onMessage?: (message: MessageContentI, isHistory: boolean) => void;
   public static readonly TEXT_BUBBLE_CLASS = 'text-message';
@@ -45,8 +45,8 @@ export class MessagesBase {
     this.elementRef = MessagesBase.createContainerElement();
     this.messageStyles = Legacy.processMessageStyles(activeChat.messageStyles);
     this._remarkable = RemarkableConfig.createNew(activeChat.remarkable);
-    this._avatars = activeChat.avatars;
-    this._names = activeChat.names;
+    this.avatars = activeChat.avatars;
+    this.names = activeChat.names;
     this._onMessage = FireEvents.onMessage.bind(this, activeChat);
     if (activeChat.htmlClassUtilities) this.htmlClassUtilities = activeChat.htmlClassUtilities;
     this.focusMode = activeChat.focusMode;
@@ -163,12 +163,12 @@ export class MessagesBase {
   // https://github.com/OvidijusParsiunas/deep-chat/issues/258
   // prettier-ignore
   private revealRoleElementsIfTempRemoved(tempElements: MessageElements, newRole: string) {
-    if ((this._avatars || this._names) && HTMLActiveChatElements.isElementTemporary(tempElements)) {
+    if ((this.avatars || this.names) && HTMLActiveChatElements.isElementTemporary(tempElements)) {
       // if prev message before temp has a different role to the new one, make sure its avatar is revealed
       const prevMessageElements = this.messageElementRefs[this.messageElementRefs.length - 2];
       if (prevMessageElements && this.messageToElements.length > 0
           && !tempElements.bubbleElement.classList.contains(MessageUtils.getRoleClass(newRole))) {
-        MessageUtils.revealRoleElements(prevMessageElements.innerContainer, this._avatars, this._names);
+        MessageUtils.revealRoleElements(prevMessageElements.innerContainer, !!this.avatars, !!this.names);
       }
     }
   }
@@ -188,7 +188,7 @@ export class MessagesBase {
   public createMessageElements(text: string, role: string, isTop = false) {
     const messageElements = this.createElements(text, role);
     MessageUtils.updateRefArr(this.messageElementRefs, messageElements, isTop);
-    MessageUtils.classifyMessages(role, this.messageElementRefs);
+    MessageUtils.classifyRoleMessages(this.messageElementRefs, role);
     return messageElements;
   }
 
@@ -198,7 +198,7 @@ export class MessagesBase {
     innerContainer.classList.add('inner-message-container');
     outerContainer.appendChild(innerContainer);
     outerContainer.classList.add('outer-message-container');
-    outerContainer.classList.add(MessageUtils.buildRoleContainerClass(role));
+    outerContainer.classList.add(MessageUtils.buildRoleOuterContainerClass(role));
     const bubbleElement = document.createElement('div');
     bubbleElement.classList.add('message-bubble');
     innerContainer.appendChild(bubbleElement);
@@ -207,13 +207,14 @@ export class MessagesBase {
 
   // prettier-ignore
   private addInnerContainerElements(bubbleElement: HTMLElement, text: string, role: string) {
-    if (this.messageToElements[this.messageToElements.length - 1]?.[0].role === role && !this.isLastMessageError()) {
-      MessageUtils.hideRoleElements(this.messageElementRefs, !!this._avatars, !!this._names);
+    const previousElement = this.messageElementRefs[this.messageElementRefs.length - 1];
+    if (MessageUtils.areOuterContainerClassRolesSame(role, previousElement) && !this.isLastMessageError()) {
+      MessageUtils.hideRoleElements(previousElement.innerContainer, !!this.avatars, !!this.names);
     }
     bubbleElement.classList.add('message-bubble', MessageUtils.getRoleClass(role),
       role === MessageUtils.USER_ROLE ? 'user-message-text' : 'ai-message-text');
     this.renderText(bubbleElement, text);
-    MessageUtils.addRoleElements(bubbleElement, role, this._avatars, this._names);
+    MessageUtils.addRoleElements(bubbleElement, role, this.avatars, this.names);
     return {bubbleElement};
   }
 
@@ -250,7 +251,9 @@ export class MessagesBase {
   }
 
   public isLastMessageError() {
-    return MessageUtils.getLastMessageBubbleElement(this.elementRef)?.classList.contains('error-message-text');
+    return MessageUtils.getLastMessageBubbleElement(this.elementRef)?.classList.contains(
+      MessageUtils.ERROR_MESSAGE_TEXT_CLASS
+    );
   }
 
   public static isLoadingMessage(elements?: MessageElements) {

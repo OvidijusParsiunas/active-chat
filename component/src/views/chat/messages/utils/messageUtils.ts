@@ -13,6 +13,8 @@ import {Name} from '../name';
 export class MessageUtils {
   public static readonly AI_ROLE = 'ai';
   public static readonly USER_ROLE = 'user';
+  public static readonly ERROR_MESSAGE_TEXT_CLASS = 'error-message-text';
+  public static readonly OUTER_CONTAINER_CLASS_ROLE_PREFIX = 'active-chat-outer-container-role-';
   private static readonly EMPTY_MESSAGE_CLASS = 'empty-message';
   private static readonly POSITION_TOP_MESSAGE_CLASS = 'active-chat-top-message';
   private static readonly POSITION_MIDDLE_MESSAGE_CLASS = 'active-chat-middle-message';
@@ -104,13 +106,12 @@ export class MessageUtils {
     if (names) Name.add(bubbleElement, role, names);
   }
 
-  public static hideRoleElements(messageElementRefs: MessageElements[], avatars: boolean, names: boolean) {
-    const innerContainer = messageElementRefs[messageElementRefs.length - 1].innerContainer;
+  public static hideRoleElements(innerContainer: HTMLElement, avatars: boolean, names: boolean) {
     if (avatars) Avatar.hide(innerContainer);
     if (names) Name.hide(innerContainer);
   }
 
-  public static revealRoleElements(innerContainer: HTMLElement, avatars?: Avatars, names?: Names) {
+  public static revealRoleElements(innerContainer: HTMLElement, avatars?: boolean, names?: boolean) {
     if (avatars) Avatar.reveal(innerContainer);
     if (names) Name.reveal(innerContainer);
   }
@@ -123,8 +124,8 @@ export class MessageUtils {
     }
   }
 
-  public static buildRoleContainerClass(role: string) {
-    return `active-chat-${role}-container`;
+  public static buildRoleOuterContainerClass(role: string) {
+    return `${MessageUtils.OUTER_CONTAINER_CLASS_ROLE_PREFIX}${role}`;
   }
 
   private static addNewPositionClasses(messageEls: MessageElements, classes: string[]) {
@@ -162,19 +163,29 @@ export class MessageUtils {
     return msgBodyEls;
   }
 
-  public static generateMessageBody(messageContent: MessageContentI, messageElementRefs: MessageElements[]) {
+  public static generateMessageBody(messageContent: MessageContentI, messageElementRefs: MessageElements[], top = false) {
     const numberOfMessageContentElement = MessageUtils.getNumberOfElements(messageContent);
-    const elements = messageElementRefs.slice(messageElementRefs.length - numberOfMessageContentElement);
+    const elements = top
+      ? messageElementRefs.slice(0, numberOfMessageContentElement)
+      : messageElementRefs.slice(messageElementRefs.length - numberOfMessageContentElement);
     return MessageUtils.generateMessageBodyElements(messageContent, elements);
   }
 
-  public static classifyMessages(role: string, messageElementRefs: MessageElements[]) {
-    const currentRole = MessageUtils.buildRoleContainerClass(role);
-    messageElementRefs.forEach((messageEls, index) => {
+  // if role not present - traverse all, if present - traverse last messages
+  public static classifyRoleMessages(messageElementRefs: MessageElements[], role?: string) {
+    let currentRole = role ? MessageUtils.buildRoleOuterContainerClass(role) : undefined;
+    for (let i = messageElementRefs.length - 1; i >= 0; i -= 1) {
+      if (!role) {
+        currentRole = Array.from(messageElementRefs[i].outerContainer.classList).find((className) =>
+          className.startsWith(MessageUtils.OUTER_CONTAINER_CLASS_ROLE_PREFIX)
+        );
+      }
+      if (!currentRole) continue; // will always be true if role is available
+      const messageEls = messageElementRefs[i];
       const hasCurrentRole = messageEls.outerContainer.classList.contains(currentRole);
 
-      const prevMessageEls = messageElementRefs[index - 1];
-      const nextMessageEls = messageElementRefs[index + 1];
+      const prevMessageEls = messageElementRefs[i - 1];
+      const nextMessageEls = messageElementRefs[i + 1];
 
       const hasPrevRole = prevMessageEls?.outerContainer.classList.contains(currentRole);
       const hasNextRole = nextMessageEls?.outerContainer.classList.contains(currentRole);
@@ -192,7 +203,34 @@ export class MessageUtils {
             MessageUtils.POSITION_BOTTOM_MESSAGE_CLASS,
           ]);
         }
+      } else if (role) {
+        break;
       }
+    }
+  }
+
+  public static areOuterContainerClassRolesSame(comparedRole: string, message?: MessageElements) {
+    if (!message) return false;
+    const currentRoleClass = Array.from(message.outerContainer.classList).find((className) =>
+      className.startsWith(MessageUtils.OUTER_CONTAINER_CLASS_ROLE_PREFIX)
+    );
+    return currentRoleClass === MessageUtils.buildRoleOuterContainerClass(comparedRole);
+  }
+
+  public static resetAllRoleElements(messageElementRefs: MessageElements[], avatars: boolean, names: boolean) {
+    if (!avatars && !names) return;
+    let lastRoleClass: string | undefined = '';
+    messageElementRefs.forEach((message, index) => {
+      if (!message.bubbleElement.classList.contains(MessageUtils.ERROR_MESSAGE_TEXT_CLASS)) {
+        MessageUtils.revealRoleElements(message.innerContainer, avatars, names);
+      }
+      const currentRoleClass = Array.from(message.outerContainer.classList).find((className) =>
+        className.startsWith(MessageUtils.OUTER_CONTAINER_CLASS_ROLE_PREFIX)
+      );
+      if (lastRoleClass === currentRoleClass) {
+        MessageUtils.hideRoleElements(messageElementRefs[index - 1].innerContainer, avatars, names);
+      }
+      lastRoleClass = currentRoleClass;
     });
   }
 }
