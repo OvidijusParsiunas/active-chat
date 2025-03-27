@@ -17,10 +17,10 @@ import {FocusMode} from '../../../types/focusMode';
 import {MessageUtils} from './utils/messageUtils';
 import {Response} from '../../../types/response';
 import {ActiveChat} from '../../../activeChat';
-import {Avatars} from '../../../types/avatars';
-import {Names} from '../../../types/names';
 import {MessageElements} from './messages';
 import {Remarkable} from 'remarkable';
+import {Avatar} from './avatar';
+import {Name} from './name';
 
 export class MessagesBase {
   messageElementRefs: MessageElements[] = [];
@@ -31,8 +31,8 @@ export class MessagesBase {
   readonly messageStyles?: MessageStyles;
   readonly htmlClassUtilities: HTMLClassUtilities = {};
   readonly messageToElements: MessageToElements = [];
-  readonly avatars?: Avatars;
-  readonly names?: Names;
+  readonly avatar?: Avatar;
+  readonly name?: Name;
   protected _introPanel?: IntroPanel;
   private _remarkable: Remarkable;
   private _lastGroupMessagesElement?: HTMLElement;
@@ -45,8 +45,8 @@ export class MessagesBase {
     this.elementRef = MessagesBase.createContainerElement();
     this.messageStyles = Legacy.processMessageStyles(activeChat.messageStyles);
     this._remarkable = RemarkableConfig.createNew(activeChat.remarkable);
-    this.avatars = activeChat.avatars;
-    this.names = activeChat.names;
+    if (activeChat.avatars) this.avatar = new Avatar(activeChat.avatars);
+    if (activeChat.names) this.name = new Name(activeChat.names);
     this._onMessage = FireEvents.onMessage.bind(this, activeChat);
     if (activeChat.htmlClassUtilities) this.htmlClassUtilities = activeChat.htmlClassUtilities;
     this.focusMode = activeChat.focusMode;
@@ -130,8 +130,8 @@ export class MessagesBase {
     this.elementRef.appendChild(this._lastGroupMessagesElement as HTMLElement);
   }
 
-  private createAndPrependNewMessageElement(text: string, role: string, isTop: boolean) {
-    const messageElements = this.createNewMessageElement(text, role, isTop);
+  private createAndPrependNewMessageElement(text: string, role: string, isTop: boolean, loading = false) {
+    const messageElements = this.createNewMessageElement(text, role, isTop, loading);
     if (isTop && (this.elementRef.firstChild as HTMLElement)?.classList.contains(MessagesBase.INTRO_CLASS)) {
       (this.elementRef.firstChild as HTMLElement).insertAdjacentElement('afterend', messageElements.outerContainer);
       // swapping to place intro refs into correct position
@@ -144,15 +144,17 @@ export class MessagesBase {
     return messageElements;
   }
 
-  public createMessageElementsOnOrientation(text: string, role: string, isTop: boolean) {
-    return isTop ? this.createAndPrependNewMessageElement(text, role, true) : this.createNewMessageElement(text, role);
+  public createMessageElementsOnOrientation(text: string, role: string, isTop: boolean, loading = false) {
+    return isTop
+      ? this.createAndPrependNewMessageElement(text, role, true, loading)
+      : this.createNewMessageElement(text, role, loading);
   }
 
-  public createNewMessageElement(text: string, role: string, isTop = false) {
-    this._introPanel?.hide();
+  public createNewMessageElement(text: string, role: string, isTop = false, loading = false) {
+    if (!loading) this._introPanel?.hide();
     const lastMessageElements = this.messageElementRefs[this.messageElementRefs.length - 1];
     LoadingHistory.changeFullViewToSmall(this);
-    if (MessagesBase.isTemporaryElement(lastMessageElements)) {
+    if (!isTop && MessagesBase.isTemporaryElement(lastMessageElements)) {
       this.revealRoleElementsIfTempRemoved(lastMessageElements, role); // readding role elements to previous message
       this.removeLastMessage();
     }
@@ -163,12 +165,12 @@ export class MessagesBase {
   // https://github.com/OvidijusParsiunas/deep-chat/issues/258
   // prettier-ignore
   private revealRoleElementsIfTempRemoved(tempElements: MessageElements, newRole: string) {
-    if ((this.avatars || this.names) && HTMLActiveChatElements.isElementTemporary(tempElements)) {
+    if ((!!this.avatar || !!this.name) && HTMLActiveChatElements.isElementTemporary(tempElements)) {
       // if prev message before temp has a different role to the new one, make sure its avatar is revealed
       const prevMessageElements = this.messageElementRefs[this.messageElementRefs.length - 2];
       if (prevMessageElements && this.messageToElements.length > 0
           && !tempElements.bubbleElement.classList.contains(MessageUtils.getRoleClass(newRole))) {
-        MessageUtils.revealRoleElements(prevMessageElements.innerContainer, !!this.avatars, !!this.names);
+        MessageUtils.revealRoleElements(prevMessageElements.innerContainer, this.avatar, this.name);
       }
     }
   }
@@ -209,12 +211,12 @@ export class MessagesBase {
   private addInnerContainerElements(bubbleElement: HTMLElement, text: string, role: string) {
     const previousElement = this.messageElementRefs[this.messageElementRefs.length - 1];
     if (MessageUtils.areOuterContainerClassRolesSame(role, previousElement) && !this.isLastMessageError()) {
-      MessageUtils.hideRoleElements(previousElement.innerContainer, !!this.avatars, !!this.names);
+      MessageUtils.hideRoleElements(previousElement.innerContainer, this.avatar, this.name);
     }
     bubbleElement.classList.add('message-bubble', MessageUtils.getRoleClass(role),
       role === MessageUtils.USER_ROLE ? 'user-message-text' : 'ai-message-text');
     this.renderText(bubbleElement, text);
-    MessageUtils.addRoleElements(bubbleElement, role, this.avatars, this.names);
+    MessageUtils.addRoleElements(bubbleElement, role, this.avatar, this.name);
     return {bubbleElement};
   }
 
