@@ -20,6 +20,7 @@ import {MessageBody} from './types/messagesInternal';
 import {DisplayLoadingBubble} from './types/loading';
 import {ValidateInput} from './types/validateInput';
 import {DropupStyles} from './types/dropupStyles';
+import {CustomButton} from './types/customButton';
 import {HTMLClassUtilities} from './types/html';
 import {ChatView} from './views/chat/chatView';
 import {ServiceIO} from './services/serviceIO';
@@ -73,6 +74,9 @@ export class ActiveChat extends InternalHTML {
 
   @Property('object')
   submitButtonStyles?: SubmitButtonStyles;
+
+  @Property('object')
+  customButtons?: CustomButton[];
 
   @Property('string')
   auxiliaryStyle?: string;
@@ -134,7 +138,7 @@ export class ActiveChat extends InternalHTML {
   @Property('object')
   remarkable?: RemarkableOptions;
 
-  @Property('boolean')
+  @Property('object')
   focusMode?: FocusMode;
 
   getMessages: () => MessageContent[] = () => [];

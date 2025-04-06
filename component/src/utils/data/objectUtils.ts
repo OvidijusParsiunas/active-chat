@@ -37,4 +37,11 @@ export class ObjectUtils {
       ObjectUtils.setPropertyValue(target, nestedKeys, newObject);
     }
   }
+
+  // prettier-ignore
+  public static assignPropertyFromOneToAnother<T extends object, K extends keyof T>(
+      key: K, target: T, source?: Partial<T>): void {
+    target[key] ??= {} as T[K];
+    Object.assign(target[key] as object, source?.[key]);
+  }
 }
