@@ -15,6 +15,20 @@
   height: 1.65em;
 }
 
+.input-button-svg-text {
+  padding: 1px;
+  height: 1.65em;
+  display: flex;
+}
+
+.input-button-svg-text > svg {
+  padding: 0.22rem;
+}
+
+.input-button-svg-text > div {
+  margin-left: 2px;
+}
+
 .input-button:hover,
 .input-button:focus-visible {
   background-color: #9c9c9c2e;
@@ -46,4 +60,10 @@
   margin-left: 4px;
   margin-right: 4px;
   height: 1.6em;
+}
+
+#custom-icon {
+  filter: brightness(0) saturate(100%) invert(39%) sepia(1%) saturate(0%) hue-rotate(83deg) brightness(93%) contrast(90%);
+  height: 100%;
+  width: 1.2em;
 }

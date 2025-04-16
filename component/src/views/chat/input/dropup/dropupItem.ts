@@ -1,7 +1,9 @@
 import {StatefulEvents} from '../../../../utils/element/statefulEvents';
 import {CustomStyle, StatefulStyles} from '../../../../types/styles';
+import {ButtonInnerElements} from '../buttons/buttonInnerElements';
 import {DropupMenuStyles} from '../../../../types/dropupStyles';
 import {StyleUtils} from '../../../../utils/element/styleUtils';
+import {CustomButton} from '../buttons/custom/customButton';
 import {InputButton} from '../buttons/inputButton';
 import {DropupMenu} from './dropupMenu';
 
@@ -45,7 +47,7 @@ export class DropupItem {
     const {elementRef, dropupText, svg, customStyles} = inputButton;
     const buttonInnerElement = elementRef.children[0];
     const emptySVG = customStyles && Object.values(customStyles).find((style) => style.svg?.content === '');
-    if (buttonInnerElement.classList.contains('text-button')) {
+    if (buttonInnerElement.classList.contains(ButtonInnerElements.INPUT_BUTTON_INNER_TEXT_CLASS)) {
       if (!emptySVG) item.appendChild(DropupItem.createItemIcon(svg, styles?.iconContainer));
       item.appendChild(DropupItem.createItemText(buttonInnerElement.textContent as string, styles?.text));
     } else {
@@ -60,8 +62,12 @@ export class DropupItem {
     DropupItem.populateItem(inputButton, item, styles);
     item.classList.add(DropupItem.MENU_ITEM_CLASS);
     const {elementRef} = inputButton;
-    const statefulStyles = StyleUtils.processStateful(styles?.item || {});
-    DropupItem.addItemEvents(menu, item, elementRef, statefulStyles);
+    if (inputButton.isCustom) {
+      (inputButton as CustomButton).setDropupItem(item);
+    } else {
+      const statefulStyles = StyleUtils.processStateful(styles?.item || {});
+      DropupItem.addItemEvents(menu, item, elementRef, statefulStyles);
+    }
     return item;
   }
 }

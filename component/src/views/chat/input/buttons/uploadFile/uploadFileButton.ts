@@ -2,9 +2,7 @@ import {FileAttachmentsType} from '../../fileAttachments/fileAttachmentTypes/fil
 import {GenericInputButtonStyles} from '../../../../../types/genericInputButton';
 import {DefinedButtonStateStyles} from '../../../../../types/buttonInternal';
 import {FileAttachments} from '../../fileAttachments/fileAttachments';
-import {SVGIconUtils} from '../../../../../utils/svg/svgIconUtils';
 import {FileServiceIO} from '../../../../../services/serviceIO';
-import {ButtonInnerElements} from '../buttonInnerElements';
 import {Modal} from '../../fileAttachments/modal/modal';
 import {InputButton} from '../inputButton';
 
@@ -20,28 +18,20 @@ export class UploadFileButton extends InputButton<Styles> {
       fileService: FileServiceIO, iconId: string, iconSVGString: string, dropupText?: string) {
     const buttonPosition = fileService?.button?.position;
     const dropupItemText = fileService?.button?.styles?.text?.content || dropupText;
-    const svg = UploadFileButton.createSVGIconElement(iconId, iconSVGString);
-    super(UploadFileButton.createButtonElement(), svg, buttonPosition, fileService.button, dropupItemText);
-    const isDropup = buttonPosition === 'dropup-menu';
-    const innerElements = this.createInnerElements(this.customStyles, isDropup);
+    super(UploadFileButton.createButtonElement(), iconSVGString, buttonPosition, fileService.button, dropupItemText);
+    const innerElements = this.createInnerElementsForStates(iconId, this.customStyles);
     this._inputElement = UploadFileButton.createInputElement(fileService?.files?.acceptedFormats);
     this.addClickEvent(containerElement, fileService);
-    this.elementRef.replaceChildren(innerElements.styles);
+    this.changeElementsByState(innerElements.styles);
     this.reapplyStateStyle('styles');
     this._fileAttachmentsType = fileAttachmentsType;
     this._openModalOnce = fileService.files?.infoModal?.openModalOnce === false
       ? undefined : fileService.files?.infoModal?.openModalOnce;
   }
 
-  private static createSVGIconElement(iconId: string, iconSVGString: string) {
-    const svgIconElement = SVGIconUtils.createSVGElement(iconSVGString);
-    svgIconElement.id = iconId;
-    return svgIconElement;
-  }
-
-  private createInnerElements(customStyles?: Styles, isDropup = false) {
+  private createInnerElementsForStates(iconId: string, customStyles?: Styles) {
     return {
-      styles: ButtonInnerElements.createInnerElement(this.elementRef, this.svg, 'styles', customStyles, isDropup),
+      styles: this.createInnerElements(iconId, 'styles', customStyles),
     };
   }
 
@@ -66,7 +56,7 @@ export class UploadFileButton extends InputButton<Styles> {
 
   private static createButtonElement() {
     const buttonElement = document.createElement('div');
-    buttonElement.classList.add('input-button', 'upload-file-button');
+    buttonElement.classList.add('input-button');
     return buttonElement;
   }
 

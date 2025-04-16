@@ -13,6 +13,10 @@
   filter: brightness(0) saturate(100%) invert(54%) sepia(0%) saturate(724%) hue-rotate(6deg) brightness(92%) contrast(90%);
 }
 
+.dropup-button > * {
+  pointer-events: none;
+}
+
 #dropup-menu {
   background-color: white;
   position: absolute;
@@ -74,6 +78,16 @@
   top: 0 !important;
   margin-bottom: auto;
   margin-top: auto;
+}
+
+#dropup-menu-item-icon-element-custom {
+  position: absolute;
+  pointer-events: none;
+  width: 1.21em;
+  height: 1.21em;
+  left: 0.28em;
+  filter: brightness(0) saturate(100%) invert(15%) sepia(0%) saturate(337%) hue-rotate(125deg) brightness(91%)
+    contrast(94%);
 }
 
 .dropup-menu-item-text {

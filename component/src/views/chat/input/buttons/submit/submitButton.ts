@@ -5,7 +5,6 @@ import {FocusModeUtils} from '../../../messages/utils/focusModeUtils';
 import {SubmitButtonStyles} from '../../../../../types/submitButton';
 import {SpeechToText} from '../microphone/speechToText/speechToText';
 import {SUBMIT_ICON_STRING} from '../../../../../icons/submitIcon';
-import {SVGIconUtils} from '../../../../../utils/svg/svgIconUtils';
 import {UserContentI} from '../../../../../types/messagesInternal';
 import {MessageUtils} from '../../../messages/utils/messageUtils';
 import {MicrophoneButton} from '../microphone/microphoneButton';
@@ -52,12 +51,12 @@ export class SubmitButton extends InputButton<Styles> {
   constructor(activeChat: ActiveChat, textInput: TextInputEl, messages: Messages, serviceIO: ServiceIO,
       fileAttachments: FileAttachments, buttons: Buttons) {
     const submitButtonStyles = SubmitButtonStateStyle.process(activeChat.submitButtonStyles);
-    const svg = SubmitButton.createSubmitIconElement();
+    const svg = SUBMIT_ICON_STRING;
     super(SubmitButton.createButtonContainerElement(), svg, submitButtonStyles?.position, submitButtonStyles);
     this._messages = messages;
     this._textInput = textInput;
     this._fileAttachments = fileAttachments;
-    this._innerElements = this.createInnerElements();
+    this._innerElements = this.createInnerElementsForStates();
     this._abortStream = new AbortController();
     this._stopClicked = {listener: () => {}};
     this._serviceIO = serviceIO;
@@ -72,32 +71,25 @@ export class SubmitButton extends InputButton<Styles> {
     });
   }
 
-  private static createSubmitIconElement() {
-    const svgIconElement = SVGIconUtils.createSVGElement(SUBMIT_ICON_STRING);
-    svgIconElement.id = 'submit-icon';
-    return svgIconElement;
-  }
-
-  private createInnerElements() {
+  private createInnerElementsForStates() {
     const {submit, loading, stop} = this.createCustomElements();
-    const submitElement = submit || this.svg;
     return {
-      submit: submitElement,
-      loading: loading || SubmitButton.createLoadingIconElement(),
-      stop: stop || SubmitButton.createStopIconElement(),
-      disabled: this.createDisabledIconElement(submitElement),
+      submit: submit as ButtonInnerElement[],
+      loading: loading || [SubmitButton.createLoadingIconElement()],
+      stop: stop || [SubmitButton.createStopIconElement()],
+      disabled: this.createDisabledIconElement(submit as ButtonInnerElement[]),
     };
   }
 
   private createCustomElements() {
-    const submit = ButtonInnerElements.createSpecificStateElement(this.elementRef, 'submit', this.customStyles);
-    const states: {[key in keyof Styles]: ButtonInnerElement} = {loading: undefined, stop: undefined};
+    const submit = ButtonInnerElements.createCustomElements('submit', this.svg, this.customStyles);
+    const states: {[key in keyof Styles]: ButtonInnerElement[]} = {loading: undefined, stop: undefined};
     Object.keys(states).forEach((state) => {
       const styleState = state as keyof Styles;
-      const element = ButtonInnerElements.createCustomElement(styleState, this.customStyles);
-      if (element) states[styleState] = element;
+      const elements = ButtonInnerElements.createCustomElements(styleState, this.svg, this.customStyles);
+      if (elements) states[styleState] = elements;
     });
-    states.submit = submit;
+    states.submit = submit || this.buildDefaultIconElement('submit-icon');
     return states;
   }
 
@@ -119,9 +111,9 @@ export class SubmitButton extends InputButton<Styles> {
     return stopIconElement;
   }
 
-  private createDisabledIconElement(submitElement: ButtonInnerElement) {
-    const element = ButtonInnerElements.createCustomElement('disabled', this.customStyles);
-    return element || (submitElement.cloneNode(true) as ButtonInnerElement);
+  private createDisabledIconElement(submitElement: ButtonInnerElement[]) {
+    const elements = ButtonInnerElements.createCustomElements('disabled', this.svg, this.customStyles);
+    return elements || [submitElement[0].cloneNode(true) as ButtonInnerElement];
   }
 
   // prettier-ignore
@@ -227,7 +219,7 @@ export class SubmitButton extends InputButton<Styles> {
     if (this._serviceIO.websocket) return; // stop not used for streaming messages in websocket
     this.elementRef.classList.remove(SubmitButton.LOADING_CLASS, SubmitButton.DISABLED_CLASS, SubmitButton.SUBMIT_CLASS);
     ButtonAccessibility.removeAriaAttributes(this.elementRef);
-    this.elementRef.replaceChildren(this._innerElements.stop);
+    this.changeElementsByState(this._innerElements.stop);
     this.reapplyStateStyle('stop', ['loading', 'submit']);
     this.elementRef.onclick = this.stopStream.bind(this);
     this.status.loadingActive = false;
@@ -235,7 +227,7 @@ export class SubmitButton extends InputButton<Styles> {
 
   private changeToLoadingIcon() {
     if (this._serviceIO.websocket) return;
-    if (!this._isSVGLoadingIconOverriden) this.elementRef.replaceChildren(this._innerElements.loading);
+    if (!this._isSVGLoadingIconOverriden) this.changeElementsByState(this._innerElements.loading);
     ButtonAccessibility.removeAriaDisabled(this.elementRef);
     this.elementRef.classList.remove(SubmitButton.SUBMIT_CLASS, SubmitButton.DISABLED_CLASS);
     ButtonAccessibility.addAriaBusy(this.elementRef);
@@ -252,7 +244,7 @@ export class SubmitButton extends InputButton<Styles> {
     this.elementRef.classList.remove(SubmitButton.LOADING_CLASS, SubmitButton.DISABLED_CLASS);
     ButtonAccessibility.removeAriaAttributes(this.elementRef);
     this.elementRef.classList.add(SubmitButton.SUBMIT_CLASS);
-    this.elementRef.replaceChildren(this._innerElements.submit);
+    this.changeElementsByState(this._innerElements.submit);
     SubmitButtonStateStyle.resetSubmit(this, this.status.loadingActive);
     this.elementRef.onclick = () => {
       this.submitFromInput();
@@ -271,7 +263,7 @@ export class SubmitButton extends InputButton<Styles> {
       ButtonAccessibility.removeAriaBusy(this.elementRef);
       this.elementRef.classList.add(SubmitButton.DISABLED_CLASS);
       ButtonAccessibility.addAriaDisabled(this.elementRef);
-      this.elementRef.replaceChildren(this._innerElements.disabled);
+      this.changeElementsByState(this._innerElements.disabled);
       this.reapplyStateStyle('disabled', ['submit']);
       this.elementRef.onclick = () => {};
     }

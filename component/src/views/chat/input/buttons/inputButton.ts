@@ -1,4 +1,7 @@
+import {ButtonInnerElement, ButtonStateStyles} from '../../../../types/buttonInternal';
 import {ButtonPosition as ButtonPositionT} from '../../../../types/button';
+import {SVGIconUtils} from '../../../../utils/svg/svgIconUtils';
+import {ButtonInnerElements} from './buttonInnerElements';
 import {StatefulStyles} from '../../../../types/styles';
 import {ButtonAccessibility} from './buttonAccessility';
 import {ButtonStyles} from '../../../../types/button';
@@ -17,18 +20,12 @@ export class InputButton<T extends Styles = Styles> {
   readonly customStyles?: T;
   readonly position?: ButtonPositionT;
   readonly dropupText?: string;
+  readonly isCustom: boolean = false;
 
-  constructor(
-    buttonElement: HTMLElement,
-    // this will only be used if button is in dropup, user has not defined custom svg and svg text is not ''
-    svg: SVGGraphicsElement,
-    position?: ButtonPositionT,
-    customStyles?: T,
-    dropupText?: string
-  ) {
+  constructor(buttonElement: HTMLElement, svg: string, position?: ButtonPositionT, customStyles?: T, dropupText?: string) {
     ButtonAccessibility.addAttributes(buttonElement);
     this.elementRef = buttonElement;
-    this.svg = svg;
+    this.svg = SVGIconUtils.createSVGElement(svg);
     this.customStyles = customStyles;
     this.position = position;
     this.dropupText = dropupText;
@@ -80,5 +77,30 @@ export class InputButton<T extends Styles = Styles> {
     const setStyle = this.customStyles[setType];
     if (setStyle) ButtonCSS.setElementCssUpToState(this.elementRef, setStyle, this._mouseState.state);
     this.setEvents(setStyle);
+  }
+
+  protected changeElementsByState(newChildElements: ButtonInnerElement[]) {
+    this.elementRef.replaceChildren(...newChildElements);
+    ButtonInnerElements.reassignClassBasedOnChildren(this.elementRef, newChildElements);
+  }
+
+  protected buildDefaultIconElement(iconId: string) {
+    const iconClone = this.svg.cloneNode(true) as SVGGraphicsElement;
+    iconClone.id = iconId;
+    return [iconClone];
+  }
+
+  protected createInnerElements(iconId: string, state: keyof T, customStyles?: ButtonStateStyles<T>) {
+    const elements = ButtonInnerElements.createCustomElements(state, this.svg, customStyles);
+    if (elements && elements.length > 0) {
+      if (this.position === 'dropup-menu') {
+        const iconClone = this.svg.cloneNode(true) as SVGGraphicsElement;
+        // if original svg - add original id, if custom use the custom id
+        iconClone.id = elements[0] === this.svg ? iconId : 'dropup-menu-item-icon-element-custom';
+        elements[0] = iconClone;
+      }
+      return elements;
+    }
+    return this.buildDefaultIconElement(iconId);
   }
 }

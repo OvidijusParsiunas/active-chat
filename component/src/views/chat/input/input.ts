@@ -12,6 +12,7 @@ import {FileAttachments} from './fileAttachments/fileAttachments';
 import {ElementUtils} from '../../../utils/element/elementUtils';
 import {ValidationHandler} from './validation/validationHandler';
 import {RecordAudio} from './buttons/microphone/recordAudio';
+import {CustomButton} from './buttons/custom/customButton';
 import {SubmitButton} from './buttons/submit/submitButton';
 import {CameraButton} from './buttons/camera/cameraButton';
 import {DropupStyles} from '../../../types/dropupStyles';
@@ -42,6 +43,7 @@ export class Input {
     ValidationHandler.attach(activeChat, serviceIO, textInput, fileAtts, submitButton);
     activeChat.submitUserMessage = submitButton.programmaticSubmit.bind(submitButton);
     buttons.submit = {button: submitButton};
+    if (activeChat.customButtons) CustomButton.add(activeChat.customButtons, buttons, activeChat.dropupStyles);
     Input.addElements(this.elementRef, textInput, buttons, containerElement, fileAtts, activeChat.dropupStyles);
   }
 
