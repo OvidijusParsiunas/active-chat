@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-<div></div>
+# OpenAI
 
 import openAILogo from '/img/openAILogo.png';
 
@@ -15,13 +15,14 @@ Properties used to connect to [OpenAI](https://openai.com/blog/openai-api).
 - Type: \{<br />
   &nbsp;&nbsp;&nbsp;&nbsp; [`chat?: Chat`](#Chat), <br />
   &nbsp;&nbsp;&nbsp;&nbsp; [`assistant?: Assistant`](#Assistant), <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; [`realtime?: OpenAIRealtime`](/docs/directConnection/OpenAI/OpenAIRealtime), <br />
   &nbsp;&nbsp;&nbsp;&nbsp; [`images?: Images`](#Images), <br />
   &nbsp;&nbsp;&nbsp;&nbsp; [`textToSpeech?: TextToSpeech`](#TextToSpeech), <br />
   &nbsp;&nbsp;&nbsp;&nbsp; [`speechToText?: SpeechToText`](#SpeechToText) <br />
   \}
 - Default: _\{chat: true\}_
 
-import ContainersKeyToggleFunction from '@site/src/components/chat/containersKeyToggleFunction';
+import ContainersKeyToggleChatFunction from '@site/src/components/chat/containersKeyToggleChatFunction';
 import ContainersKeyToggle from '@site/src/components/chat/containersKeyToggle';
 import ComponentContainer from '@site/src/components/chat/componentContainer';
 import DeepChatBrowser from '@site/src/components/chat/deepChatBrowser';
@@ -44,9 +45,9 @@ import Tabs from '@theme/Tabs';
   &nbsp;&nbsp;&nbsp;&nbsp; `top_p?: number`, <br />
   &nbsp;&nbsp;&nbsp;&nbsp; [`ChatFunctions`](#chat-functions) <br />
   \}
-- Default: _\{system_prompt: "You are a helpful assistant.", model: "gpt-3.5-turbo"\}_
+- Default: _\{system_prompt: "You are a helpful assistant.", model: "gpt-4o"\}_
 
-Connect to Open AI's [`chat`](https://platform.openai.com/docs/api-reference/chat) API. You can set this property to _true_ or configure it using an object: <br />
+Connect to OpenAI's [`chat`](https://platform.openai.com/docs/api-reference/chat) API. You can set this property to _true_ or configure it using an object: <br />
 `system_prompt` is used to set the [_"system"_](https://platform.openai.com/docs/api-reference/chat/create) message for the conversation context. <br />
 `model` is the name of the model to be used by the API. Check [/v1/chat/completions](https://platform.openai.com/docs/models/model-endpoint-compatibility) for more. <br />
 `max_tokens` the maximum number of tokens to generate in the chat. Check [tokenizer](https://platform.openai.com/tokenizer) for more info. <br />
@@ -197,16 +198,20 @@ If `max_tokens` is not set, the component sets it to _300_ as otherwise the API 
   &nbsp;&nbsp;&nbsp;&nbsp; `thread_id?: string`, <br />
   &nbsp;&nbsp;&nbsp;&nbsp; `load_thread_history?: boolean`, <br />
   &nbsp;&nbsp;&nbsp;&nbsp; [`new_assistant?: NewAssistant`](#NewAssistant), <br />
-  &nbsp;&nbsp;&nbsp;&nbsp; [`function_handler?: AssistantFunctionHandler`](#assistant-functions) <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; [`files_tool_type?: FileToolTypes`](#FileToolTypes), <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; [`function_handler?: AssistantFunctionHandler`](#assistant-functions), <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `custom_base_url?: string` <br />
   \}
 
-Connect to your Open AI [`assistant`](https://platform.openai.com/docs/assistants/overview).
+Connect to your OpenAI [`assistant`](https://platform.openai.com/docs/assistants/overview).
 When set to `true` or the `assistant_id` is not defined, Deep Chat will automatically create a new assistant when the user sends the first message. <br />
 `assistant_id` is the id of your assistant. <br />
 `thread_id` allows you to communicate in the context of an already existing conversation/[thread](https://platform.openai.com/docs/api-reference/threads). <br />
-`load_thread_history` toggles a preload of the previous conversation/[thread](https://platform.openai.com/docs/api-reference/threads) messages on chat is initialisation. <br />
+`load_thread_history` toggles a preload of the previous conversation/[thread](https://platform.openai.com/docs/api-reference/threads) messages on chat initialisation. <br />
 `new_assistant` defines the details for the newly created assistant. <br />
+`files_tool_type` defines the type of a tool to be used to process an uploaded file. <br />
 `function_handler` is the actual function used to handle the model's function response. Please navigate to [Assistant Functions](#assistant-functions) for more info. <br />
+`custom_base_url` is used to proxy the calls to the service through a custom API such as your service. <br />
 
 <ContainersKeyToggle>
   <ComponentContainer>
@@ -278,20 +283,25 @@ stores the thread id and allows conversation to continue on a new session.
   &nbsp;&nbsp;&nbsp;&nbsp; `name?: string`, <br />
   &nbsp;&nbsp;&nbsp;&nbsp; `description?: string`, <br />
   &nbsp;&nbsp;&nbsp;&nbsp; `instructions?: string`, <br />
-  &nbsp;&nbsp;&nbsp;&nbsp; `fileIds?: string[]`, <br />
   &nbsp;&nbsp;&nbsp;&nbsp; `tools?`: \{ <br />
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `type?`: `"code_interpreter"` | `"retrieval"` | `"function"`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `type?`: `"code_interpreter"` | `"file_search"` | `"function"`, <br />
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `function?`: \{`name: string`, `description?: string`, `parameters?: object`\} <br />
-  \}\}
+  &nbsp;&nbsp;&nbsp;&nbsp; \}, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; `tool_resources?`: \{ <br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `code_interpreter?`: \{`file_ids: string[]`\}, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `file_search?`: \{<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `vector_store_ids: string[]`, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `vector_stores?`: \{`file_ids: string[]`\} <br />
+  &nbsp;&nbsp;&nbsp;&nbsp;\}\}\} <br />
 
 - Default: _\{model: "gpt-4"\}_
 
 When `assistant_id` is not used, this object is used to define the details of the new assistant that will be created by Deep Chat when
-the user sends a new message. This object follows the [Open AI Create Asssistant API](https://platform.openai.com/docs/api-reference/assistants/createAssistant). <br />
+the user sends a new message. This object follows the [OpenAI Create Asssistant API](https://platform.openai.com/docs/api-reference/assistants/createAssistant). <br />
 `model` is the name of the model to be used by the API. Check the [model overview](https://platform.openai.com/docs/models/overview) for more. <br />
 `name` and `description` are used to describe the new assistant. <br />
 `instructions` direct the assistant's behaviour. <br />
-`fileIds` is an array of file ids that the new assistant has access to. Log into OpenAI and check [files](https://platform.openai.com/files). <br />
+`tool_resources` defines the resources that the assistant has access to. <br />
 `tools` is an array of objects that describe the tools the assistant will have access to.
 When using the `"function"` tool, you will need to also define the `function` object. <br />
 
@@ -373,8 +383,107 @@ When using the `"function"` tool, you will need to also define the `function` ob
 </Tabs>
 
 :::info
-Access the newly created `assistant_id` via `chatElementRef._activeService.rawBody.assistant_id`.
+You can access the created `assistant_id` via `chatElementRef._activeService.rawBody.assistant_id`.
 :::
+
+<LineBreak></LineBreak>
+
+#### `FileToolTypes` {#FileToolTypes}
+
+- Type: [FileToolType](#FileToolType) | (`fileNames: string[]`) => [FileToolType](#FileToolType)
+- Default: _"images"_
+
+This is used to define the type of tool that will be used to process uploaded files. You can either define it as a string or a function that will return
+the tool type based on the uploaded files. <br />
+When nothing is defined and the user uploads an image, Deep Chat will automatically use [`"images"`](https://platform.openai.com/docs/assistants/how-it-works/creating-image-input-content)
+which will not use any tools and send the image directly to the [_vision model_](https://platform.openai.com/docs/models). <br />
+It is important to note that the `"code_interpreter"` and `"file_search"` tools must be toggled ON in the assistant that you are using before
+the files are uploaded. This can either be done in the [OpenAI Assistant Playground](https://platform.openai.com/playground) or in the [NewAssistant](#NewAssistant) object.
+
+<ContainersKeyToggle>
+  <ComponentContainer>
+    <DeepChatBrowser
+      style={{borderRadius: '8px'}}
+      directConnection={{
+        openAI: {
+          key: 'placeholder key',
+          assistant: {
+            assistant_id: 'assistant with code interpreter',
+            files_tool_type: 'code_interpreter',
+          },
+        },
+      }}
+      mixedFiles={true}
+    ></DeepChatBrowser>
+  </ComponentContainer>
+  <ComponentContainer>
+    <DeepChatBrowser
+      style={{borderRadius: '8px'}}
+      directConnection={{
+        openAI: {
+          assistant: {
+            assistant_id: 'assistant with code interpreter',
+            files_tool_type: 'code_interpreter',
+          },
+        },
+      }}
+      mixedFiles={true}
+    ></DeepChatBrowser>
+  </ComponentContainer>
+</ContainersKeyToggle>
+
+<Tabs>
+<TabItem value="js" label="Sample code">
+
+```html
+<deep-chat
+  directConnection='{
+    "openAI": {
+      "key": "placeholder key",
+      "assistant": {
+        "assistant_id": "assistant with code interpreter",
+        "files_tool_type": "code_interpreter"
+  }}}'
+></deep-chat>
+```
+
+</TabItem>
+<TabItem value="py" label="Full code">
+
+```html
+<!-- This example is for Vanilla JS and should be tailored to your framework (see Examples) -->
+
+<deep-chat
+  directConnection='{
+    "openAI": {
+      "key": "placeholder key",
+      "assistant": {
+        "assistant_id": "assistant with code interpreter",
+        "files_tool_type": "code_interpreter"
+  }}}'
+  mixedFiles="true"
+  style="border-radius: 8px"
+></deep-chat>
+```
+
+</TabItem>
+</Tabs>
+
+<LineBreak></LineBreak>
+
+:::info
+When uploading a file, the user must also submit a text message.
+:::
+
+<LineBreak></LineBreak>
+
+#### `FileToolType` {#FileToolType}
+
+- Type: `"code_interpreter"` | `"file_search"` | `"images"`
+
+Type of tool used to process an uploaded file. Find out more information in [`"code_interpreter"`](https://platform.openai.com/docs/assistants/tools/code-interpreter) and
+[`"file_search"`](https://platform.openai.com/docs/assistants/tools/file-search). [`"images"`](https://platform.openai.com/docs/assistants/how-it-works/managing-threads-and-messages) is
+technically not a tool but a way to indicate that image files will be sent directly to a [_vision model_](https://platform.openai.com/docs/models).
 
 <LineBreak></LineBreak>
 
@@ -383,7 +492,7 @@ Access the newly created `assistant_id` via `chatElementRef._activeService.rawBo
 - Type: `true` | [`Dall-e-2`](#dall-e-2) | [`Dall-e-3`](#dall-e-3)
 - Default: _Dall-e-2_
 
-Connect to Open AI's [`Images`](https://platform.openai.com/docs/api-reference/images) API.
+Connect to OpenAI's [`Images`](https://platform.openai.com/docs/api-reference/images) API.
 Set this property to _true_ or use either of the [`Dall-e-2`](#dall-e-2) or [`Dall-e-3`](#dall-e-3) objects. <br />
 
 You can automatically call any of the following three APIs by combining different inputs:
@@ -495,7 +604,7 @@ You can automatically call any of the following three APIs by combining differen
   \}
 - Default: _\{model: "tts-1", voice: "alloy", speed: 1\}_
 
-Connect to Open AI's [`Text To Speech`](https://platform.openai.com/docs/guides/text-to-speech) API.
+Connect to OpenAI's [`Text To Speech`](https://platform.openai.com/docs/guides/text-to-speech) API.
 You can set this property to _true_ or [configure](https://platform.openai.com/docs/api-reference/audio/createSpeech) it using an object: <br />
 `model` defines the target model used by the API. Check [/v1/audio/speech](https://platform.openai.com/docs/models/model-endpoint-compatibility) for more. <br />
 `voice` is the name of the voice used in the generated audio. <br />
@@ -573,7 +682,7 @@ You can set this property to _true_ or [configure](https://platform.openai.com/d
   \}
 - Default: _\{model: "whisper-1", type: "transcription"\}_
 
-Connect to Open AI's [`Speech To Text`](https://platform.openai.com/docs/guides/speech-to-text) API.
+Connect to OpenAI's [`Speech To Text`](https://platform.openai.com/docs/guides/speech-to-text) API.
 You can set this property to _true_ or [configure](https://platform.openai.com/docs/api-reference/audio/createTranscription) it using an object: <br />
 `model` is the name of the model to use. _"whisper-1"_ is currently the only one available. <br />
 `temperature` is used for sampling; between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused. <br />
@@ -662,7 +771,7 @@ from their text and return it all in a standardized response for you to act on. 
 `tool_choice` controls which (if any) function should be called. <br />
 `function_handler` is the actual function that is called with the model's instructions.
 
-<ContainersKeyToggleFunction></ContainersKeyToggleFunction>
+<ContainersKeyToggleChatFunction></ContainersKeyToggleChatFunction>
 
 <Tabs>
 <TabItem value="js" label="Sample code">
@@ -713,34 +822,39 @@ chatElementRef.directConnection = {
 // using JavaScript for a simplified example
 
 chatElementRef.directConnection = {
-    openAI: {
-      chat: {
-        tools: [{
-            type: "function",
-            function: {
-              name: "get_current_weather",
-              description: "Get the current weather in a given location",
-              parameters: {
-                type: "object",
-                properties: {
-                  location: {
-                    type: "string",
-                    description: "The city and state, e.g. San Francisco, CA",
-                  },
-                  unit: {type: "string", enum: ["celsius", "fahrenheit"]},
+  openAI: {
+    chat: {
+      tools: [
+        {
+          type: 'function',
+          function: {
+            name: 'get_current_weather',
+            description: 'Get the current weather in a given location',
+            parameters: {
+              type: 'object',
+              properties: {
+                location: {
+                  type: 'string',
+                  description: 'The city and state, e.g. San Francisco, CA',
                 },
-                required: ["location"],
-          }}}],
-        function_handler: (functionsDetails) => {
-          return functionsDetails.map((functionDetails) => {
-            return {
-              response: getCurrentWeather(functionDetails.arguments),
-        };});}
+                unit: {type: 'string', enum: ['celsius', 'fahrenheit']},
+              },
+              required: ['location'],
+            },
+          },
+        },
+      ],
+      function_handler: (functionsDetails) => {
+        return functionsDetails.map((functionDetails) => {
+          return {
+            response: getCurrentWeather(functionDetails.arguments),
+          };
+        });
       },
-      key: "placeholder-key",
     },
-  };
-}
+    key: 'placeholder-key',
+  },
+};
 
 function getCurrentWeather(location) {
   location = location.toLowerCase();
@@ -799,8 +913,6 @@ inside the [OpneAI assistants platform](https://platform.openai.com/assistants).
 [`functionsDetails`](#FunctionsDetails) contains information about what functions should be called. <br />
 This function should return an array of strings defining the response for each function described in `functionDetails` (in the same order)
 which will feed it back into the assistant to finalise a response.
-
-Try it out live in the Deep Chat [Playground](/playground).
 
 <Tabs>
 <TabItem value="js" label="Sample code">
