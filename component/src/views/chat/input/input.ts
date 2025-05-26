@@ -43,7 +43,7 @@ export class Input {
     ValidationHandler.attach(activeChat, serviceIO, textInput, fileAtts, submitButton);
     activeChat.submitUserMessage = submitButton.programmaticSubmit.bind(submitButton);
     buttons.submit = {button: submitButton};
-    if (activeChat.customButtons) CustomButton.add(activeChat.customButtons, buttons, activeChat.dropupStyles);
+    if (activeChat.customButtons) CustomButton.add(activeChat, buttons);
     Input.addElements(this.elementRef, textInput, buttons, containerElement, fileAtts, activeChat.dropupStyles);
   }
 

@@ -2,15 +2,18 @@ import {ErrorMessages} from '../../../../utils/errorMessages/errorMessages';
 import {ElementUtils} from '../../../../utils/element/elementUtils';
 import {MessageContentI} from '../../../../types/messagesInternal';
 import {TextToSpeech} from '../textToSpeech/textToSpeech';
+import {MessageFile} from '../../../../types/messageFile';
+import {MessageElements, Messages} from '../messages';
 import {Response} from '../../../../types/response';
 import {MessageUtils} from '../utils/messageUtils';
 import {HTMLMessages} from '../html/htmlMessages';
+import {Stream} from '../../../../types/stream';
 import {MessagesBase} from '../messagesBase';
 import {HTMLUtils} from '../html/htmlUtils';
-import {MessageElements} from '../messages';
 
 export class MessageStream {
   static readonly MESSAGE_CLASS = 'streamed-message';
+  private static readonly PARTIAL_RENDER_TEXT_MARK = '\n\n';
   private _fileAdded = false;
   private _streamType: 'text' | 'html' | '' = '';
   private _elements?: MessageElements;
@@ -18,9 +21,14 @@ export class MessageStream {
   private _activeMessageRole?: string;
   private _message?: MessageContentI;
   private readonly _messages: MessagesBase;
+  private _endStreamAfterOperation?: boolean;
+  private readonly _partialRender?: boolean;
+  private _partialText: string = '';
+  private _partialBubble?: HTMLDivElement;
 
-  constructor(messages: MessagesBase) {
+  constructor(messages: MessagesBase, stream?: Stream) {
     this._messages = messages;
+    this._partialRender = typeof stream === 'object' ? stream.partialRender : false;
   }
 
   public upsertStreamedMessage(response?: Response) {
@@ -28,6 +36,7 @@ export class MessageStream {
     if (response?.text === undefined && response?.html === undefined) {
       return console.error(ErrorMessages.INVALID_STREAM_EVENT);
     }
+    if (response?.custom && this._message) this._message.custom = response.custom;
     const content = response?.text || response?.html || '';
     const isScrollbarAtBottomOfElement = ElementUtils.isScrollbarAtBottomOfElement(this._messages.elementRef);
     const streamType = response?.text !== undefined ? 'text' : 'html';
@@ -59,7 +68,7 @@ export class MessageStream {
   }
 
   private updateBasedOnType(content: string, expectedType: string, bubbleElement: HTMLElement, isOverwrite = false) {
-    MessageUtils.unfillEmptyMessageElement(bubbleElement, content);
+    if (!this._partialRender) MessageUtils.unfillEmptyMessageElement(bubbleElement, content);
     const func = expectedType === 'text' ? this.updateText : this.updateHTML;
     func.bind(this)(content, bubbleElement, isOverwrite);
   }
@@ -67,7 +76,31 @@ export class MessageStream {
   private updateText(text: string, bubbleElement: HTMLElement, isOverwrite: boolean) {
     if (!this._message) return;
     this._message.text = isOverwrite ? text : this._message.text + text;
-    this._messages.renderText(bubbleElement, this._message.text);
+    if (this._partialRender && this.isNewPartialRenderParagraph()) this.partialRenderNewParagraph(bubbleElement);
+    if (this._partialBubble) {
+      this.partialRenderBubbleUpdate(text);
+    } else {
+      this._messages.renderText(bubbleElement, this._message.text);
+    }
+  }
+
+  private isNewPartialRenderParagraph() {
+    if (!this._partialBubble) {
+      return this._message?.text && this._message.text.indexOf(MessageStream.PARTIAL_RENDER_TEXT_MARK) > -1;
+    }
+    return this._partialText && this._partialText?.indexOf(MessageStream.PARTIAL_RENDER_TEXT_MARK) > -1;
+  }
+
+  private partialRenderNewParagraph(bubbleElement: HTMLElement) {
+    this._partialText = '';
+    this._partialBubble = document.createElement('div');
+    this._partialBubble.classList.add('partial-render-message');
+    bubbleElement.appendChild(this._partialBubble);
+  }
+
+  private partialRenderBubbleUpdate(text: string) {
+    this._partialText += text;
+    this._messages.renderText(this._partialBubble as HTMLDivElement, this._partialText);
   }
 
   private updateHTML(html: string, bubbleElement: HTMLElement, isOverwrite: boolean) {
@@ -84,7 +117,7 @@ export class MessageStream {
   }
 
   public finaliseStreamedMessage() {
-    if (!this._message) return;
+    if (this._endStreamAfterOperation || !this._message) return;
     if (this._fileAdded && !this._elements) return;
     if (!this._elements) throw Error(ErrorMessages.NO_VALID_STREAM_EVENTS_SENT);
     if (!this._elements.bubbleElement?.classList.contains(MessageStream.MESSAGE_CLASS)) return;
@@ -111,5 +144,16 @@ export class MessageStream {
     this._fileAdded = false;
     this._hasStreamEnded = false;
     this._activeMessageRole = undefined;
+  }
+
+  // prettier-ignore
+  public async endStreamAfterFileDownloaded(
+      messages: Messages, downloadCb: () => Promise<{files?: MessageFile[]; text?: string}>) {
+    this._endStreamAfterOperation = true;
+    const {text, files} = await downloadCb();
+    if (text) this.updateBasedOnType(text, 'text', this._elements?.bubbleElement as HTMLElement, true);
+    this._endStreamAfterOperation = false;
+    this.finaliseStreamedMessage();
+    if (files) messages.addNewMessage({files}); // adding later to trigger event later
   }
 }

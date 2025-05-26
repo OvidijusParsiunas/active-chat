@@ -1,4 +1,5 @@
 import {MessageBody, MessageContentI, Overwrite} from '../../../types/messagesInternal';
+import {HiddenFileAttachments} from '../input/fileAttachments/fileAttachments';
 import {MessageFile, MessageFileType} from '../../../types/messageFile';
 import {HTMLActiveChatElements} from './html/htmlActiveChatElements';
 import {CustomErrors, ServiceIO} from '../../../services/serviceIO';
@@ -42,6 +43,7 @@ export class Messages extends MessagesBase {
   private readonly _permittedErrorPrefixes?: CustomErrors;
   private readonly _displayServiceErrorMessages?: boolean;
   private _introMessage?: IntroMessage | IntroMessage[];
+  private _hiddenAttachments?: HiddenFileAttachments;
   customDemoResponse?: DemoResponse;
 
   constructor(activeChat: ActiveChat, serviceIO: ServiceIO, panel?: HTMLElement) {
@@ -65,7 +67,8 @@ export class Messages extends MessagesBase {
     activeChat.getMessages = () => JSON.parse(JSON.stringify(this.messageToElements.map(([msg]) => msg)));
     activeChat.clearMessages = this.clearMessages.bind(this, serviceIO);
     activeChat.refreshMessages = this.refreshTextMessages.bind(this, activeChat.remarkable);
-    activeChat.scrollToBottom = ElementUtils.scrollToBottom.bind(this, this.elementRef);
+    activeChat.getMessages = () =>
+      MessageUtils.deepCloneMessagesWithReferences(this.messageToElements.map(([msg]) => msg));
     activeChat.addMessage = (message: ResponseI, isUpdate?: boolean) => {
       this.addAnyMessage({...message, sendUpdate: !!isUpdate}, !isUpdate);
     };
@@ -195,6 +198,7 @@ export class Messages extends MessagesBase {
 
   // this should not be activated by streamed messages
   public addNewMessage(data: ResponseI, isHistory = false, isTop = false) {
+    if (data.role !== MessageUtils.USER_ROLE) this._hiddenAttachments?.removeHiddenFiles();
     const message = Messages.createMessageContent(data);
     const overwrite: Overwrite = {status: data.overwrite}; // if did not overwrite, create a new message
     if (isTop) {
@@ -236,6 +240,7 @@ export class Messages extends MessagesBase {
 
   // prettier-ignore
   public addNewErrorMessage(type: keyof Omit<ErrorMessageOverrides, 'default'>, message?: ErrorResp, isTop = false) {
+    this._hiddenAttachments?.readdHiddenFiles();
     this.removeMessageOnError();
     const text = this.getPermittedMessage(message) || this._errorMessageOverrides?.[type]
       || this._errorMessageOverrides?.default || 'Error, please try again.';
@@ -251,6 +256,7 @@ export class Messages extends MessagesBase {
     if (!isTop) this.appendOuterContainerElemet(outerContainer);
     if (this.textToSpeech) TextToSpeech.speak(text, this.textToSpeech);
     this._onError?.(text);
+    setTimeout(() => ElementUtils.scrollToBottom(this.elementRef)); // timeout neeed when bubble font is large
   }
 
   private static checkPermittedErrorPrefixes(errorPrefixes: string[], message: string): string | undefined {
@@ -331,7 +337,8 @@ export class Messages extends MessagesBase {
     }
   }
 
-  public async addMultipleFiles(filesData: {file: File; type: MessageFileType}[]) {
+  public async addMultipleFiles(filesData: {file: File; type: MessageFileType}[], hiddenAtts: HiddenFileAttachments) {
+    this._hiddenAttachments = hiddenAtts;
     return Promise.all<MessageFile>(
       (filesData || []).map((fileData) => {
         return new Promise((resolve) => {
