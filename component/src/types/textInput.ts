@@ -17,3 +17,5 @@ export interface TextInput {
   placeholder?: Placeholder;
   disabled?: boolean;
 }
+
+export type OnInput = (body: {content: {text?: string; files?: File[]}; isUser: boolean}) => void;

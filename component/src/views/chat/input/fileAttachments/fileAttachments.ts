@@ -2,7 +2,7 @@ import {FileAttachmentTypeFactory} from './fileAttachmentTypes/fileAttachmentTyp
 import {FileAttachments as FileAttachmentsT} from '../../../../types/fileAttachments';
 import {AudioFileAttachmentType} from './fileAttachmentTypes/audioFileAttachmentType';
 import {FileAttachmentsType} from './fileAttachmentTypes/fileAttachmentsType';
-import {ServiceFileTypes} from '../../../../services/serviceIO';
+import {ServiceFileTypes, ServiceIO} from '../../../../services/serviceIO';
 import {CustomStyle} from '../../../../types/styles';
 import {ActiveChat} from '../../../../activeChat';
 import {Demo} from '../../../../types/demo';
@@ -25,9 +25,9 @@ export class FileAttachments implements HiddenFileAttachments {
   }
 
   // prettier-ignore
-  addType(activeChat: ActiveChat, files: FileAttachmentsT, type: keyof ServiceFileTypes) {
+  addType(activeChat: ActiveChat, serviceIO: ServiceIO, files: FileAttachmentsT, type: keyof ServiceFileTypes) {
     const fileAttachmentsType = FileAttachmentTypeFactory.create(
-      activeChat, files, this.toggleContainerDisplay.bind(this), this.elementRef, type);
+      activeChat, serviceIO, files, this.toggleContainerDisplay.bind(this), this.elementRef, type);
     this._fileAttachmentsTypes.push(fileAttachmentsType);
     return fileAttachmentsType;
   }

@@ -18,9 +18,9 @@ export class TextInputEl {
   private readonly _config: TextInput;
   // detect if using a dropup for text input composition, e.g. hiragana to kanji symbols
   private _isComposing: boolean = false;
+  private _onInput: ((isUser: boolean) => void) | undefined;
   submit?: () => void;
 
-  // prettier-ignore
   constructor(activeChat: ActiveChat, serviceIO: ServiceIO, fileAts: FileAttachments) {
     const processedConfig = TextInputEl.processConfig(serviceIO, activeChat.textInput);
     this.elementRef = TextInputEl.createContainerElement(processedConfig?.styles?.container);
@@ -31,8 +31,8 @@ export class TextInputEl {
     activeChat.setPlaceholderText(this._config.placeholder?.text || 'Ask me anything!');
     setTimeout(() => {
       // in a timeout as activeChat._validationHandler initialised later
-      TextInputEvents.add(
-        this.inputElementRef, fileAts, this._config.characterLimit, activeChat._validationHandler);
+      TextInputEvents.add(this.inputElementRef, fileAts, this._config.characterLimit, activeChat._validationHandler);
+      this._onInput = serviceIO.onInput;
     });
   }
 
@@ -69,6 +69,7 @@ export class TextInputEl {
       Object.assign(this.inputElementRef.style, this._config.placeholder?.style);
       this.inputElementRef.textContent = '';
       FocusUtils.focusEndOfInput(this.inputElementRef);
+      this._onInput?.(false);
     }
     if (Browser.IS_CHROMIUM) window.scrollTo({top: scrollY});
   }
@@ -135,10 +136,12 @@ export class TextInputEl {
     } else {
       Object.assign(this.inputElementRef.style, this._config.placeholder?.style);
     }
+    this._onInput?.(true);
   }
 
   private setPlaceholderText(text: string) {
-    this.inputElementRef.setAttribute('active-chat-placeholder-text', text);
+    this.inputElementRef.setAttribute('deep-chat-placeholder-text', text);
+    this.inputElementRef.setAttribute('aria-label', text);
   }
 
   public isTextInputEmpty() {

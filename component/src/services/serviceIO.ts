@@ -120,4 +120,6 @@ export interface ServiceIO {
   insertKeyPlaceholderText?: string;
 
   keyHelpUrl?: string;
+
+  onInput?: (isUser: boolean) => void;
 }

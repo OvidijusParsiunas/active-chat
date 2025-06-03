@@ -12,6 +12,7 @@ import {FileAttachments} from './fileAttachments/fileAttachments';
 import {ElementUtils} from '../../../utils/element/elementUtils';
 import {ValidationHandler} from './validation/validationHandler';
 import {RecordAudio} from './buttons/microphone/recordAudio';
+import {FireEvents} from '../../../utils/events/fireEvents';
 import {CustomButton} from './buttons/custom/customButton';
 import {SubmitButton} from './buttons/submit/submitButton';
 import {CameraButton} from './buttons/camera/cameraButton';
@@ -45,6 +46,7 @@ export class Input {
     buttons.submit = {button: submitButton};
     if (activeChat.customButtons) CustomButton.add(activeChat, buttons);
     Input.addElements(this.elementRef, textInput, buttons, containerElement, fileAtts, activeChat.dropupStyles);
+    Input.assignOnInput(activeChat, serviceIO, fileAtts, textInput);
   }
 
   private static createPanelElement(customStyle?: CustomStyle) {
@@ -58,13 +60,15 @@ export class Input {
   private createFileUploadComponents(
       chat: ActiveChat, serviceIO: ServiceIO, containerElement: HTMLElement, buttons: Buttons) {
     const fileAttachments = new FileAttachments(this.elementRef, chat.attachmentContainerStyle, serviceIO.demo);
-    Input.createUploadButtons(chat, serviceIO.fileTypes || {}, fileAttachments, containerElement, buttons);
+    Input.createUploadButtons(chat, serviceIO, serviceIO.fileTypes || {}, fileAttachments, containerElement, buttons);
     if (serviceIO.camera?.files) {
-      const cameraType = buttons.images?.fileType || fileAttachments.addType(chat, serviceIO.camera.files, 'images');
+      const cameraType = buttons.images?.fileType
+        || fileAttachments.addType(chat, serviceIO, serviceIO.camera.files, 'images');
       buttons.camera = {button: new CameraButton(containerElement, cameraType, serviceIO.camera)};
     }
     if (serviceIO.recordAudio?.files) {
-      const audioType = buttons.audio?.fileType || fileAttachments.addType(chat, serviceIO.recordAudio.files, 'audio');
+      const audioType = buttons.audio?.fileType
+        || fileAttachments.addType(chat, serviceIO, serviceIO.recordAudio.files, 'audio');
       buttons.microphone = {button: new RecordAudio(audioType as AudioFileAttachmentType, serviceIO.recordAudio)};
     }
     if (DragAndDrop.isEnabled(fileAttachments, chat.dragAndDrop)) {
@@ -74,13 +78,13 @@ export class Input {
   }
 
   // prettier-ignore
-  private static createUploadButtons(activeChat: ActiveChat,
+  private static createUploadButtons(activeChat: ActiveChat, serviceIO: ServiceIO,
       fileTypes: ServiceFileTypes, fileAtt: FileAttachments, containerEl: HTMLElement, buttons: Buttons) {
     Object.keys(fileTypes).forEach((key) => {
       const fileType = key as keyof ServiceFileTypes;
       const fileService = fileTypes[fileType] as FileServiceIO;
       if (fileService.files) {
-        const fileAttachmentsType = fileAtt.addType(activeChat, fileService.files, fileType);
+        const fileAttachmentsType = fileAtt.addType(activeChat, serviceIO, fileService.files, fileType);
         const {id, svgString, dropupText} = FILE_TYPE_BUTTON_ICONS[fileType];
         const button = new UploadFileButton(containerEl, fileAttachmentsType, fileService, id, svgString, dropupText);
         buttons[fileType] = {button, fileType: fileAttachmentsType};
@@ -96,5 +100,18 @@ export class Input {
     const pToBs = InputButtonPositions.addButtons(buttonContainers, buttons, container, dropupStyles);
     InputButtonStyleAdjustments.set(textInput.inputElementRef, buttonContainers, fileAttachments.elementRef, pToBs);
     ButtonContainers.add(panel, buttonContainers);
+  }
+
+  private static assignOnInput(activeChat: ActiveChat, io: ServiceIO, fileAtts: FileAttachments, textInput: TextInputEl) {
+    io.onInput = (isUser: boolean) => {
+      // In a timeout as when submitting files need to wait for their close events to be triggered
+      setTimeout(() => {
+        const uploadedFilesData = fileAtts.getAllFileData();
+        const inputText = textInput.inputElementRef.innerText.trim() as string;
+        const content: {text?: string; files?: File[]} = {text: inputText};
+        if (uploadedFilesData) content.files = uploadedFilesData.map((file) => file.file);
+        FireEvents.onInput(activeChat, content, isUser);
+      });
+    };
   }
 }
