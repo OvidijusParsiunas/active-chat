@@ -5,6 +5,7 @@ import {HTMLActiveChatElements} from './html/htmlActiveChatElements';
 import {LoadingStyle} from '../../../utils/loading/loadingStyle';
 import {ElementUtils} from '../../../utils/element/elementUtils';
 import {RemarkableConfig} from './remarkable/remarkableConfig';
+import {BrowserStorage} from './browserStorage/browserStorage';
 import {RemarkableOptions} from '../../../types/remarkable';
 import {FireEvents} from '../../../utils/events/fireEvents';
 import {MessageStyleUtils} from './utils/messageStyleUtils';
@@ -37,6 +38,7 @@ export class MessagesBase {
   private _remarkable: Remarkable;
   private _lastGroupMessagesElement?: HTMLElement;
   private readonly _onMessage?: (message: MessageContentI, isHistory: boolean) => void;
+  public readonly browserStorage?: BrowserStorage;
   public static readonly TEXT_BUBBLE_CLASS = 'text-message';
   public static readonly INTRO_CLASS = 'active-chat-intro';
   public static readonly LAST_GROUP_MESSAGES_ACTIVE = 'active-chat-last-group-messages-active';
@@ -46,6 +48,7 @@ export class MessagesBase {
     this.messageStyles = Legacy.processMessageStyles(activeChat.messageStyles);
     this._remarkable = RemarkableConfig.createNew(activeChat.remarkable);
     if (activeChat.avatars) this.avatar = new Avatar(activeChat.avatars);
+    if (activeChat.browserStorage) this.browserStorage = new BrowserStorage(activeChat.browserStorage);
     if (activeChat.names) this.name = new Name(activeChat.names);
     this._onMessage = FireEvents.onMessage.bind(this, activeChat);
     if (activeChat.htmlClassUtilities) this.htmlClassUtilities = activeChat.htmlClassUtilities;

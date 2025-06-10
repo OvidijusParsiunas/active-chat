@@ -117,7 +117,7 @@ export class History {
     if (activeChat.loadHistory) {
       this.loadInitialHistory(activeChat.loadHistory);
     }
-    const history = activeChat.history || Legacy.processHistory(activeChat);
+    const history = activeChat.history || Legacy.processHistory(activeChat) || this._messages.browserStorage?.get();
     if (history) {
       this.populateInitialHistory(history);
       this._index += 1;
