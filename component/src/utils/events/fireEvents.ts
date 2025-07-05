@@ -25,7 +25,7 @@ export class FireEvents {
   public static onInput(activeChat: ActiveChat, content: {text?: string; files?: File[]}, isUser: boolean) {
     const updateBody = JSON.parse(JSON.stringify({content, isUser}));
     if (content.files) {
-      FileMessageUtils.reAddFileRefToObject({files: content.files?.map((file) => ({ref: file}))}, updateBody);
+      FileMessageUtils.reAddFileRefToObject({files: content.files?.map((file) => ({ref: file}))}, updateBody.content);
     }
     activeChat.onInput?.(updateBody);
     activeChat.dispatchEvent(new CustomEvent('input', {detail: updateBody}));
