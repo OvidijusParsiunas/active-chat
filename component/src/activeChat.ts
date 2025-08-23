@@ -135,9 +135,6 @@ export class ActiveChat extends InternalHTML {
   dragAndDrop?: boolean | CustomStyle; // by default it is enabled if file attachments are allowed
 
   @Property('object')
-  introPanelStyle?: CustomStyle;
-
-  @Property('object')
   htmlClassUtilities?: HTMLClassUtilities;
 
   @Property('object')
@@ -227,7 +224,7 @@ export class ActiveChat extends InternalHTML {
     // set before container populated, not available in constructor for react,
     // assigning to variable as it is added to panel and is no longer child (test in official website)
     this._childElement ??= this.children[0] as HTMLElement | undefined;
-    ChatView.render(this, this._elementRef, this._activeService, this._childElement);
+    ChatView.render(this, this._elementRef, this._activeService);
     if (!this._hasBeenRendered) FireEvents.onRender(this);
     this._hasBeenRendered = true;
   }

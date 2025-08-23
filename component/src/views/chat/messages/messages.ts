@@ -17,16 +17,13 @@ import {ErrorResp} from '../../../types/errorInternal';
 import {IntroMessage} from '../../../types/messages';
 import {MessageStream} from './stream/messageStream';
 import {UpdateMessage} from './utils/updateMessage';
-import {IntroPanel} from '../introPanel/introPanel';
 import {Legacy} from '../../../utils/legacy/legacy';
 import {LoadHistory} from '../../../types/history';
-import {CustomStyle} from '../../../types/styles';
 import {MessageUtils} from './utils/messageUtils';
 import {HTMLMessages} from './html/htmlMessages';
 import {ActiveChat} from '../../../activeChat';
 import {FileMessages} from './fileMessages';
 import {MessagesBase} from './messagesBase';
-import {HTMLUtils} from './html/htmlUtils';
 import {History} from './history/history';
 
 export interface MessageElements {
@@ -46,9 +43,9 @@ export class Messages extends MessagesBase {
   private _hiddenAttachments?: HiddenFileAttachments;
   customDemoResponse?: DemoResponse;
 
-  constructor(activeChat: ActiveChat, serviceIO: ServiceIO, panel?: HTMLElement) {
+  constructor(activeChat: ActiveChat, serviceIO: ServiceIO) {
     super(activeChat);
-    const {permittedErrorPrefixes, introPanelMarkUp, demo} = serviceIO;
+    const {permittedErrorPrefixes, demo} = serviceIO;
     this._errorMessageOverrides = activeChat.errorMessages?.overrides;
     this._onClearMessages = FireEvents.onClearMessages.bind(this, activeChat);
     this._onError = FireEvents.onError.bind(this, activeChat);
@@ -57,9 +54,7 @@ export class Messages extends MessagesBase {
       activeChat.displayLoadingBubble.toggleLoading = this.setToggleLoading.bind(this);
     }
     this._permittedErrorPrefixes = permittedErrorPrefixes;
-    if (!this.addSetupMessageIfNeeded(activeChat)) {
-      this.populateIntroPanel(panel, introPanelMarkUp, activeChat.introPanelStyle);
-    }
+    this.addSetupMessageIfNeeded(activeChat);
     if (demo) this.prepareDemo(Legacy.processDemo(demo), activeChat.loadHistory); // before intro/history for load spinner
     this.addIntroductoryMessages(activeChat, serviceIO);
     new History(activeChat, this, serviceIO);
@@ -122,7 +117,6 @@ export class Messages extends MessagesBase {
       const elements = this.createAndAppendNewMessageElement(text, MessageUtils.AI_ROLE);
       this.applyCustomStyles(elements, MessageUtils.AI_ROLE, false);
     }
-    return !!text;
   }
 
   // WORK - const file for active chat classes
@@ -330,16 +324,6 @@ export class Messages extends MessagesBase {
     if (!this.focusMode) ElementUtils.scrollToBottom(this.elementRef);
   }
 
-  private populateIntroPanel(childElement?: HTMLElement, introPanelMarkUp?: string, introPanelStyle?: CustomStyle) {
-    if (childElement || introPanelMarkUp) {
-      this._introPanel = new IntroPanel(childElement, introPanelMarkUp, introPanelStyle);
-      if (this._introPanel._elementRef) {
-        HTMLUtils.apply(this, this._introPanel._elementRef);
-        this.elementRef.appendChild(this._introPanel._elementRef);
-      }
-    }
-  }
-
   public async addMultipleFiles(filesData: {file: File; type: MessageFileType}[], hiddenAtts: HiddenFileAttachments) {
     this._hiddenAttachments = hiddenAtts;
     return Promise.all<MessageFile>(
@@ -397,7 +381,6 @@ export class Messages extends MessagesBase {
     });
     this.messageToElements.splice(0, this.messageToElements.length, ...retainedMessageToElements);
     if (isReset !== false) {
-      if (this._introPanel?._elementRef) this._introPanel.display();
       this.addIntroductoryMessages();
     }
     this.browserStorage?.clear();

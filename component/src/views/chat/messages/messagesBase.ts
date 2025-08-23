@@ -12,7 +12,6 @@ import {MessageStyleUtils} from './utils/messageStyleUtils';
 import {LoadingHistory} from './history/loadingHistory';
 import {HTMLClassUtilities} from '../../../types/html';
 import {FocusModeUtils} from './utils/focusModeUtils';
-import {IntroPanel} from '../introPanel/introPanel';
 import {Legacy} from '../../../utils/legacy/legacy';
 import {FocusMode} from '../../../types/focusMode';
 import {MessageUtils} from './utils/messageUtils';
@@ -34,7 +33,6 @@ export class MessagesBase {
   readonly messageToElements: MessageToElements = [];
   readonly avatar?: Avatar;
   readonly name?: Name;
-  protected _introPanel?: IntroPanel;
   private _remarkable: Remarkable;
   private _lastGroupMessagesElement?: HTMLElement;
   private readonly _onMessage?: (message: MessageContentI, isHistory: boolean) => void;
@@ -129,8 +127,8 @@ export class MessagesBase {
     this.elementRef.appendChild(this._lastGroupMessagesElement as HTMLElement);
   }
 
-  private createAndPrependNewMessageElement(text: string, role: string, isTop: boolean, loading = false) {
-    const messageElements = this.createNewMessageElement(text, role, isTop, loading);
+  private createAndPrependNewMessageElement(text: string, role: string, isTop: boolean) {
+    const messageElements = this.createNewMessageElement(text, role, isTop);
     if (isTop && (this.elementRef.firstChild as HTMLElement)?.classList.contains(MessagesBase.INTRO_CLASS)) {
       (this.elementRef.firstChild as HTMLElement).insertAdjacentElement('afterend', messageElements.outerContainer);
       // swapping to place intro refs into correct position
@@ -150,7 +148,6 @@ export class MessagesBase {
   }
 
   public createNewMessageElement(text: string, role: string, isTop = false, loading = false) {
-    if (!loading) this._introPanel?.hide();
     const lastMessageElements = this.messageElementRefs[this.messageElementRefs.length - 1];
     LoadingHistory.changeFullViewToSmall(this);
     if (!isTop && MessagesBase.isTemporaryElement(lastMessageElements)) {
