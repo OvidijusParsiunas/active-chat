@@ -141,13 +141,13 @@ export class MessagesBase {
     return messageElements;
   }
 
-  public createMessageElementsOnOrientation(text: string, role: string, isTop: boolean, loading = false) {
+  public createMessageElementsOnOrientation(text: string, role: string, isTop: boolean) {
     return isTop
-      ? this.createAndPrependNewMessageElement(text, role, true, loading)
-      : this.createNewMessageElement(text, role, loading);
+      ? this.createAndPrependNewMessageElement(text, role, isTop)
+      : this.createNewMessageElement(text, role, isTop);
   }
 
-  public createNewMessageElement(text: string, role: string, isTop = false, loading = false) {
+  public createNewMessageElement(text: string, role: string, isTop = false) {
     const lastMessageElements = this.messageElementRefs[this.messageElementRefs.length - 1];
     LoadingHistory.changeFullViewToSmall(this);
     if (!isTop && MessagesBase.isTemporaryElement(lastMessageElements)) {
