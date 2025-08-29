@@ -31,6 +31,7 @@ import {Legacy} from './utils/legacy/legacy';
 import {LoadHistory} from './types/history';
 import style from './activeChat.css?inline';
 import {FocusMode} from './types/focusMode';
+import {HTMLWrappers} from './types/stream';
 import {CustomStyle} from './types/styles';
 import {Response} from './types/response';
 import {Connect} from './types/connect';
@@ -133,6 +134,9 @@ export class ActiveChat extends InternalHTML {
 
   @Property('object')
   dragAndDrop?: boolean | CustomStyle; // by default it is enabled if file attachments are allowed
+
+  @Property('object')
+  htmlWrappers?: HTMLWrappers;
 
   @Property('object')
   htmlClassUtilities?: HTMLClassUtilities;

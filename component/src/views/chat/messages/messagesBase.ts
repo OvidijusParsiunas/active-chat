@@ -13,11 +13,13 @@ import {LoadingHistory} from './history/loadingHistory';
 import {HTMLClassUtilities} from '../../../types/html';
 import {FocusModeUtils} from './utils/focusModeUtils';
 import {Legacy} from '../../../utils/legacy/legacy';
+import {HTMLWrappers} from '../../../types/stream';
 import {FocusMode} from '../../../types/focusMode';
 import {MessageUtils} from './utils/messageUtils';
 import {Response} from '../../../types/response';
 import {ActiveChat} from '../../../activeChat';
 import {MessageElements} from './messages';
+import {HTMLUtils} from './html/htmlUtils';
 import {Remarkable} from 'remarkable';
 import {Avatar} from './avatar';
 import {Name} from './name';
@@ -34,6 +36,7 @@ export class MessagesBase {
   readonly avatar?: Avatar;
   readonly name?: Name;
   private _remarkable: Remarkable;
+  readonly _customWrappers?: HTMLWrappers;
   private _lastGroupMessagesElement?: HTMLElement;
   private readonly _onMessage?: (message: MessageContentI, isHistory: boolean) => void;
   public readonly browserStorage?: BrowserStorage;
@@ -55,6 +58,7 @@ export class MessagesBase {
     if (typeof this.focusMode !== 'boolean' && this.focusMode?.fade) {
       FocusModeUtils.setFade(this.elementRef, this.focusMode.fade);
     }
+    this._customWrappers = activeChat.htmlWrappers;
     setTimeout(() => {
       this.submitUserMessage = activeChat.submitUserMessage; // wait for it to be available in input.ts
     });
@@ -85,7 +89,7 @@ export class MessagesBase {
   private overwriteText(role: string, text: string, elementRefs: MessageElements[]) {
     const elems = MessageUtils.overwriteMessage(
       this.messageToElements, elementRefs, text, role, 'text', MessagesBase.TEXT_BUBBLE_CLASS);
-    if (elems) this.renderText(elems.bubbleElement, text);
+    if (elems) this.renderText(elems.bubbleElement, text, role);
     return elems;
   }
 
@@ -211,7 +215,7 @@ export class MessagesBase {
     }
     bubbleElement.classList.add('message-bubble', MessageUtils.getRoleClass(role),
       role === MessageUtils.USER_ROLE ? 'user-message-text' : 'ai-message-text');
-    this.renderText(bubbleElement, text);
+    this.renderText(bubbleElement, text, role);
     MessageUtils.addRoleElements(bubbleElement, role, this.avatar, this.name);
     return {bubbleElement};
   }
@@ -263,18 +267,17 @@ export class MessagesBase {
     this._onMessage?.(message, isHistory);
   }
 
-  public renderText(bubbleElement: HTMLElement, text: string) {
-    bubbleElement.innerHTML = this._remarkable.render(text);
+  // role is optional to not add wrapper to error
+  public renderText(bubbleElement: HTMLElement, text: string, role?: string) {
+    const {contentEl: textEl, wrapper} = HTMLUtils.tryAddWrapper(bubbleElement, text, this._customWrappers, role);
+    if (wrapper) HTMLUtils.apply(this, bubbleElement);
+    textEl.innerHTML = this._remarkable.render(text);
     // There is a bug in remarkable where text with only numbers and full stop after them causes the creation
     // of a list which has no inner text and is instead prepended as a prefix in the start attribute (12.)
     // We also check if the only child is not <p> because it could be an image
     // https://github.com/OvidijusParsiunas/deep-chat/issues/435
-    if (
-      bubbleElement.innerText.trim().length === 0 &&
-      bubbleElement.children.length > 0 &&
-      bubbleElement.children[0].tagName !== 'P'
-    ) {
-      bubbleElement.innerText = text;
+    if (textEl.innerText.trim().length === 0 && textEl.children.length > 0 && textEl.children[0].tagName !== 'P') {
+      textEl.innerText = text;
     }
   }
 
@@ -282,7 +285,9 @@ export class MessagesBase {
   protected refreshTextMessages(customConfig?: RemarkableOptions) {
     this._remarkable = RemarkableConfig.createNew(customConfig);
     this.messageToElements.forEach((msgToEls) => {
-      if (msgToEls[1].text && msgToEls[0].text) this.renderText(msgToEls[1].text.bubbleElement, msgToEls[0].text);
+      if (msgToEls[1].text && msgToEls[0].text) {
+        this.renderText(msgToEls[1].text.bubbleElement, msgToEls[0].text, msgToEls[0].role);
+      }
     });
   }
 }
