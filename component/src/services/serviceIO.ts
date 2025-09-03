@@ -2,7 +2,6 @@ import {CameraFilesServiceConfig, FilesServiceConfig, MicrophoneFilesServiceConf
 import {IWebsocketHandler} from '../utils/HTTP/customHandler';
 import {Messages} from '../views/chat/messages/messages';
 import {InterfacesUnion} from '../types/utilityTypes';
-import {FetchFunc} from '../utils/HTTP/requestUtils';
 import {FILE_TYPE} from '../types/fileTypes';
 import {Response} from '../types/response';
 import {Connect} from '../types/connect';
@@ -76,11 +75,7 @@ export interface ServiceIO {
 
   callAPI(requestContents: RequestContents, messages: Messages): Promise<void>;
 
-  extractResultData?(
-    result: object,
-    fetch?: FetchFunc,
-    previousBody?: object
-  ): Promise<InterfacesUnion<Response | {makingAnotherRequest: true}>>;
+  extractResultData?(result: object, previousBody?: object): Promise<Response>;
 
   extractPollResultData?(result: object): PollResult;
 
@@ -96,7 +91,7 @@ export interface ServiceIO {
 
   fetchHistory?: () => Promise<Response[]> | Response[];
 
-  // mostly used for streaming to not close the stream when it makes another request
+  // used to not add another message or close a stream when another request is in progress
   asyncCallInProgress?: boolean;
 
   // PROPERTIES FOR CHILD COMPONENTS
@@ -106,18 +101,6 @@ export interface ServiceIO {
   isLoadingMessage: boolean;
 
   setUpMessagesForService?: (messages: Messages) => void;
-
-  // add it to a DeepChat interface
-
-  verifyKey?(key: string, keyVerificationHandlers: KeyVerificationHandlers): void;
-
-  key?: string;
-
-  validateKeyProperty?: boolean;
-
-  insertKeyPlaceholderText?: string;
-
-  keyHelpUrl?: string;
 
   onInput?: (isUser: boolean) => void;
 }
