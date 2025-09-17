@@ -36,6 +36,7 @@ export class HTTPRequest {
         if (!resultData || (typeof resultData !== 'object' && !Array.isArray(resultData)))
           throw Error(
             ErrorMessages.INVALID_RESPONSE(result, 'response', !!io.activeChat.responseInterceptor, finalResult));
+        if (resultData.error) throw resultData.error;
         if (io.asyncCallInProgress) {
           io.asyncCallInProgress = false;
           return;

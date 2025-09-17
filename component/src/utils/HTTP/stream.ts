@@ -6,6 +6,7 @@ import {ErrorMessages} from '../errorMessages/errorMessages';
 import {Messages} from '../../views/chat/messages/messages';
 import {Response as ResponseI} from '../../types/response';
 import {Stream as StreamI} from '../../types/stream';
+import {ErrorResp} from '../../types/errorInternal';
 import {CustomHandler} from './customHandler';
 import {RequestUtils} from './requestUtils';
 import {Demo} from '../demo/demo';
@@ -114,9 +115,11 @@ export class Stream {
     io.extractResultData?.(eventData, interceptedBody)
       .then((result?: ResponseI) => {
         // do not to stop the stream on one message failure to give other messages a change to display
-        Stream.upsertWFiles(messages, stream.upsertStreamedMessage.bind(stream), stream, result);
+        Stream.upsertContent(messages, stream.upsertStreamedMessage.bind(stream), stream, result);
       })
-      .catch((e) => RequestUtils.displayError(messages, e));
+      .catch((e) => {
+        if (!messages.isLastMessageError()) RequestUtils.displayError(messages, e);}
+      );
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -180,8 +183,12 @@ export class Stream {
       sh: SimulationSH, type: 'text'|'html', charIndex: number, io?: ServiceIO) {
     const character = responseStrings[charIndex];
     if (character) {
-      const finalEventData = await RequestUtils.basicResponseProcessing(messages, {[type]: character}, {io});
-      Stream.upsertWFiles(messages, stream.upsertStreamedMessage.bind(stream), stream, finalEventData);
+      try {
+        const finalEventData = await RequestUtils.basicResponseProcessing(messages, {[type]: character}, {io});
+        Stream.upsertContent(messages, stream.upsertStreamedMessage.bind(stream), stream, finalEventData);
+      } catch (e) {
+        if (!messages.isLastMessageError()) RequestUtils.displayError(messages, e as ErrorResp);
+      }
       const timeout = setTimeout(() => {
         Stream.populateMessages(messages, responseStrings, stream, sh, type, charIndex + 1, io);
       }, sh.simulationInterim || 6);
@@ -208,7 +215,7 @@ export class Stream {
     onClose();
   }
 
-  public static upsertWFiles(msgs: Messages, upsert: UpsertFunc, stream?: MessageStream, resp?: ResponseI | ResponseI[]) {
+  public static upsertContent(msgs: Messages, upsert: UpsertFunc, stream?: MessageStream, resp?: ResponseI | ResponseI[]) {
     if (resp && Array.isArray(resp)) resp = resp[0]; // single array responses are supproted
     if (resp?.text || resp?.html) {
       const resultStream = upsert(resp);
@@ -217,6 +224,9 @@ export class Stream {
     if (resp?.files) {
       msgs.addNewMessage({files: resp.files});
       stream?.markFileAdded();
+    }
+    if (resp?.error) {
+      throw resp.error;
     }
   }
 }
