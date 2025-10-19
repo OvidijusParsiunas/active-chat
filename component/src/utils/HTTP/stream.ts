@@ -11,8 +11,6 @@ import {CustomHandler} from './customHandler';
 import {RequestUtils} from './requestUtils';
 import {Demo} from '../demo/demo';
 
-type SimulationSH = Omit<StreamHandlers, 'abortStream'> & {abortStream: {abort: () => void}};
-
 type UpsertFunc = (response?: ResponseI) => MessageStream | void;
 
 export class Stream {
@@ -65,7 +63,7 @@ export class Stream {
     }).catch((err) => {
       Stream.handleError(io, messages, err);
     });
-     io.streamHandlers.onAbort = () => {
+    io.streamHandlers.onAbort = () => {
       stream.finaliseStreamedMessage();
       io.streamHandlers.onClose();
       aborted = true;
@@ -124,6 +122,7 @@ export class Stream {
       .then((result?: ResponseI) => {
         // do not to stop the stream on one message failure to give other messages a change to display
         Stream.upsertContent(messages, stream.upsertStreamedMessage.bind(stream), stream, result);
+        messages.removeError();
       })
       .catch((e) => {
         if (!messages.isLastMessageError()) RequestUtils.displayError(messages, e);}
@@ -159,7 +158,6 @@ export class Stream {
 
   // io is only passed for demo to simulate a real stream
   public static async simulate(messages: Messages, sh: StreamHandlers, result: ResponseI, io?: ServiceIO) {
-    const simulationSH = sh as unknown as SimulationSH;
     if (!(await RequestUtils.basicResponseProcessing(messages, result, {io, useRI: false}))) return sh.onClose();
     if (Array.isArray(result)) result = result[0]; // single array responses are supproted
     if (result.files) {
@@ -170,37 +168,41 @@ export class Stream {
       sh.onOpen();
       const responseTextStrings = result.text.split(''); // important to split by char for Chinese characters
       const stream = new MessageStream(messages, io?.stream);
-      Stream.populateMessages(messages, responseTextStrings, stream, simulationSH, 'text', 0, io);
+      Stream.populateMessages(messages, responseTextStrings, stream, sh, 'text', 0, io);
     }
     if (result.html) {
       sh.onOpen();
       let responseHTMLStrings = HTMLUtils.splitHTML(result.html);
       if (responseHTMLStrings.length === 0) responseHTMLStrings = result.html.split('');
       const stream = new MessageStream(messages, io?.stream);
-      Stream.populateMessages(messages, responseHTMLStrings, stream, simulationSH, 'html', 0, io);
+      Stream.populateMessages(messages, responseHTMLStrings, stream, sh, 'html', 0, io);
     }
     if (result.error) {
       RequestUtils.displayError(messages, result.error);
       sh.onClose();
     }
+    sh.onAbort = () => {
+      sh.onClose();
+    };
   }
 
   // prettier-ignore
   // io is only passed for demo to simulate a real stream
   private static async populateMessages(messages: Messages, responseStrings: string[], stream: MessageStream,
-      sh: SimulationSH, type: 'text'|'html', charIndex: number, io?: ServiceIO) {
+      sh: StreamHandlers, type: 'text'|'html', charIndex: number, io?: ServiceIO) {
     const character = responseStrings[charIndex];
     if (character) {
       try {
         const finalEventData = await RequestUtils.basicResponseProcessing(messages, {[type]: character}, {io});
         Stream.upsertContent(messages, stream.upsertStreamedMessage.bind(stream), stream, finalEventData);
+        messages.removeError();
       } catch (e) {
         if (!messages.isLastMessageError()) RequestUtils.displayError(messages, e as ErrorResp);
       }
       const timeout = setTimeout(() => {
         Stream.populateMessages(messages, responseStrings, stream, sh, type, charIndex + 1, io);
       }, sh.simulationInterim || 6);
-      sh.abortStream.abort = () => {
+      sh.onAbort = () => {
         Stream.abort(timeout, stream, sh.onClose);
       };
     } else {
