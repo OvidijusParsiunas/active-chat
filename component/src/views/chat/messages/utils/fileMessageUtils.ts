@@ -1,5 +1,6 @@
-import {MessageFileType, MessageFile} from '../../../../types/messageFile';
-import {MessageStyles, MessageContent} from '../../../../types/messages';
+import {MessageFile, MessageFileType} from '../../../../types/messageFile';
+import {MessageContent, MessageStyles} from '../../../../types/messages';
+import {ElementUtils} from '../../../../utils/element/elementUtils';
 import {MessagesBase} from '../messagesBase';
 import {MessageElements} from '../messages';
 
@@ -16,12 +17,12 @@ export class FileMessageUtils {
   }
 
   // prettier-ignore
-  public static addMessage(
-      messages: MessagesBase, elements: MessageElements, styles: keyof MessageStyles, role: string, isTop: boolean) {
+  public static addMessage(messages: MessagesBase, elements: MessageElements, styles: keyof MessageStyles,
+      role: string, isTop: boolean, scroll: boolean) {
     FileMessageUtils.setElementProps(messages, elements, styles, role);
     if (!isTop) {
       messages.appendOuterContainerElemet(elements.outerContainer);
-      if (!messages.focusMode) messages.elementRef.scrollTop = messages.elementRef.scrollHeight;
+      if (!messages.focusMode && scroll) ElementUtils.scrollToBottom(messages.elementRef, false, elements.outerContainer);
     }
   }
 
@@ -38,8 +39,10 @@ export class FileMessageUtils {
     // if not a data url (http url) or image
     if (!url.startsWith('data') || type === 'image') return false;
     // not linking javascript as it can be a potential security vulnerability
-    // if not marked as image, but image - is linkable
-    return (type === 'any' && url.startsWith('data:text/javascript')) || !url.startsWith('data:image');
+    return (
+      (type === 'any' && url.startsWith('data:text/javascript')) ||
+      (!url.startsWith('data:image') && !url.startsWith('data:application'))
+    );
   }
 
   public static processContent(type: MessageFileType, contentEl: HTMLElement, url?: string, name?: string) {
@@ -47,14 +50,15 @@ export class FileMessageUtils {
     return FileMessageUtils.wrapInLink(contentEl, url, name);
   }
 
-  private static waitToLoadThenScroll(messagesContainerEl: HTMLElement) {
+  private static waitToLoadThenScroll(messagesContainerEl: HTMLElement, targetElement: HTMLElement) {
     setTimeout(() => {
-      messagesContainerEl.scrollTop = messagesContainerEl.scrollHeight;
+      ElementUtils.scrollToBottom(messagesContainerEl, false, targetElement);
     }, 60); // this timeout is used to allow the new image element dimensions to be rendered
   }
-  public static scrollDownOnImageLoad(url: string, messagesContainerEl: HTMLElement) {
+
+  public static scrollDownOnImageLoad(url: string, messagesContainerEl: HTMLElement, targetElement: HTMLElement) {
     if (url.startsWith('data')) {
-      FileMessageUtils.waitToLoadThenScroll(messagesContainerEl);
+      FileMessageUtils.waitToLoadThenScroll(targetElement, messagesContainerEl);
     } else {
       // this is used to prevent an issue where we immediately scroll down before the image meta data has been
       // downloaded which is used to create the image element dimensions (before the image data is loaded)
@@ -66,10 +70,10 @@ export class FileMessageUtils {
         fetch(url, {mode: 'no-cors'})
           .catch(() => {})
           .finally(() => {
-            FileMessageUtils.waitToLoadThenScroll(messagesContainerEl);
+            FileMessageUtils.waitToLoadThenScroll(targetElement, messagesContainerEl);
           });
       } catch (_) {
-        messagesContainerEl.scrollTop = messagesContainerEl.scrollHeight;
+        ElementUtils.scrollToBottom(messagesContainerEl, false, targetElement);
       }
     }
   }

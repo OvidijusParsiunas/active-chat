@@ -1,0 +1,9 @@
+.intro-panel {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  inset: 0px;
+  margin: auto;
+  height: fit-content;
+  top: -2.5em;
+}

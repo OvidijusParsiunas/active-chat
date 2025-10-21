@@ -1,5 +1,6 @@
 #messages {
   overflow: auto;
+  overflow-anchor: none;
 }
 
 .outer-message-container:last-child {

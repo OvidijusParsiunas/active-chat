@@ -19,12 +19,14 @@ import {ErrorResp} from '../../../types/errorInternal';
 import {MessageStream} from './stream/messageStream';
 import {UpdateMessage} from './utils/updateMessage';
 import {Legacy} from '../../../utils/legacy/legacy';
+import {IntroPanel} from '../introPanel/introPanel';
 import {LoadHistory} from '../../../types/history';
 import {MessageUtils} from './utils/messageUtils';
 import {HTMLMessages} from './html/htmlMessages';
 import {ActiveChat} from '../../../activeChat';
 import {FileMessages} from './fileMessages';
 import {MessagesBase} from './messagesBase';
+import {HTMLUtils} from './html/htmlUtils';
 import {History} from './history/history';
 
 export interface MessageElements {
@@ -45,7 +47,7 @@ export class Messages extends MessagesBase {
   private _activeLoadingConfig?: LoadingToggleConfig;
   customDemoResponse?: DemoResponse;
 
-  constructor(activeChat: ActiveChat, serviceIO: ServiceIO) {
+  constructor(activeChat: ActiveChat, serviceIO: ServiceIO, panel?: HTMLElement) {
     super(activeChat);
     const {permittedErrorPrefixes, demo} = serviceIO;
     this._errorMessageOverrides = activeChat.errorMessages?.overrides;
@@ -56,6 +58,7 @@ export class Messages extends MessagesBase {
       activeChat.displayLoadingBubble.toggle = this.setLoadingToggle.bind(this);
     }
     this._permittedErrorPrefixes = permittedErrorPrefixes;
+    this.populateIntroPanel(panel);
     this.addSetupMessageIfNeeded(activeChat);
     if (demo) this.prepareDemo(Legacy.processDemo(demo), activeChat.loadHistory); // before intro/history for load spinner
     this.addIntroductoryMessages(activeChat, serviceIO);
@@ -151,7 +154,7 @@ export class Messages extends MessagesBase {
     if (introMessage?.text) {
       elements = this.createAndAppendNewMessageElement(introMessage.text, MessageUtils.AI_ROLE);
     } else if (introMessage?.html) {
-      elements = HTMLMessages.add(this, introMessage.html, MessageUtils.AI_ROLE);
+      elements = HTMLMessages.add(this, introMessage.html, MessageUtils.AI_ROLE, false);
     }
     if (elements) {
       this.applyCustomStyles(elements, MessageUtils.AI_ROLE, false, this.messageStyles?.intro);
@@ -177,7 +180,7 @@ export class Messages extends MessagesBase {
   }
 
   private tryAddTextMessage(msg: MessageContentI, overwrite: Overwrite, data: ResponseI, history = false, isTop = false) {
-    if (!data.ignoreText && msg.text !== undefined && data.text !== null) {
+    if (msg.text !== undefined && data.text !== null) {
       this.addNewTextMessage(msg.text, msg.role, overwrite, isTop);
       if (!history && this.textToSpeech && msg.role !== MessageUtils.USER_ROLE) {
         TextToSpeech.speak(msg.text, this.textToSpeech);
@@ -187,13 +190,14 @@ export class Messages extends MessagesBase {
 
   private tryAddFileMessages(message: MessageContentI, isTop = false) {
     if (message.files && Array.isArray(message.files)) {
-      FileMessages.addMessages(this, message.files, message.role, isTop);
+      FileMessages.addMessages(this, message.files, message.role, !!message.text, isTop);
     }
   }
 
   private tryAddHTMLMessage(message: MessageContentI, overwrite: Overwrite, isTop = false) {
     if (message.html !== undefined && message.html !== null) {
-      const elements = HTMLMessages.add(this, message.html, message.role, overwrite, isTop);
+      const scroll = !message.text && (!message.files || message.files.length === 0);
+      const elements = HTMLMessages.add(this, message.html, message.role, scroll, overwrite, isTop);
       if (!isTop && HTMLActiveChatElements.isElementTemporary(elements)) delete message.html;
     }
   }
@@ -202,7 +206,7 @@ export class Messages extends MessagesBase {
   public addNewMessage(data: ResponseI, isHistory = false, isTop = false) {
     if (data.role !== MessageUtils.USER_ROLE) this._hiddenAttachments?.removeHiddenFiles();
     const message = Messages.createMessageContent(data);
-    const displayText = this.textToSpeech?.service?.displayText;
+    const displayText = this.textToSpeech?.audio?.displayText;
     if (typeof displayText === 'boolean' && !displayText) delete message.text;
     const overwrite: Overwrite = {status: data.overwrite}; // if did not overwrite, create a new message
     if (isTop) {
@@ -334,7 +338,16 @@ export class Messages extends MessagesBase {
     messageElements.bubbleElement.classList.add(LoadingStyle.BUBBLE_CLASS);
     this.applyCustomStyles(messageElements, role, false, style?.styles);
     this.avatar?.getAvatarContainer(messageElements.innerContainer)?.classList.add('loading-avatar-container');
-    if (!this.focusMode) ElementUtils.scrollToBottom(this.elementRef);
+    const allowScroll = !this.focusMode && ElementUtils.isScrollbarAtBottomOfElement(this.elementRef);
+    if (allowScroll) ElementUtils.scrollToBottom(this.elementRef);
+  }
+
+  private populateIntroPanel(childElement?: HTMLElement) {
+    if (childElement) {
+      this._introPanel = new IntroPanel(childElement);
+      HTMLUtils.apply(this, this._introPanel._elementRef);
+      this.elementRef.appendChild(this._introPanel._elementRef);
+    }
   }
 
   public async addMultipleFiles(filesData: {file: File; type: MessageFileType}[], hiddenAtts: HiddenFileAttachments) {
@@ -343,13 +356,14 @@ export class Messages extends MessagesBase {
       (filesData || []).map((fileData) => {
         return new Promise((resolve) => {
           if (!fileData.type || fileData.type === 'any') {
-            const fileName = fileData.file.name || FileMessageUtils.DEFAULT_FILE_NAME;
-            resolve({name: fileName, type: 'any', ref: fileData.file});
+            const name = fileData.file.name || FileMessageUtils.DEFAULT_FILE_NAME;
+            resolve({name, type: 'any', ref: fileData.file});
           } else {
             const reader = new FileReader();
             reader.readAsDataURL(fileData.file);
             reader.onload = () => {
-              resolve({src: reader.result as string, type: fileData.type, ref: fileData.file});
+              const name = fileData.file.name;
+              resolve({src: reader.result as string, name, type: fileData.type, ref: fileData.file});
             };
           }
         });
@@ -394,6 +408,7 @@ export class Messages extends MessagesBase {
     });
     this.messageToElements.splice(0, this.messageToElements.length, ...retainedMessageToElements);
     if (isReset !== false) {
+      if (this._introPanel?._elementRef) this._introPanel.display();
       this.addIntroductoryMessages();
     }
     this.browserStorage?.clear();

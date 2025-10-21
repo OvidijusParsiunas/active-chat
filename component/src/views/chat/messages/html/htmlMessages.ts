@@ -1,3 +1,4 @@
+import {ElementUtils} from '../../../../utils/element/elementUtils';
 import {Overwrite} from '../../../../types/messagesInternal';
 import {Legacy} from '../../../../utils/legacy/legacy';
 import {MessageUtils} from '../utils/messageUtils';
@@ -8,13 +9,16 @@ import {HTMLUtils} from './htmlUtils';
 export class HTMLMessages {
   public static readonly HTML_BUBBLE_CLASS = 'html-message';
 
-  private static addElement(messages: MessagesBase, outerElement: HTMLElement) {
+  private static addElement(messages: MessagesBase, outerElement: HTMLElement, allowScroll: boolean) {
+    const isCurrentlyAtBottom = ElementUtils.isScrollbarAtBottomOfElement(messages.elementRef);
     messages.appendOuterContainerElemet(outerElement);
-    if (!messages.focusMode) messages.elementRef.scrollTop = messages.elementRef.scrollHeight;
+    if (!messages.focusMode && allowScroll && isCurrentlyAtBottom) {
+      ElementUtils.scrollToBottom(messages.elementRef, false, outerElement);
+    }
   }
 
-  public static createElements(messages: MessagesBase, html: string, role: string, isTop: boolean) {
-    const messageElements = messages.createMessageElementsOnOrientation('', role, isTop);
+  public static createElements(messages: MessagesBase, html: string, role: string, isTop: boolean, loading = false) {
+    const messageElements = messages.createMessageElementsOnOrientation('', role, isTop, loading);
     messageElements.bubbleElement.classList.add(HTMLMessages.HTML_BUBBLE_CLASS);
     const {contentEl} = HTMLUtils.tryAddWrapper(messageElements.bubbleElement, html, messages._customWrappers, role);
     contentEl.innerHTML = html;
@@ -47,7 +51,9 @@ export class HTMLMessages {
     return messageElements;
   }
 
-  public static add(messages: MessagesBase, html: string, role: string, overwrite?: Overwrite, isTop = false) {
+  // prettier-ignore
+  public static add(
+      messages: MessagesBase, html: string, role: string, scroll: boolean, overwrite?: Overwrite, isTop = false) {
     if (overwrite?.status) {
       const overwrittenElements = this.overwrite(messages, html, role, messages.messageElementRefs);
       if (overwrittenElements) return overwrittenElements;
@@ -58,7 +64,7 @@ export class HTMLMessages {
       return;
     }
     const messageElements = HTMLMessages.create(messages, html, role, isTop);
-    if (!isTop) HTMLMessages.addElement(messages, messageElements.outerContainer);
+    if (!isTop) HTMLMessages.addElement(messages, messageElements.outerContainer, scroll);
     return messageElements;
   }
 }

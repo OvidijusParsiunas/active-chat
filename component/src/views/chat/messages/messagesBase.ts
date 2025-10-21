@@ -13,6 +13,7 @@ import {LoadingHistory} from './history/loadingHistory';
 import {HTMLClassUtilities} from '../../../types/html';
 import {FocusModeUtils} from './utils/focusModeUtils';
 import {Legacy} from '../../../utils/legacy/legacy';
+import {IntroPanel} from '../introPanel/introPanel';
 import {HTMLWrappers} from '../../../types/stream';
 import {FocusMode} from '../../../types/focusMode';
 import {MessageUtils} from './utils/messageUtils';
@@ -35,9 +36,11 @@ export class MessagesBase {
   readonly messageToElements: MessageToElements = [];
   readonly avatar?: Avatar;
   readonly name?: Name;
+  protected _introPanel?: IntroPanel;
   private _remarkable: Remarkable;
   readonly _customWrappers?: HTMLWrappers;
   private _lastGroupMessagesElement?: HTMLElement;
+  private readonly _applyHTMLToRemarkable?: boolean;
   private readonly _onMessage?: (message: MessageContentI, isHistory: boolean) => void;
   public readonly browserStorage?: BrowserStorage;
   public static readonly TEXT_BUBBLE_CLASS = 'text-message';
@@ -48,6 +51,7 @@ export class MessagesBase {
     this.elementRef = MessagesBase.createContainerElement();
     this.messageStyles = Legacy.processMessageStyles(activeChat.messageStyles);
     this._remarkable = RemarkableConfig.createNew(activeChat.remarkable);
+    this._applyHTMLToRemarkable = activeChat.remarkable?.applyHTML;
     if (activeChat.avatars) this.avatar = new Avatar(activeChat.avatars);
     if (activeChat.browserStorage) this.browserStorage = new BrowserStorage(activeChat.browserStorage);
     if (activeChat.names) this.name = new Name(activeChat.names);
@@ -104,8 +108,14 @@ export class MessagesBase {
     const messageElements = this.createNewMessageElement(text, role);
     this.appendOuterContainerElemet(messageElements.outerContainer, role);
     if (role === 'user') {
-      const isAnimation = typeof this.focusMode !== 'boolean' && this.focusMode?.scroll;
-      ElementUtils.scrollToBottom(this.elementRef, isAnimation);
+      const isAnimation = typeof this.focusMode !== 'boolean' && this.focusMode?.smoothScroll;
+      if (isAnimation) {
+        setTimeout(() => {
+          ElementUtils.scrollToBottom(this.elementRef, isAnimation); // in timeout for it to move to the loading bubble
+        });
+      } else {
+        ElementUtils.scrollToBottom(this.elementRef);
+      }
     }
     return messageElements;
   }
@@ -120,8 +130,16 @@ export class MessagesBase {
 
   private createAndAppendNewMessageElementDefault(text: string, role: string) {
     const messageElements = this.createNewMessageElement(text, role);
+    const isCurrentlyAtBottom = ElementUtils.isScrollbarAtBottomOfElement(this.elementRef);
     this.appendOuterContainerElemet(messageElements.outerContainer);
-    setTimeout(() => ElementUtils.scrollToBottom(this.elementRef)); // timeout neeed when bubble font is large
+    // timeout neeed when bubble font is large
+    setTimeout(() => {
+      if (role === 'user') {
+        ElementUtils.scrollToBottom(this.elementRef);
+      } else if (isCurrentlyAtBottom) {
+        ElementUtils.scrollToBottom(this.elementRef, false, messageElements.outerContainer);
+      }
+    });
     return messageElements;
   }
 
@@ -131,8 +149,8 @@ export class MessagesBase {
     this.elementRef.appendChild(this._lastGroupMessagesElement as HTMLElement);
   }
 
-  private createAndPrependNewMessageElement(text: string, role: string, isTop: boolean) {
-    const messageElements = this.createNewMessageElement(text, role, isTop);
+  private createAndPrependNewMessageElement(text: string, role: string, isTop: boolean, loading = false) {
+    const messageElements = this.createNewMessageElement(text, role, isTop, loading);
     if (isTop && (this.elementRef.firstChild as HTMLElement)?.classList.contains(MessagesBase.INTRO_CLASS)) {
       (this.elementRef.firstChild as HTMLElement).insertAdjacentElement('afterend', messageElements.outerContainer);
       // swapping to place intro refs into correct position
@@ -145,13 +163,14 @@ export class MessagesBase {
     return messageElements;
   }
 
-  public createMessageElementsOnOrientation(text: string, role: string, isTop: boolean) {
+  public createMessageElementsOnOrientation(text: string, role: string, isTop: boolean, loading = false) {
     return isTop
-      ? this.createAndPrependNewMessageElement(text, role, isTop)
-      : this.createNewMessageElement(text, role, isTop);
+      ? this.createAndPrependNewMessageElement(text, role, isTop, loading)
+      : this.createNewMessageElement(text, role, isTop, loading);
   }
 
-  public createNewMessageElement(text: string, role: string, isTop = false) {
+  public createNewMessageElement(text: string, role: string, isTop = false, loading = false) {
+    if (!loading) this._introPanel?.hide();
     const lastMessageElements = this.messageElementRefs[this.messageElementRefs.length - 1];
     LoadingHistory.changeFullViewToSmall(this);
     if (!isTop && MessagesBase.isTemporaryElement(lastMessageElements)) {
@@ -272,6 +291,7 @@ export class MessagesBase {
     const {contentEl: textEl, wrapper} = HTMLUtils.tryAddWrapper(bubbleElement, text, this._customWrappers, role);
     if (wrapper) HTMLUtils.apply(this, bubbleElement);
     textEl.innerHTML = this._remarkable.render(text);
+    if (this._applyHTMLToRemarkable) HTMLUtils.apply(this, textEl);
     // There is a bug in remarkable where text with only numbers and full stop after them causes the creation
     // of a list which has no inner text and is instead prepended as a prefix in the start attribute (12.)
     // We also check if the only child is not <p> because it could be an image

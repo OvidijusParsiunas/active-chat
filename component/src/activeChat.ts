@@ -228,7 +228,7 @@ export class ActiveChat extends InternalHTML {
     // set before container populated, not available in constructor for react,
     // assigning to variable as it is added to panel and is no longer child (test in official website)
     this._childElement ??= this.children[0] as HTMLElement | undefined;
-    ChatView.render(this, this._elementRef, this._activeService);
+    ChatView.render(this, this._elementRef, this._activeService, this._childElement);
     if (!this._hasBeenRendered) FireEvents.onRender(this);
     this._hasBeenRendered = true;
   }

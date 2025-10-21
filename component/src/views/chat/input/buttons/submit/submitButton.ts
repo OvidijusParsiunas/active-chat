@@ -9,6 +9,7 @@ import {UserContentI} from '../../../../../types/messagesInternal';
 import {MessageUtils} from '../../../messages/utils/messageUtils';
 import {MicrophoneButton} from '../microphone/microphoneButton';
 import {SubmitButtonStateStyle} from './submitButtonStateStyle';
+import {Browser} from '../../../../../utils/browser/browser';
 import {ServiceIO} from '../../../../../services/serviceIO';
 import {ButtonInnerElements} from '../buttonInnerElements';
 import {UserContent} from '../../../../../types/messages';
@@ -16,6 +17,7 @@ import {Legacy} from '../../../../../utils/legacy/legacy';
 import {ButtonAccessibility} from '../buttonAccessility';
 import {Response} from '../../../../../types/response';
 import {TextInputEl} from '../../textInput/textInput';
+import {FocusUtils} from '../../textInput/focusUtils';
 import {Signals} from '../../../../../types/handler';
 import {ActiveChat} from '../../../../../activeChat';
 import {TooltipUtils} from '../tooltip/tooltipUtils';
@@ -169,6 +171,10 @@ export class SubmitButton extends InputButton<Styles> {
       const inputText = this._textInput.inputElementRef.innerText.trim() as string;
       this.attemptSubmit({text: inputText, files: uploadedFilesData});
     }
+    // on Safari and mobile devices, after triggering submit, immediately restore caret/focus for seamless typing
+    if (Browser.IS_SAFARI || Browser.IS_MOBILE) {
+      setTimeout(() => FocusUtils.focusEndOfInput(this._textInput.inputElementRef));
+    }
   }
 
   public async programmaticSubmit(content: UserContent) {
@@ -189,6 +195,10 @@ export class SubmitButton extends InputButton<Styles> {
     if ((await this._validationHandler?.(isProgrammatic ? content : undefined)) === false) return;
     this.changeToLoadingIcon();
     this._textInput.clear();
+    // Keep focus on mobile after clearing to maintain keyboard active
+    if (Browser.IS_MOBILE) {
+      setTimeout(() => this._textInput.inputElementRef.focus());
+    }
     if (typeof this._messages.focusMode !== 'boolean' && this._messages.focusMode?.fade) {
       await FocusModeUtils.fadeAnimation(this._messages.elementRef, this._messages.focusMode.fade);
     }
@@ -251,6 +261,8 @@ export class SubmitButton extends InputButton<Styles> {
       if (this._microphoneButton?.isActive) {
         SpeechToText.toggleSpeechAfterSubmit(this._microphoneButton.elementRef, !!this._stopSTTAfterSubmit);
       }
+      // Ensure focus is restored even when triggered via button click
+      setTimeout(() => FocusUtils.focusEndOfInput(this._textInput.inputElementRef));
     };
   }
 
