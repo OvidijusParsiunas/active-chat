@@ -4,6 +4,7 @@ import {REFRESH_ICON_STRING} from '../../../../../icons/refreshIcon';
 import {CAPTURE_ICON_STRING} from '../../../../../icons/captureIcon';
 import {SVGIconUtils} from '../../../../../utils/svg/svgIconUtils';
 import {CLOSE_ICON_STRING} from '../../../../../icons/closeIcon';
+import {CLICK} from '../../../../../utils/consts/inputConstants';
 import {TICK_ICON_STRING} from '../../../../../icons/tickIcon';
 import {CustomStyle} from '../../../../../types/styles';
 import {FileAttachments} from '../fileAttachments';
@@ -62,7 +63,7 @@ export class CameraModal extends Modal {
     captureButton.onclick = () => {
       this.capture();
     };
-    closeButton.addEventListener('click', this.stop.bind(this));
+    closeButton.addEventListener(CLICK, this.stop.bind(this));
     submitButton.onclick = () => {
       const file = this.getFile();
       if (file) FileAttachments.addFilesToType([file], [fileAttachmentsType]);

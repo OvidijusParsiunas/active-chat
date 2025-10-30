@@ -1,6 +1,7 @@
 import {Avatars, AvatarStyles, CustomAvatars} from '../../../types/avatars';
 import aiLogoUrl from '../../../../assets/machine-learning.svg';
 import avatarUrl from '../../../../assets/person-avatar.png';
+import {DEFAULT} from '../../../utils/consts/inputConstants';
 import {MessageUtils} from './utils/messageUtils';
 import {Role} from './role';
 
@@ -16,17 +17,17 @@ export class Avatar extends Role {
     const styles = typeof this._avatars === 'boolean' ? undefined : this._avatars;
     const avatarContainerElement = this.createAvatar(role, styles);
     const position = this.getPosition(role, styles);
-    avatarContainerElement.classList.add(position === 'left' ? 'left-item-position' : 'right-item-position');
-    messageText.insertAdjacentElement(position === 'left' ? 'beforebegin' : 'afterend', avatarContainerElement);
+    avatarContainerElement.classList.add(position === 'start' ? 'start-item-position' : 'end-item-position');
+    messageText.insertAdjacentElement(position === 'start' ? 'beforebegin' : 'afterend', avatarContainerElement);
   }
 
   private createAvatar(role: string, avatars?: CustomAvatars) {
     const avatar = document.createElement('img');
     if (role === MessageUtils.USER_ROLE) {
-      avatar.src = avatars?.user?.src || avatars?.default?.src || avatarUrl;
+      avatar.src = avatars?.user?.src || avatars?.[DEFAULT]?.src || avatarUrl;
       avatar.onerror = Avatar.errorFallback.bind(this, avatarUrl);
     } else {
-      avatar.src = avatars?.[role]?.src || avatars?.ai?.src || avatars?.default?.src || aiLogoUrl;
+      avatar.src = avatars?.[role]?.src || avatars?.ai?.src || avatars?.[DEFAULT]?.src || aiLogoUrl;
       avatar.onerror = Avatar.errorFallback.bind(this, aiLogoUrl);
     }
     avatar.classList.add('avatar');
@@ -41,8 +42,8 @@ export class Avatar extends Role {
   private getPosition(role: string, avatars?: CustomAvatars) {
     let position: AvatarStyles['position'] | undefined = avatars?.[role]?.styles?.position;
     if (role !== MessageUtils.USER_ROLE) position ??= avatars?.ai?.styles?.position;
-    position ??= avatars?.default?.styles?.position;
-    position ??= role === MessageUtils.USER_ROLE ? 'right' : 'left';
+    position ??= avatars?.[DEFAULT]?.styles?.position;
+    position ??= role === MessageUtils.USER_ROLE ? 'end' : 'start';
     return position;
   }
 
@@ -58,7 +59,7 @@ export class Avatar extends Role {
   }
 
   private static applyCustomStyles(container: HTMLElement, avatar: HTMLElement, avatars: CustomAvatars, role: string) {
-    if (avatars.default?.styles) Avatar.applyCustomStylesToElements(container, avatar, avatars.default.styles);
+    if (avatars[DEFAULT]?.styles) Avatar.applyCustomStylesToElements(container, avatar, avatars[DEFAULT].styles);
     if (role === MessageUtils.USER_ROLE) {
       if (avatars.user?.styles) Avatar.applyCustomStylesToElements(container, avatar, avatars.user.styles);
     } else {

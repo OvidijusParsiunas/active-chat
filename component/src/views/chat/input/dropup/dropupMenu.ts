@@ -1,3 +1,4 @@
+import {CLICK, DROPUP_MENU} from '../../../../utils/consts/inputConstants';
 import {KEYBOARD_KEY} from '../../../../utils/buttons/keyboardKeys';
 import {DropupMenuStyles} from '../../../../types/dropupStyles';
 import {DropupItemNavigation} from './dropupItemNavigation';
@@ -22,7 +23,7 @@ export class DropupMenu {
 
   private static createElement(containerStyle?: CustomStyle) {
     const menuElement = document.createElement('div');
-    menuElement.id = 'dropup-menu';
+    menuElement.id = DROPUP_MENU;
     Object.assign(menuElement.style, containerStyle);
     return menuElement;
   }
@@ -55,14 +56,14 @@ export class DropupMenu {
   // prettier-ignore
   private addWindowEvents(containerElement: HTMLElement) {
     this.clickEvent = this.windowClick.bind(this, containerElement);
-    window.addEventListener('click', this.clickEvent);
+    window.addEventListener(CLICK, this.clickEvent);
     this.keyDownEvent = this.windowKeyDown.bind(this, containerElement);
     window.addEventListener('keydown', this.keyDownEvent);
   }
 
   private windowClick(containerElement: HTMLElement, event: MouseEvent) {
     if (!containerElement.isConnected && this.clickEvent) {
-      window.removeEventListener('click', this.clickEvent);
+      window.removeEventListener(CLICK, this.clickEvent);
     } else if (containerElement.parentElement !== (event.target as HTMLElement).shadowRoot?.children[0]) {
       this.close();
     }
@@ -77,7 +78,7 @@ export class DropupMenu {
         this.close();
         this.highlightedItem?.dispatchEvent(new MouseEvent('mouseleave'));
       } else if (event.key === KEYBOARD_KEY.ENTER) {
-        this.highlightedItem?.click();
+        this.highlightedItem?.[CLICK]();
         this.highlightedItem?.dispatchEvent(new MouseEvent('mouseleave'));
       } else if (event.key === KEYBOARD_KEY.ARROW_DOWN) {
         DropupItemNavigation.focusSiblingItem(

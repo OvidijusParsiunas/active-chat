@@ -1,6 +1,7 @@
 import {ErrorMessages} from '../../../../utils/errorMessages/errorMessages';
 import {ElementUtils} from '../../../../utils/element/elementUtils';
 import {MessageContentI} from '../../../../types/messagesInternal';
+import {DEFAULT} from '../../../../utils/consts/inputConstants';
 import {TextToSpeech} from '../textToSpeech/textToSpeech';
 import {MessageFile} from '../../../../types/messageFile';
 import {MessageElements, Messages} from '../messages';
@@ -65,7 +66,7 @@ export class MessageStream {
   private setInitialState(streamType: 'text' | 'html', content: string, role?: string) {
     this._streamType = streamType;
     role ??= MessageUtils.AI_ROLE;
-    const customWrapper = this._messages._customWrappers?.[role] || this._messages._customWrappers?.['default'];
+    const customWrapper = this._messages._customWrappers?.[role] || this._messages._customWrappers?.[DEFAULT];
     const initContent = customWrapper ? '' : content;
     // does not overwrite previous message for simplicity as otherwise users would need to return first response with
     // {..., overwrite: false} and others as {..., ovewrite: true} which would be too complex on their end

@@ -1,3 +1,4 @@
+import {CLICK, DEFAULT, HOVER} from '../../../../utils/consts/inputConstants';
 import {StyleUtils} from '../../../../utils/element/styleUtils';
 import {HTMLClassUtilities} from '../../../../types/html';
 import {StatefulStyles} from '../../../../types/styles';
@@ -12,7 +13,7 @@ const ACTIVE_CHAT_SUGGESTION_BUTTON = 'chat-suggestion-button';
 const ACTIVE_CHAT_ELEMENTS: HTMLClassUtilities = {
   'chat-button': {
     styles: {
-      default: {
+      [DEFAULT]: {
         backgroundColor: 'white',
         padding: '5px',
         paddingLeft: '7px',
@@ -21,10 +22,10 @@ const ACTIVE_CHAT_ELEMENTS: HTMLClassUtilities = {
         borderRadius: '6px',
         cursor: 'pointer',
       },
-      hover: {
+      [HOVER]: {
         backgroundColor: '#fafafa',
       },
-      click: {
+      [CLICK]: {
         backgroundColor: '#f1f1f1',
       },
     },
@@ -37,7 +38,7 @@ export class HTMLActiveChatElements {
   private static applySuggestionEvent(messages: MessagesBase, element: Element) {
     // needs to be in a timeout for submitMessage to be available
     setTimeout(() => {
-      element.addEventListener('click', () => {
+      element.addEventListener(CLICK, () => {
         messages.submitUserMessage?.({text: element.textContent?.trim() || ''});
       });
     });
@@ -70,7 +71,7 @@ export class HTMLActiveChatElements {
     const activeChatStyles = ACTIVE_CHAT_ELEMENTS[className].styles;
     if (activeChatStyles) {
       const stylesCp = JSON.parse(JSON.stringify(activeChatStyles));
-      if (stylesCp.default) StyleUtils.overwriteDefaultWithAlreadyApplied(stylesCp, element as HTMLElement);
+      if (stylesCp[DEFAULT]) StyleUtils.overwriteDefaultWithAlreadyApplied(stylesCp, element as HTMLElement);
       customStyles.unshift(stylesCp); // add it to the front to be primary
     }
     const mergedStyles = StyleUtils.mergeStatefulStyles(customStyles);

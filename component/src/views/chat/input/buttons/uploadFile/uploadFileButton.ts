@@ -2,6 +2,7 @@ import {FileAttachmentsType} from '../../fileAttachments/fileAttachmentTypes/fil
 import {GenericInputButtonStyles} from '../../../../../types/genericInputButton';
 import {DefinedButtonStateStyles} from '../../../../../types/buttonInternal';
 import {FileAttachments} from '../../fileAttachments/fileAttachments';
+import {CLICK} from '../../../../../utils/consts/inputConstants';
 import {FileServiceIO} from '../../../../../services/serviceIO';
 import {Modal} from '../../fileAttachments/modal/modal';
 import {TooltipUtils} from '../tooltip/tooltipUtils';
@@ -41,7 +42,7 @@ export class UploadFileButton extends InputButton<Styles> {
 
   private triggerImportPrompt(inputElement: HTMLInputElement) {
     inputElement.onchange = this.import.bind(this, inputElement);
-    inputElement.click();
+    inputElement[CLICK]();
   }
 
   private import(inputElement: HTMLInputElement) {
@@ -67,7 +68,7 @@ export class UploadFileButton extends InputButton<Styles> {
   private addClickEvent(containerElement: HTMLElement, fileService: FileServiceIO) {
     const closeCallback = this.triggerImportPrompt.bind(this, this._inputElement);
     const openModalFunc = Modal.createTextModalFunc(containerElement, fileService, closeCallback);
-    this.elementRef.onclick = this.click.bind(this, openModalFunc);
+    this.elementRef.onclick = this[CLICK].bind(this, openModalFunc);
   }
 
   private click(openModalFunc?: () => void) {

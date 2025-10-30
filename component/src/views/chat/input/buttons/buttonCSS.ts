@@ -1,3 +1,4 @@
+import {CLICK, DEFAULT, HOVER} from '../../../../utils/consts/inputConstants';
 import {StyleUtils} from '../../../../utils/element/styleUtils';
 import {StatefulStyles} from '../../../../types/styles';
 import {ButtonStyles} from '../../../../types/button';
@@ -26,10 +27,10 @@ export class ButtonCSS {
   }
 
   public static setElementCssUpToState(button: HTMLElement, styles: ButtonStyles, style: keyof StatefulStyles) {
-    ButtonCSS.setElementsCSS(button, styles, 'default');
-    if (style === 'default') return;
-    ButtonCSS.setElementsCSS(button, styles, 'hover');
-    if (style === 'hover') return;
-    ButtonCSS.setElementsCSS(button, styles, 'click');
+    ButtonCSS.setElementsCSS(button, styles, DEFAULT);
+    if (style === DEFAULT) return;
+    ButtonCSS.setElementsCSS(button, styles, HOVER);
+    if (style === HOVER) return;
+    ButtonCSS.setElementsCSS(button, styles, CLICK);
   }
 }

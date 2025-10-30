@@ -2,6 +2,7 @@ import {ValidationHandler} from '../../../../../types/validationHandler';
 import {FileAttachments} from '../../../../../types/fileAttachments';
 import {AudioFileAttachmentType} from './audioFileAttachmentType';
 import {MessageFileType} from '../../../../../types/messageFile';
+import {CLICK} from '../../../../../utils/consts/inputConstants';
 import {Browser} from '../../../../../utils/browser/browser';
 import {ServiceIO} from '../../../../../services/serviceIO';
 import {ActiveChat} from '../../../../../activeChat';
@@ -113,7 +114,7 @@ export class FileAttachmentsType {
     const containerElement = FileAttachmentsType.createContainer(attachmentElement);
     if (this._attachments.length >= this._fileCountLimit) {
       const removeButton = this._attachments[this._attachments.length - 1].removeButton;
-      removeButton?.click();
+      removeButton?.[CLICK]();
       const attachments = this._fileAttachmentsContainerRef.children;
       this._fileAttachmentsContainerRef.insertBefore(containerElement, attachments[0]);
     } else {
@@ -168,7 +169,7 @@ export class FileAttachmentsType {
     this._hiddenAttachments.clear();
     // the remove is in a timeout as otherwise the this._attachments.splice would cause iteration of the same file
     this._attachments.forEach((attachment) => {
-      setTimeout(() => attachment.removeButton?.click());
+      setTimeout(() => attachment.removeButton?.[CLICK]());
       this._hiddenAttachments.add(attachment);
     });
   }
@@ -176,7 +177,7 @@ export class FileAttachmentsType {
   removeAttachments() {
     // the remove is in a timeout as otherwise the this._attachments.splice would cause iteration of the same file
     this._attachments.forEach((attachment) => {
-      setTimeout(() => attachment.removeButton?.click());
+      setTimeout(() => attachment.removeButton?.[CLICK]());
     });
     this._hiddenAttachments.clear();
   }

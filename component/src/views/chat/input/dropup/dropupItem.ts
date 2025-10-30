@@ -1,4 +1,5 @@
 import {StatefulEvents} from '../../../../utils/element/statefulEvents';
+import {CLICK, DEFAULT} from '../../../../utils/consts/inputConstants';
 import {CustomStyle, StatefulStyles} from '../../../../types/styles';
 import {ButtonInnerElements} from '../buttons/buttonInnerElements';
 import {DropupMenuStyles} from '../../../../types/dropupStyles';
@@ -14,8 +15,8 @@ export class DropupItem {
 
   private static addItemEvents(menu: DropupMenu, item: HTMLElement, inputButton: HTMLElement, styles: StatefulStyles) {
     StatefulEvents.add(item, styles);
-    item.addEventListener('click', () => {
-      inputButton.click();
+    item.addEventListener(CLICK, () => {
+      inputButton[CLICK]();
     });
     item.addEventListener('mouseenter', (event) => {
       menu.highlightedItem = event.target as HTMLElement;
@@ -56,7 +57,7 @@ export class DropupItem {
 
   public static createItem(menu: DropupMenu, inputButton: InputButton, styles?: DropupMenuStyles) {
     const item = document.createElement('div');
-    Object.assign(item.style, styles?.item?.default);
+    Object.assign(item.style, styles?.item?.[DEFAULT]);
     DropupItem.populateItem(inputButton, item, styles);
     item.classList.add(DropupItem.MENU_ITEM_CLASS);
     const {elementRef} = inputButton;

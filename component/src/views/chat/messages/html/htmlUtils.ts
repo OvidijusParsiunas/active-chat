@@ -2,6 +2,7 @@ import {EventToFunction, HTMLClassUtility, HTMLClassUtilities} from '../../../..
 import {StatefulEvents} from '../../../../utils/element/statefulEvents';
 import {StyleUtils} from '../../../../utils/element/styleUtils';
 import {HTMLActiveChatElements} from './htmlActiveChatElements';
+import {DEFAULT} from '../../../../utils/consts/inputConstants';
 import {StatefulStyles} from '../../../../types/styles';
 import {HTMLWrappers} from '../../../../types/stream';
 import {MessagesBase} from '../messagesBase';
@@ -12,7 +13,7 @@ export class HTMLUtils {
   public static applyStylesToElement(element: HTMLElement, styles: StatefulStyles) {
     const statefulStyles = StyleUtils.processStateful(styles);
     StatefulEvents.add(element, statefulStyles);
-    Object.assign(element.style, statefulStyles.default);
+    Object.assign(element.style, statefulStyles[DEFAULT]);
   }
 
   private static applyEventsToElement(element: HTMLElement, events: EventToFunction) {
@@ -85,7 +86,7 @@ export class HTMLUtils {
 
   public static tryAddWrapper(bubbleElement: HTMLElement, content: string, wrappers?: HTMLWrappers, role?: string) {
     if (content && role) {
-      const customWrapper = wrappers?.[role] || wrappers?.['default'];
+      const customWrapper = wrappers?.[role] || wrappers?.[DEFAULT];
       if (customWrapper) {
         bubbleElement.innerHTML = customWrapper;
         return {contentEl: HTMLUtils.getTargetWrapper(bubbleElement), wrapper: true};

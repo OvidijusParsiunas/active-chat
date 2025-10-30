@@ -1,4 +1,5 @@
 import {DefinedButtonInnerElements, DefinedButtonStateStyles} from '../../../../../types/buttonInternal';
+import {DEFAULT, DROPUP_MENU, OUTSIDE_END} from '../../../../../utils/consts/inputConstants';
 import {MICROPHONE_ICON_STRING} from '../../../../../icons/microphone';
 import {MicrophoneStyles} from '../../../../../types/microphone';
 import {ButtonStyles} from '../../../../../types/button';
@@ -16,7 +17,7 @@ export class MicrophoneButton extends InputButton<Styles> {
   isActive = false;
 
   constructor(styles?: AllMicrophoneStyles) {
-    if (styles?.position === 'dropup-menu') styles.position = 'outside-right'; // not allowed to be in dropup for UX
+    if (styles?.position === DROPUP_MENU) styles.position = OUTSIDE_END; // not allowed to be in dropup for UX
     const tooltip = TooltipUtils.tryCreateConfig('Microphone', styles?.tooltip);
     super(MicrophoneButton.createMicrophoneElement(), MICROPHONE_ICON_STRING, styles?.position, tooltip, styles);
     this._innerElements = this.createInnerElementsForStates(this.customStyles);
@@ -26,7 +27,7 @@ export class MicrophoneButton extends InputButton<Styles> {
   private createInnerElementsForStates(customStyles?: Styles) {
     const iconId = 'microphone-icon';
     return {
-      default: this.createInnerElements(iconId, 'default', customStyles),
+      [DEFAULT]: this.createInnerElements(iconId, DEFAULT, customStyles),
       active: this.createInnerElements(iconId, 'active', customStyles),
       unsupported: this.createInnerElements(iconId, 'unsupported', customStyles),
       commandMode: this.createInnerElements(iconId, 'commandMode', customStyles),
@@ -43,14 +44,14 @@ export class MicrophoneButton extends InputButton<Styles> {
   public changeToActive() {
     this.changeElementsByState(this._innerElements.active);
     this.toggleIconFilter('active');
-    this.reapplyStateStyle('active', ['default', 'commandMode']);
+    this.reapplyStateStyle('active', [DEFAULT, 'commandMode']);
     this.isActive = true;
   }
 
   public changeToDefault() {
-    this.changeElementsByState(this._innerElements.default);
-    this.toggleIconFilter('default');
-    this.reapplyStateStyle('default', ['active', 'commandMode']);
+    this.changeElementsByState(this._innerElements[DEFAULT]);
+    this.toggleIconFilter(DEFAULT);
+    this.reapplyStateStyle(DEFAULT, ['active', 'commandMode']);
     this.isActive = false;
   }
 
@@ -70,7 +71,7 @@ export class MicrophoneButton extends InputButton<Styles> {
     const iconElement = this.elementRef.children[0];
     if (iconElement.tagName.toLocaleLowerCase() === 'svg') {
       switch (mode) {
-        case 'default':
+        case DEFAULT:
           iconElement.classList.remove('active-microphone-icon', 'command-microphone-icon');
           iconElement.classList.add('default-microphone-icon');
           break;

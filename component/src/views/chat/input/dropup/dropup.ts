@@ -1,3 +1,4 @@
+import {CLICK, OUTSIDE_START, OUTSIDE_END} from '../../../../utils/consts/inputConstants';
 import {PositionToButtons} from '../buttons/styleAdjustments/inputButtonPositions';
 import {GenericInputButtonStyles} from '../../../../types/genericInputButton';
 import {DefinedButtonStateStyles} from '../../../../types/buttonInternal';
@@ -57,7 +58,7 @@ export class Dropup extends InputButton<Styles> {
   }
 
   private addContainerEvents(containerElement: HTMLElement) {
-    containerElement.addEventListener('click', (event) => {
+    containerElement.addEventListener(CLICK, (event) => {
       const classes = (event.target as HTMLElement).classList;
       if (!classes.contains(Dropup.BUTTON_ICON_CLASS) && !classes.contains(CustomButton.DISABLED_CONTAINER_CLASS)) {
         this._menu.close();
@@ -69,9 +70,9 @@ export class Dropup extends InputButton<Styles> {
     if (dropupStyles?.button?.position) {
       return dropupStyles?.button?.position;
     }
-    if (pToBs['outside-left'].length > 0 && pToBs['outside-right'].length === 0) {
-      return 'outside-right';
+    if (pToBs[OUTSIDE_START].length > 0 && pToBs[OUTSIDE_END].length === 0) {
+      return OUTSIDE_END;
     }
-    return 'outside-left';
+    return OUTSIDE_START;
   }
 }

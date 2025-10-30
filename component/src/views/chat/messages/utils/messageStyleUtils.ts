@@ -1,4 +1,5 @@
 import {MessageElementsStyles, MessageRoleStyles, MessageStyles} from '../../../../types/messages';
+import {DEFAULT} from '../../../../utils/consts/inputConstants';
 import {OverrideTypes} from '../../../../types/utilityTypes';
 import {GenericObject} from '../../../../types/object';
 import {CustomStyle} from '../../../../types/styles';
@@ -41,17 +42,17 @@ export class MessageStyleUtils {
   // prettier-ignore
   public static applyCustomStyles(messageStyles: MessageStyles,
       elements: MessageElements, role: string, media: boolean, otherStyles?: MessageRoleStyles | MessageElementsStyles) {
-    if (otherStyles && messageStyles.default !== otherStyles) {
+    if (otherStyles && messageStyles[DEFAULT] !== otherStyles) {
       if (MessageStyleUtils.isElementsStyles(otherStyles)) {
-        MessageStyleUtils.applyCustomStylesToElements(elements, media, messageStyles.default?.shared);
+        MessageStyleUtils.applyCustomStylesToElements(elements, media, messageStyles[DEFAULT]?.shared);
         MessageStyleUtils.applyCustomStylesToElements(elements, media, otherStyles);
       } else {
-        MessageStyleUtils.applySideStyles(elements, role, media, messageStyles.default);
+        MessageStyleUtils.applySideStyles(elements, role, media, messageStyles[DEFAULT]);
         MessageStyleUtils.applySideStyles(elements, role, media, otherStyles);
       }
     } else {
       // just apply the default for all sides
-      MessageStyleUtils.applySideStyles(elements, role, media, messageStyles.default);
+      MessageStyleUtils.applySideStyles(elements, role, media, messageStyles[DEFAULT]);
     }
   }
 

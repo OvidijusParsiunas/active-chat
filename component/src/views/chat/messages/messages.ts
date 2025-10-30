@@ -6,6 +6,7 @@ import {CustomErrors, ServiceIO} from '../../../services/serviceIO';
 import {IntroMessage, LoadingStyles} from '../../../types/messages';
 import {LoadingStyle} from '../../../utils/loading/loadingStyle';
 import {ElementUtils} from '../../../utils/element/elementUtils';
+import {DEFAULT} from '../../../utils/consts/inputConstants';
 import {FireEvents} from '../../../utils/events/fireEvents';
 import {MessageStyleUtils} from './utils/messageStyleUtils';
 import {ErrorMessageOverrides} from '../../../types/error';
@@ -112,7 +113,7 @@ export class Messages extends MessagesBase {
         if (history?.full) LoadingHistory.addMessage(this);
       }
       if (demo.displayErrors) {
-        if (demo.displayErrors.default) this.addNewErrorMessage('' as 'service', '');
+        if (demo.displayErrors[DEFAULT]) this.addNewErrorMessage('' as 'service', '');
         if (demo.displayErrors.service) this.addNewErrorMessage('service', '');
         if (demo.displayErrors.speechToText) this.addNewErrorMessage('speechToText', '');
       }
@@ -253,14 +254,14 @@ export class Messages extends MessagesBase {
     this._hiddenAttachments?.readdHiddenFiles();
     this.removeMessageOnError();
     const text = this.getPermittedMessage(message) || this._errorMessageOverrides?.[type]
-      || this._errorMessageOverrides?.default || 'Error, please try again.';
+      || this._errorMessageOverrides?.[DEFAULT] || 'Error, please try again.';
     const messageElements = this.createMessageElementsOnOrientation(text, 'error', isTop);
     MessageUtils.hideRoleElements(messageElements.innerContainer, this.avatar, this.name);
     const {bubbleElement, outerContainer} = messageElements;
     bubbleElement.classList.add(MessageUtils.ERROR_MESSAGE_TEXT_CLASS);
     this.renderText(bubbleElement, text);
     const fontElementStyles = MessageStyleUtils.extractParticularSharedStyles(['fontSize', 'fontFamily'],
-      this.messageStyles?.default);
+      this.messageStyles?.[DEFAULT]);
     MessageStyleUtils.applyCustomStylesToElements(messageElements, false, fontElementStyles);
     MessageStyleUtils.applyCustomStylesToElements(messageElements, false, this.messageStyles?.error);
     if (!isTop) this.appendOuterContainerElemet(outerContainer);

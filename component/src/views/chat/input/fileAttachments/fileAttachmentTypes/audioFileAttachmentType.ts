@@ -2,6 +2,7 @@ import {AttachmentObject, FileAttachmentsType} from './fileAttachmentsType';
 import {ElementUtils} from '../../../../../utils/element/elementUtils';
 import {FileAttachments} from '../../../../../types/fileAttachments';
 import {SVGIconUtils} from '../../../../../utils/svg/svgIconUtils';
+import {CLICK} from '../../../../../utils/consts/inputConstants';
 import {PLAY_ICON_STRING} from '../../../../../icons/playIcon';
 import {STOP_ICON_STRING} from '../../../../../icons/stopIcon';
 import {Browser} from '../../../../../utils/browser/browser';
@@ -103,7 +104,7 @@ export class AudioFileAttachmentType extends FileAttachmentsType {
     const mouseLeave = () => container.replaceChildren(textContainer);
     container.addEventListener('mouseleave', mouseLeave);
     const click = () => this.stopPlaceholderCallback?.();
-    container.addEventListener('click', click);
+    container.addEventListener(CLICK, click);
   }
 
   addPlaceholderAttachment(stopCallback: () => Promise<void>, customTimeLimit?: number) {
@@ -143,7 +144,7 @@ export class AudioFileAttachmentType extends FileAttachmentsType {
 
   public static stopAttachmentPlayback(attachmentContainerEl: HTMLElement) {
     if (attachmentContainerEl.children[0]?.children?.[0]?.classList.contains('stop-icon')) {
-      (attachmentContainerEl.children[0] as HTMLElement).click();
+      (attachmentContainerEl.children[0] as HTMLElement)[CLICK]();
     }
   }
 }

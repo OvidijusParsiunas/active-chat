@@ -38,7 +38,7 @@ export class FileMessages {
     if (Browser.IS_SAFARI) {
       audioElement.classList.add('audio-player-safari');
       audioElement.classList.add(
-        role === MessageUtils.USER_ROLE ? 'audio-player-safari-right' : 'audio-player-safari-left'
+        role === MessageUtils.USER_ROLE ? 'audio-player-safari-end' : 'audio-player-safari-start'
       );
     }
     return audioElement;

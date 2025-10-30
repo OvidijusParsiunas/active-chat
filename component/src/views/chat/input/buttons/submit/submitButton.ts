@@ -1,3 +1,4 @@
+import {LOADING_CLASS, DISABLED_CLASS, SUBMIT_CLASS} from '../../../../../utils/consts/inputConstants';
 import {FileAttachmentsType} from '../../fileAttachments/fileAttachmentTypes/fileAttachmentsType';
 import {ValidationHandler} from '../../../../../types/validationHandler';
 import {FileAttachments} from '../../fileAttachments/fileAttachments';
@@ -33,9 +34,6 @@ import {
 type Styles = Omit<DefinedButtonStateStyles<SubmitButtonStyles>, 'alwaysEnabled' | 'tooltip'>;
 
 export class SubmitButton extends InputButton<Styles> {
-  private static readonly SUBMIT_CLASS = 'submit-button';
-  private static readonly LOADING_CLASS = 'loading-button';
-  private static readonly DISABLED_CLASS = 'disabled-button';
   private readonly _serviceIO: ServiceIO;
   private readonly _messages: Messages;
   private readonly _textInput: TextInputEl;
@@ -227,7 +225,7 @@ export class SubmitButton extends InputButton<Styles> {
 
   private changeToStopIcon() {
     if (this._serviceIO.websocket) return; // stop not used for streaming messages in websocket
-    this.elementRef.classList.remove(SubmitButton.LOADING_CLASS, SubmitButton.DISABLED_CLASS, SubmitButton.SUBMIT_CLASS);
+    this.elementRef.classList.remove(LOADING_CLASS, DISABLED_CLASS, SUBMIT_CLASS);
     ButtonAccessibility.removeAriaAttributes(this.elementRef);
     this.changeElementsByState(this._innerElements.stop);
     this.reapplyStateStyle('stop', ['loading', 'submit']);
@@ -239,9 +237,9 @@ export class SubmitButton extends InputButton<Styles> {
     if (this._serviceIO.websocket) return;
     if (!this._isSVGLoadingIconOverriden) this.changeElementsByState(this._innerElements.loading);
     ButtonAccessibility.removeAriaDisabled(this.elementRef);
-    this.elementRef.classList.remove(SubmitButton.SUBMIT_CLASS, SubmitButton.DISABLED_CLASS);
+    this.elementRef.classList.remove(SUBMIT_CLASS, DISABLED_CLASS);
     ButtonAccessibility.addAriaBusy(this.elementRef);
-    this.elementRef.classList.add(SubmitButton.LOADING_CLASS);
+    this.elementRef.classList.add(LOADING_CLASS);
     this.reapplyStateStyle('loading', ['submit']);
     this.elementRef.onclick = () => {};
     this.status.requestInProgress = true;
@@ -250,10 +248,10 @@ export class SubmitButton extends InputButton<Styles> {
 
   // called every time when user triggers an input via ValidationHandler - hence use class to check if not already present
   public changeToSubmitIcon() {
-    if (this.elementRef.classList.contains(SubmitButton.SUBMIT_CLASS)) return;
-    this.elementRef.classList.remove(SubmitButton.LOADING_CLASS, SubmitButton.DISABLED_CLASS);
+    if (this.elementRef.classList.contains(SUBMIT_CLASS)) return;
+    this.elementRef.classList.remove(LOADING_CLASS, DISABLED_CLASS);
     ButtonAccessibility.removeAriaAttributes(this.elementRef);
-    this.elementRef.classList.add(SubmitButton.SUBMIT_CLASS);
+    this.elementRef.classList.add(SUBMIT_CLASS);
     this.changeElementsByState(this._innerElements.submit);
     SubmitButtonStateStyle.resetSubmit(this, this.status.loadingActive);
     this.elementRef.onclick = () => {
@@ -270,10 +268,10 @@ export class SubmitButton extends InputButton<Styles> {
   public changeToDisabledIcon(isProgrammatic = false) {
     if (this._alwaysEnabled && !isProgrammatic) {
       this.changeToSubmitIcon();
-    } else if (!this.elementRef.classList.contains(SubmitButton.DISABLED_CLASS)) {
-      this.elementRef.classList.remove(SubmitButton.LOADING_CLASS, SubmitButton.SUBMIT_CLASS);
+    } else if (!this.elementRef.classList.contains(DISABLED_CLASS)) {
+      this.elementRef.classList.remove(LOADING_CLASS, SUBMIT_CLASS);
       ButtonAccessibility.removeAriaBusy(this.elementRef);
-      this.elementRef.classList.add(SubmitButton.DISABLED_CLASS);
+      this.elementRef.classList.add(DISABLED_CLASS);
       ButtonAccessibility.addAriaDisabled(this.elementRef);
       this.changeElementsByState(this._innerElements.disabled);
       this.reapplyStateStyle('disabled', ['submit']);
