@@ -1,8 +1,10 @@
+import {BrowserStorage} from '../../messages/browserStorage/browserStorage';
 import {KEYBOARD_KEY} from '../../../../utils/buttons/keyboardKeys';
 import {FileAttachments} from '../fileAttachments/fileAttachments';
 import {StyleUtils} from '../../../../utils/element/styleUtils';
 import {Browser} from '../../../../utils/browser/browser';
 import {ServiceIO} from '../../../../services/serviceIO';
+import {DefaultInput} from '../../../../types/messages';
 import {TextInput} from '../../../../types/textInput';
 import {CustomStyle} from '../../../../types/styles';
 import {TextInputEvents} from './textInputEvents';
@@ -21,11 +23,12 @@ export class TextInputEl {
   private _onInput: ((isUser: boolean) => void) | undefined;
   submit?: () => void;
 
-  constructor(activeChat: ActiveChat, serviceIO: ServiceIO, fileAts: FileAttachments) {
+  constructor(activeChat: ActiveChat, serviceIO: ServiceIO, fileAts: FileAttachments, storage?: BrowserStorage) {
     const processedConfig = TextInputEl.processConfig(serviceIO, activeChat.textInput);
     this.elementRef = TextInputEl.createContainerElement(processedConfig?.styles?.container);
     this._config = processedConfig;
-    this.inputElementRef = this.createInputElement();
+    this.inputElementRef = this.createInputElement(activeChat.defaultInput?.text, storage);
+    TextInputEl.addFilesToAnyType(fileAts, activeChat.defaultInput?.files);
     this.elementRef.appendChild(this.inputElementRef);
     activeChat.setPlaceholderText = this.setPlaceholderText.bind(this);
     activeChat.setPlaceholderText(this._config.placeholder?.text || 'Ask me anything!');
@@ -74,11 +77,16 @@ export class TextInputEl {
     if (Browser.IS_CHROMIUM) window.scrollTo({top: scrollY});
   }
 
-  private createInputElement() {
+  private createInputElement(defaultText?: string, storage?: BrowserStorage) {
     const inputElement = document.createElement('div');
     inputElement.id = TextInputEl.TEXT_INPUT_ID;
     inputElement.classList.add('text-input-styling');
     inputElement.role = 'textbox';
+    if (typeof defaultText === 'string') {
+      inputElement.innerText = defaultText;
+    } else if (storage?.trackInputText) {
+      inputElement.innerText = storage.get().inputText || '';
+    }
     // makes the element focusable on mobile
     // https://github.com/OvidijusParsiunas/deep-chat/pull/452/files/b8cf45dc559be2667e51f8cf2bb026527000076d
     if (Browser.IS_MOBILE) inputElement.setAttribute('tabindex', '0');
@@ -96,6 +104,10 @@ export class TextInputEl {
     Object.assign(inputElement.style, this._config.placeholder?.style);
     if (!this._config.placeholder?.style?.color) inputElement.setAttribute('textcolor', '');
     return inputElement;
+  }
+
+  private static addFilesToAnyType(fileAttachments: FileAttachments, files: DefaultInput['files']) {
+    if (files) fileAttachments.addFilesToAnyType(Array.from(files).map((file) => file));
   }
 
   public removePlaceholderStyle() {

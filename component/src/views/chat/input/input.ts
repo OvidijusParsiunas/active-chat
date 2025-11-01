@@ -35,13 +35,13 @@ export class Input {
     this.elementRef = Input.createPanelElement(activeChat.inputAreaStyle);
     const buttons: Buttons = {};
     const fileAtts = this.createFileUploadComponents(activeChat, serviceIO, containerElement, buttons);
-    const textInput = new TextInputEl(activeChat, serviceIO, fileAtts);
+    const textInput = new TextInputEl(activeChat, serviceIO, fileAtts, messages.browserStorage);
     if (activeChat.speechToText && !buttons.microphone) {
       buttons.microphone = {button: new SpeechToText(activeChat, textInput, messages.addNewErrorMessage.bind(messages))};
     }
     const submitButton = new SubmitButton(activeChat, textInput, messages, serviceIO, fileAtts, buttons);
     textInput.submit = submitButton.submitFromInput.bind(submitButton);
-    ValidationHandler.attach(activeChat, serviceIO, textInput, fileAtts, submitButton);
+    ValidationHandler.attach(activeChat, serviceIO, textInput, fileAtts, submitButton, messages.browserStorage);
     activeChat.submitUserMessage = submitButton.programmaticSubmit.bind(submitButton);
     buttons.submit = {button: submitButton};
     if (activeChat.customButtons) CustomButton.add(activeChat, buttons);

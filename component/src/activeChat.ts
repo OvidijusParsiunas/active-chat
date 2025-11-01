@@ -1,5 +1,5 @@
 import {CameraFilesServiceConfig, FilesServiceConfig, MicrophoneFilesServiceConfig} from './types/fileServiceConfigs';
-import {MessageContent, IntroMessage, MessageStyles, UserContent, OnMessage} from './types/messages';
+import {MessageContent, IntroMessage, MessageStyles, UserContent, OnMessage, DefaultInput} from './types/messages';
 import {WebComponentStyleUtils} from './utils/webComponent/webComponentStyleUtils';
 import {DisableSubmitButton, SubmitButtonStyles} from './types/submitButton';
 import {RequestInterceptor, ResponseInterceptor} from './types/interceptors';
@@ -74,6 +74,9 @@ export class ActiveChat extends InternalHTML {
 
   @Property('object')
   textInput?: TextInput;
+
+  @Property('object')
+  defaultInput?: DefaultInput;
 
   @Property('object')
   submitButtonStyles?: SubmitButtonStyles;
