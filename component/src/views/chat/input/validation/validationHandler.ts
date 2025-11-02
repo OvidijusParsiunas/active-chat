@@ -4,7 +4,6 @@ import {UserContentI} from '../../../../types/messagesInternal';
 import {SubmitButton} from '../buttons/submit/submitButton';
 import {Websocket} from '../../../../utils/HTTP/websocket';
 import {ServiceIO} from '../../../../services/serviceIO';
-import {Legacy} from '../../../../utils/legacy/legacy';
 import {TextInputEl} from '../textInput/textInput';
 import {ActiveChat} from '../../../../activeChat';
 import {Demo} from '../../../../utils/demo/demo';
@@ -54,7 +53,7 @@ export class ValidationHandler {
   // prettier-ignore
   public static attach(activeChat: ActiveChat, serviceIO: ServiceIO, textInput: TextInputEl,
       fileAttachments: FileAttachments, submitButton: SubmitButton, browserStorage?: BrowserStorage) {
-    const validateInput = activeChat.validateInput || Legacy.processValidateInput(activeChat);
+    const validateInput = activeChat.validateInput;
     activeChat._validationHandler = async (programmatic?: UserContentI) => {
       if (submitButton.status.loadingActive || submitButton.status.requestInProgress) return false;
       if (serviceIO.isSubmitProgrammaticallyDisabled === true) return false;

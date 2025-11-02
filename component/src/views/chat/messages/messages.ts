@@ -19,7 +19,6 @@ import {Demo, DemoResponse} from '../../../types/demo';
 import {ErrorResp} from '../../../types/errorInternal';
 import {MessageStream} from './stream/messageStream';
 import {UpdateMessage} from './utils/updateMessage';
-import {Legacy} from '../../../utils/legacy/legacy';
 import {IntroPanel} from '../introPanel/introPanel';
 import {LoadHistory} from '../../../types/history';
 import {MessageUtils} from './utils/messageUtils';
@@ -61,7 +60,7 @@ export class Messages extends MessagesBase {
     this._permittedErrorPrefixes = permittedErrorPrefixes;
     this.populateIntroPanel(panel);
     this.addSetupMessageIfNeeded(activeChat);
-    if (demo) this.prepareDemo(Legacy.processDemo(demo), activeChat.loadHistory); // before intro/history for load spinner
+    if (demo) this.prepareDemo(demo, activeChat.loadHistory); // before intro/history for load spinner
     this.addIntroductoryMessages(activeChat, serviceIO);
     new History(activeChat, this, serviceIO);
     this._displayServiceErrorMessages = activeChat.errorMessages?.displayServiceErrorMessages;

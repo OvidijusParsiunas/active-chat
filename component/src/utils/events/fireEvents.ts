@@ -1,7 +1,6 @@
 import {FileMessageUtils} from '../../views/chat/messages/utils/fileMessageUtils';
 import {MessageContentI} from '../../types/messagesInternal';
 import {ActiveChat} from '../../activeChat';
-import {Legacy} from '../legacy/legacy';
 
 export class FireEvents {
   public static onMessage(activeChat: ActiveChat, message: MessageContentI, isHistory: boolean) {
@@ -9,7 +8,6 @@ export class FireEvents {
     FileMessageUtils.reAddFileRefToObject(message, updateBody.message);
     activeChat.onMessage?.(updateBody);
     activeChat.dispatchEvent(new CustomEvent('message', {detail: updateBody}));
-    Legacy.fireOnNewMessage(activeChat, updateBody);
   }
 
   public static onClearMessages(activeChat: ActiveChat) {

@@ -12,7 +12,6 @@ import {MessageStyleUtils} from './utils/messageStyleUtils';
 import {LoadingHistory} from './history/loadingHistory';
 import {HTMLClassUtilities} from '../../../types/html';
 import {FocusModeUtils} from './utils/focusModeUtils';
-import {Legacy} from '../../../utils/legacy/legacy';
 import {IntroPanel} from '../introPanel/introPanel';
 import {HTMLWrappers} from '../../../types/stream';
 import {FocusMode} from '../../../types/focusMode';
@@ -49,7 +48,7 @@ export class MessagesBase {
 
   constructor(activeChat: ActiveChat) {
     this.elementRef = MessagesBase.createContainerElement();
-    this.messageStyles = Legacy.processMessageStyles(activeChat.messageStyles);
+    this.messageStyles = activeChat.messageStyles;
     this._remarkable = RemarkableConfig.createNew(activeChat.remarkable);
     this._applyHTMLToRemarkable = activeChat.remarkable?.applyHTML;
     if (activeChat.avatars) this.avatar = new Avatar(activeChat.avatars);

@@ -3,7 +3,6 @@ import {ElementUtils} from '../../../../utils/element/elementUtils';
 import {MessageContentI} from '../../../../types/messagesInternal';
 import {MessageContent} from '../../../../types/messages';
 import {ServiceIO} from '../../../../services/serviceIO';
-import {Legacy} from '../../../../utils/legacy/legacy';
 import {MessageElements, Messages} from '../messages';
 import {MessageUtils} from '../utils/messageUtils';
 import {ActiveChat} from '../../../../activeChat';
@@ -86,7 +85,6 @@ export class History {
 
   private populateInitialHistory(history: MessageContent[]) {
     history.forEach((message) => {
-      Legacy.processHistoryFile(message);
       this._messages.addAnyMessage(message, true);
     });
   }
@@ -117,8 +115,7 @@ export class History {
     if (activeChat.loadHistory) {
       this.loadInitialHistory(activeChat.loadHistory);
     }
-    const history =
-      activeChat.history || Legacy.processHistory(activeChat) || this._messages.browserStorage?.get().messages;
+    const history = activeChat.history || this._messages.browserStorage?.get().messages;
     if (history) {
       this.populateInitialHistory(history);
       this._index += 1;

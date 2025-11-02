@@ -1,6 +1,5 @@
 import {ElementUtils} from '../../../../utils/element/elementUtils';
 import {Overwrite} from '../../../../types/messagesInternal';
-import {Legacy} from '../../../../utils/legacy/legacy';
 import {MessageUtils} from '../utils/messageUtils';
 import {MessagesBase} from '../messagesBase';
 import {MessageElements} from '../messages';
@@ -28,7 +27,6 @@ export class HTMLMessages {
   public static overwriteElements(messages: MessagesBase, html: string, overwrittenElements: MessageElements) {
     overwrittenElements.bubbleElement.innerHTML = html;
     HTMLUtils.apply(messages, overwrittenElements.outerContainer);
-    Legacy.flagHTMLUpdateClass(overwrittenElements.bubbleElement);
   }
 
   // prettier-ignore
@@ -46,7 +44,6 @@ export class HTMLMessages {
     const messageElements = HTMLMessages.createElements(messages, html, role, isTop);
     MessageUtils.fillEmptyMessageElement(messageElements.bubbleElement, html);
     HTMLUtils.apply(messages, messageElements.outerContainer);
-    Legacy.flagHTMLUpdateClass(messageElements.bubbleElement);
     messages.applyCustomStyles(messageElements, role, false, messages.messageStyles?.html);
     return messageElements;
   }

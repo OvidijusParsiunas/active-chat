@@ -27,7 +27,6 @@ import {CustomButton} from './types/customButton';
 import {HTMLClassUtilities} from './types/html';
 import {ChatView} from './views/chat/chatView';
 import {ServiceIO} from './services/serviceIO';
-import {Legacy} from './utils/legacy/legacy';
 import {LoadHistory} from './types/history';
 import style from './activeChat.css?inline';
 import {FocusMode} from './types/focusMode';
@@ -220,14 +219,12 @@ export class ActiveChat extends InternalHTML {
   // prettier-ignore
   override onRender() {
     GoogleFont.attemptAppendStyleSheetToHead(this.style);
-    Legacy.processConnect(this);
     if (!this._activeService || this._activeService.demo) this._activeService = ServiceIOFactory.create(this); 
     if (this.auxiliaryStyle && !this._auxiliaryStyleApplied) {
       WebComponentStyleUtils.apply(this.auxiliaryStyle, this.shadowRoot);
       this._auxiliaryStyleApplied = true;
     }
     WebComponentStyleUtils.applyDefaultStyleToComponent(this.style, this.chatStyle);
-    Legacy.checkForContainerStyles(this, this._elementRef);
     // set before container populated, not available in constructor for react,
     // assigning to variable as it is added to panel and is no longer child (test in official website)
     this._childElement ??= this.children[0] as HTMLElement | undefined;

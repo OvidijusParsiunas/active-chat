@@ -9,7 +9,6 @@ import {ValidateInput} from '../../types/validateInput';
 import {MessageLimitUtils} from './messageLimitUtils';
 import {Stream as StreamI} from '../../types/stream';
 import {Websocket} from '../../utils/HTTP/websocket';
-import {Legacy} from '../../utils/legacy/legacy';
 import {Stream} from '../../utils/HTTP/stream';
 import {Demo as DemoT} from '../../types/demo';
 import {Response} from '../../types/response';
@@ -46,7 +45,7 @@ export class BaseServiceIO implements ServiceIO {
     if (activeChat.connect) this.connectSettings = activeChat.connect;
     if (this.demo) this.connectSettings.url ??= Demo.URL;
     if (this.connectSettings.websocket) Websocket.setup(this);
-    this.stream = this.activeChat.connect?.stream || Legacy.checkForStream(this.activeChat);
+    this.stream = this.activeChat.connect?.stream;
     if (activeChat.loadHistory) History.addErrorPrefix(this);
   }
 
@@ -138,7 +137,6 @@ export class BaseServiceIO implements ServiceIO {
   }
 
   async extractResultData(result: any | Response): Promise<Response> {
-    if (result.result) return Legacy.handleResponseProperty(result);
     // if invalid - process later in HTTPRequest.request
     if (!RequestUtils.validateResponseFormat(result, !!this.stream)) return undefined as unknown as Response;
     return result;

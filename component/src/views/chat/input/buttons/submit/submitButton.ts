@@ -14,7 +14,6 @@ import {Browser} from '../../../../../utils/browser/browser';
 import {ServiceIO} from '../../../../../services/serviceIO';
 import {ButtonInnerElements} from '../buttonInnerElements';
 import {UserContent} from '../../../../../types/messages';
-import {Legacy} from '../../../../../utils/legacy/legacy';
 import {ButtonAccessibility} from '../buttonAccessility';
 import {Response} from '../../../../../types/response';
 import {TextInputEl} from '../../textInput/textInput';
@@ -176,7 +175,6 @@ export class SubmitButton extends InputButton<Styles> {
   }
 
   public async programmaticSubmit(content: UserContent) {
-    if (typeof content === 'string') content = Legacy.processSubmitUserMessage(content);
     const newContent: UserContentI = {text: content.text};
     if (content.files) {
       newContent.files = Array.from(content.files).map((file) => {
