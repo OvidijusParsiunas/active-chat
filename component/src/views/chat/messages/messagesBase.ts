@@ -9,6 +9,7 @@ import {BrowserStorage} from './browserStorage/browserStorage';
 import {RemarkableOptions} from '../../../types/remarkable';
 import {FireEvents} from '../../../utils/events/fireEvents';
 import {MessageStyleUtils} from './utils/messageStyleUtils';
+import {TEXT} from '../../../utils/consts/messageConstants';
 import {LoadingHistory} from './history/loadingHistory';
 import {HTMLClassUtilities} from '../../../types/html';
 import {FocusModeUtils} from './utils/focusModeUtils';
@@ -91,7 +92,7 @@ export class MessagesBase {
   // prettier-ignore
   private overwriteText(role: string, text: string, elementRefs: MessageElements[]) {
     const elems = MessageUtils.overwriteMessage(
-      this.messageToElements, elementRefs, text, role, 'text', MessagesBase.TEXT_BUBBLE_CLASS);
+      this.messageToElements, elementRefs, text, role, TEXT, MessagesBase.TEXT_BUBBLE_CLASS);
     if (elems) this.renderText(elems.bubbleElement, text, role);
     return elems;
   }

@@ -1,5 +1,6 @@
 import {CLICK, DEFAULT, HOVER} from '../../../../utils/consts/inputConstants';
 import {StyleUtils} from '../../../../utils/element/styleUtils';
+import {TEXT} from '../../../../utils/consts/messageConstants';
 import {HTMLClassUtilities} from '../../../../types/html';
 import {StatefulStyles} from '../../../../types/styles';
 import {MessagesBase} from '../messagesBase';
@@ -39,7 +40,7 @@ export class HTMLActiveChatElements {
     // needs to be in a timeout for submitMessage to be available
     setTimeout(() => {
       element.addEventListener(CLICK, () => {
-        messages.submitUserMessage?.({text: element.textContent?.trim() || ''});
+        messages.submitUserMessage?.({[TEXT]: element.textContent?.trim() || ''});
       });
     });
   }

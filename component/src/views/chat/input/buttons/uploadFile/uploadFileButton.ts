@@ -2,6 +2,7 @@ import {FileAttachmentsType} from '../../fileAttachments/fileAttachmentTypes/fil
 import {GenericInputButtonStyles} from '../../../../../types/genericInputButton';
 import {DefinedButtonStateStyles} from '../../../../../types/buttonInternal';
 import {FileAttachments} from '../../fileAttachments/fileAttachments';
+import {TEXT} from '../../../../../utils/consts/messageConstants';
 import {CLICK} from '../../../../../utils/consts/inputConstants';
 import {FileServiceIO} from '../../../../../services/serviceIO';
 import {Modal} from '../../fileAttachments/modal/modal';
@@ -19,7 +20,7 @@ export class UploadFileButton extends InputButton<Styles> {
   constructor(containerElement: HTMLElement, fileAttachmentsType: FileAttachmentsType,
       fileService: FileServiceIO, iconId: string, iconSVGString: string, dropupText?: string) {
     const buttonPosition = fileService?.button?.position;
-    const dropupItemText = fileService?.button?.styles?.text?.content || dropupText;
+    const dropupItemText = fileService?.button?.styles?.[TEXT]?.content || dropupText;
     const tooltip = TooltipUtils.tryCreateConfig('Upload File', fileService?.button?.tooltip);
     super(
       UploadFileButton.createButtonElement(), iconSVGString, buttonPosition,

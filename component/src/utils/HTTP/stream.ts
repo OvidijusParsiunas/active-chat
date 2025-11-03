@@ -7,6 +7,7 @@ import {Messages} from '../../views/chat/messages/messages';
 import {Response as ResponseI} from '../../types/response';
 import {Stream as StreamI} from '../../types/stream';
 import {ErrorResp} from '../../types/errorInternal';
+import {TEXT} from '../consts/messageConstants';
 import {CustomHandler} from './customHandler';
 import {RequestUtils} from './requestUtils';
 import {Demo} from '../demo/demo';
@@ -170,17 +171,17 @@ export class Stream {
     if (result.files) {
       const finalEventData = await RequestUtils.basicResponseProcessing(messages, {files: result.files}, {io});
       messages.addNewMessage({sendUpdate: false, ...finalEventData}, false);
-      if (!result.html && !result.text) {
+      if (!result.html && !result[TEXT]) {
         const stream = new MessageStream(messages, io?.stream);
         stream.finaliseStreamedMessage();
         sh.onClose();
       }
     }
-    if (result.text) {
+    if (result[TEXT]) {
       sh.onOpen();
-      const responseTextStrings = result.text.split(''); // important to split by char for Chinese characters
+      const responseTextStrings = result[TEXT].split(''); // important to split by char for Chinese characters
       const stream = new MessageStream(messages, io?.stream);
-      Stream.populateMessages(messages, responseTextStrings, stream, sh, 'text', 0, io);
+      Stream.populateMessages(messages, responseTextStrings, stream, sh, TEXT, 0, io);
     }
     if (result.error) {
       RequestUtils.displayError(messages, result.error);
@@ -221,7 +222,7 @@ export class Stream {
   }
 
   public static isSimulatable(stream?: StreamI, respone?: ResponseI) {
-    return Stream.isSimulation(stream) && respone && (respone.text || respone.html);
+    return Stream.isSimulation(stream) && respone && (respone[TEXT] || respone.html);
   }
 
   private static abort(timeout: number, stream: MessageStream, onClose: () => void) {
@@ -232,7 +233,7 @@ export class Stream {
 
   public static upsertContent(msgs: Messages, upsert: UpsertFunc, stream?: MessageStream, resp?: ResponseI | ResponseI[]) {
     if (resp && Array.isArray(resp)) resp = resp[0]; // single array responses are supproted
-    if (resp?.text || resp?.html) {
+    if (resp?.[TEXT] || resp?.html) {
       const resultStream = upsert(resp);
       stream ??= resultStream || undefined; // when streaming with websockets - created per message due to roles
     }

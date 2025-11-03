@@ -8,6 +8,7 @@ import {SpeechToText} from '../microphone/speechToText/speechToText';
 import {SUBMIT_ICON_STRING} from '../../../../../icons/submitIcon';
 import {UserContentI} from '../../../../../types/messagesInternal';
 import {MessageUtils} from '../../../messages/utils/messageUtils';
+import {TEXT} from '../../../../../utils/consts/messageConstants';
 import {MicrophoneButton} from '../microphone/microphoneButton';
 import {SubmitButtonStateStyle} from './submitButtonStateStyle';
 import {Browser} from '../../../../../utils/browser/browser';
@@ -118,7 +119,7 @@ export class SubmitButton extends InputButton<Styles> {
   // prettier-ignore
   private attemptOverwriteLoadingStyle(activeChat: ActiveChat) {
     if (this.customStyles?.submit?.svg
-        || this.customStyles?.loading?.svg?.content || this.customStyles?.loading?.text?.content) return;
+        || this.customStyles?.loading?.svg?.content || this.customStyles?.loading?.[TEXT]?.content) return;
     if (activeChat.displayLoadingBubble === undefined || activeChat.displayLoadingBubble === true) {
       // this gets triggered when alwaysEnabled is set to true
       const styleElement = document.createElement('style');
@@ -162,11 +163,11 @@ export class SubmitButton extends InputButton<Styles> {
     await this._fileAttachments.completePlaceholders();
     const uploadedFilesData = this._fileAttachments.getAllFileData();
     if (this._textInput.isTextInputEmpty()) {
-      this.attemptSubmit({text: '', files: uploadedFilesData});
+      this.attemptSubmit({[TEXT]: '', files: uploadedFilesData});
     } else {
       // not using textContent as it ignores new line spaces
       const inputText = this._textInput.inputElementRef.innerText.trim() as string;
-      this.attemptSubmit({text: inputText, files: uploadedFilesData});
+      this.attemptSubmit({[TEXT]: inputText, files: uploadedFilesData});
     }
     // on Safari and mobile devices, after triggering submit, immediately restore caret/focus for seamless typing
     if (Browser.IS_SAFARI || Browser.IS_MOBILE) {
@@ -175,7 +176,7 @@ export class SubmitButton extends InputButton<Styles> {
   }
 
   public async programmaticSubmit(content: UserContent) {
-    const newContent: UserContentI = {text: content.text};
+    const newContent: UserContentI = {[TEXT]: content[TEXT]};
     if (content.files) {
       newContent.files = Array.from(content.files).map((file) => {
         return {file, type: FileAttachmentsType.getTypeFromBlob(file)};
@@ -201,14 +202,14 @@ export class SubmitButton extends InputButton<Styles> {
     await this.addNewMessage(content);
     if (this._serviceIO.isLoadingMessage) this._messages.addLoadingMessage();
     const filesData = content.files?.map((fileData) => fileData.file);
-    const requestContents = {text: content.text === '' ? undefined : content.text, files: filesData};
+    const requestContents = {[TEXT]: content[TEXT] === '' ? undefined : content[TEXT], files: filesData};
     await this._serviceIO.callAPI(requestContents, this._messages);
     this._fileAttachments?.hideFiles();
   }
 
   private async addNewMessage({text, files, custom}: UserContentI) {
     const data: Response = {role: MessageUtils.USER_ROLE, custom};
-    if (text) data.text = text;
+    if (text) data[TEXT] = text;
     if (files) data.files = await this._messages.addMultipleFiles(files, this._fileAttachments);
     if (this._serviceIO.sessionId) data._sessionId = this._serviceIO.sessionId;
     if (Object.keys(data).length > 0) this._messages.addNewMessage(data);

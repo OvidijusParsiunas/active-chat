@@ -1,5 +1,6 @@
 import {MessageContentI, MessageToElements} from '../../types/messagesInternal';
 import {Messages} from '../../views/chat/messages/messages';
+import {SERVICE, TEXT} from '../consts/messageConstants';
 import {ServiceIO} from '../../services/serviceIO';
 import {RequestUtils} from '../HTTP/requestUtils';
 import {DemoResponse} from '../../types/demo';
@@ -27,11 +28,11 @@ export class Demo {
       }
       return 'That is an interesting file!';
     }
-    if (requestMessage.text) {
-      if (requestMessage.text.charAt(requestMessage.text.length - 1) === '?') {
+    if (requestMessage[TEXT]) {
+      if (requestMessage[TEXT].charAt(requestMessage[TEXT].length - 1) === '?') {
         return "I'm sorry but I can't answer that question...";
       }
-      if (requestMessage.text.includes('updog')) {
+      if (requestMessage[TEXT].includes('updog')) {
         return "What's updog?";
       }
     }
@@ -46,7 +47,7 @@ export class Demo {
   private static getResponse({customDemoResponse, messageToElements}: Messages): Response {
     return customDemoResponse
       ? Demo.getCustomResponse(customDemoResponse, messageToElements[messageToElements.length - 1][0])
-      : {text: Demo.generateResponse(messageToElements)};
+      : {[TEXT]: Demo.generateResponse(messageToElements)};
   }
 
   // timeout is used to simulate a timeout for a response to come back
@@ -58,7 +59,7 @@ export class Demo {
       const messageDataArr = Array.isArray(result) ? result : [result];
       const errorMessage = messageDataArr.find((message) => typeof message.error === 'string');
       if (errorMessage) {
-        messages.addNewErrorMessage('service', errorMessage.error);
+        messages.addNewErrorMessage(SERVICE, errorMessage.error);
         io.completionsHandlers.onFinish();
       } else if (Stream.isSimulatable(io.stream, result as Response)) {
         Stream.simulate(messages, io.streamHandlers, result as Response);

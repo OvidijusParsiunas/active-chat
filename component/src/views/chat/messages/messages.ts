@@ -6,6 +6,7 @@ import {CustomErrors, ServiceIO} from '../../../services/serviceIO';
 import {IntroMessage, LoadingStyles} from '../../../types/messages';
 import {LoadingStyle} from '../../../utils/loading/loadingStyle';
 import {ElementUtils} from '../../../utils/element/elementUtils';
+import {SERVICE} from '../../../utils/consts/messageConstants';
 import {DEFAULT} from '../../../utils/consts/inputConstants';
 import {FireEvents} from '../../../utils/events/fireEvents';
 import {MessageStyleUtils} from './utils/messageStyleUtils';
@@ -113,7 +114,7 @@ export class Messages extends MessagesBase {
       }
       if (demo.displayErrors) {
         if (demo.displayErrors[DEFAULT]) this.addNewErrorMessage('' as 'service', '');
-        if (demo.displayErrors.service) this.addNewErrorMessage('service', '');
+        if (demo.displayErrors[SERVICE]) this.addNewErrorMessage(SERVICE, '');
         if (demo.displayErrors.speechToText) this.addNewErrorMessage('speechToText', '');
       }
       // needs to be here for message loading bubble to not disappear after error
@@ -174,7 +175,7 @@ export class Messages extends MessagesBase {
 
   public addAnyMessage(message: ResponseI, isHistory = false, isTop = false) {
     if (message.error) {
-      return this.addNewErrorMessage('service', message.error, isTop);
+      return this.addNewErrorMessage(SERVICE, message.error, isTop);
     }
     return this.addNewMessage(message, isHistory, isTop);
   }

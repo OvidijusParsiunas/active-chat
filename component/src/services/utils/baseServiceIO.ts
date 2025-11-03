@@ -5,6 +5,7 @@ import {MessageContentI} from '../../types/messagesInternal';
 import {Messages} from '../../views/chat/messages/messages';
 import {RequestUtils} from '../../utils/HTTP/requestUtils';
 import {HTTPRequest} from '../../utils/HTTP/HTTPRequest';
+import {TEXT} from '../../utils/consts/messageConstants';
 import {ValidateInput} from '../../types/validateInput';
 import {MessageLimitUtils} from './messageLimitUtils';
 import {Stream as StreamI} from '../../types/stream';
@@ -63,7 +64,7 @@ export class BaseServiceIO implements ServiceIO {
       formData.append(`message${(textMessageIndex += 1)}`, JSON.stringify(message));
     });
     const lastMessage = messages[messages.length - 1];
-    if (lastMessage.text) {
+    if (lastMessage[TEXT]) {
       delete lastMessage.files; // no need to have files prop as we are sending the message
       formData.append(`message${(textMessageIndex += 1)}`, JSON.stringify(lastMessage));
     }

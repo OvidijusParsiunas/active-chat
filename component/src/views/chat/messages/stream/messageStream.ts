@@ -2,6 +2,7 @@ import {ErrorMessages} from '../../../../utils/errorMessages/errorMessages';
 import {ElementUtils} from '../../../../utils/element/elementUtils';
 import {MessageContentI} from '../../../../types/messagesInternal';
 import {DEFAULT} from '../../../../utils/consts/inputConstants';
+import {TEXT} from '../../../../utils/consts/messageConstants';
 import {TextToSpeech} from '../textToSpeech/textToSpeech';
 import {MessageFile} from '../../../../types/messageFile';
 import {MessageElements, Messages} from '../messages';
@@ -52,7 +53,7 @@ export class MessageStream {
     if (response?.custom && this._message) this._message.custom = response.custom;
     const content = response?.text || response?.html || '';
     const isScrollbarAtBottomOfElement = ElementUtils.isScrollbarAtBottomOfElement(this._messages.elementRef);
-    const streamType = response?.text !== undefined ? 'text' : 'html';
+    const streamType = response?.text !== undefined ? TEXT : 'html';
     if (!this._elements && !this._message) {
       this.setInitialState(streamType, content, response?.role);
     } else if (this._streamType !== streamType) {
@@ -71,7 +72,7 @@ export class MessageStream {
     // does not overwrite previous message for simplicity as otherwise users would need to return first response with
     // {..., overwrite: false} and others as {..., ovewrite: true} which would be too complex on their end
     this._elements =
-      streamType === 'text'
+      streamType === TEXT
         ? this._messages.addNewTextMessage(initContent, role)
         : HTMLMessages.add(this._messages, initContent, role, true);
     if (this._elements) {
@@ -94,7 +95,7 @@ export class MessageStream {
   private updateBasedOnType(content: string, expectedType: string, isOverwrite = false) {
     const bubbleElement = (this._targetWrapper || this._elements?.bubbleElement) as HTMLElement;
     if (!this._partialRender) MessageUtils.unfillEmptyMessageElement(bubbleElement, content);
-    const func = expectedType === 'text' ? this.updateText : this.updateHTML;
+    const func = expectedType === TEXT ? this.updateText : this.updateHTML;
     func.bind(this)(content, bubbleElement, isOverwrite);
   }
 
@@ -160,7 +161,7 @@ export class MessageStream {
     if (this._fileAdded && !this._elements) return;
     if (!this._elements) throw Error(ErrorMessages.NO_VALID_STREAM_EVENTS_SENT);
     if (!this._elements.bubbleElement?.classList.contains(MessageStream.MESSAGE_CLASS)) return;
-    if (this._streamType === 'text') {
+    if (this._streamType === TEXT) {
       if (this._messages.textToSpeech) TextToSpeech.speak(this._message.text || '', this._messages.textToSpeech);
     } else if (this._streamType === 'html') {
       if (this._elements) HTMLUtils.apply(this._messages, this._elements.outerContainer);
@@ -182,7 +183,7 @@ export class MessageStream {
       messages: Messages, downloadCb: () => Promise<{files?: MessageFile[]; text?: string}>) {
     this._endStreamAfterOperation = true;
     const {text, files} = await downloadCb();
-    if (text) this.updateBasedOnType(text, 'text', true);
+    if (text) this.updateBasedOnType(text, TEXT, true);
     this._endStreamAfterOperation = false;
     this.finaliseStreamedMessage();
     if (files) messages.addNewMessage({files}); // adding later to trigger event later

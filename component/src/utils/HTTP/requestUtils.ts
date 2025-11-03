@@ -1,6 +1,7 @@
 import {ErrorMessages} from '../errorMessages/errorMessages';
 import {Messages} from '../../views/chat/messages/messages';
 import {Response as ResponseI} from '../../types/response';
+import {SERVICE, TEXT} from '../consts/messageConstants';
 import {RequestDetails} from '../../types/interceptors';
 import {ErrorResp} from '../../types/errorInternal';
 import {ServiceIO} from '../../services/serviceIO';
@@ -43,17 +44,17 @@ export class RequestUtils {
     console.error(err);
     if (typeof err === 'object') {
       if (err instanceof Error) {
-        return messages.addNewErrorMessage('service', err.message);
+        return messages.addNewErrorMessage(SERVICE, err.message);
       }
       if (Array.isArray(err) || typeof err.error === 'string') {
-        return messages.addNewErrorMessage('service', err);
+        return messages.addNewErrorMessage(SERVICE, err);
       }
       if (Object.keys(err).length === 0) {
-        return messages.addNewErrorMessage('service', defMessage);
+        return messages.addNewErrorMessage(SERVICE, defMessage);
       }
-      return messages.addNewErrorMessage('service', JSON.stringify(err));
+      return messages.addNewErrorMessage(SERVICE, JSON.stringify(err));
     }
-    messages.addNewErrorMessage('service', err);
+    messages.addNewErrorMessage(SERVICE, err);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -95,7 +96,7 @@ export class RequestUtils {
         typeof data !== 'object' ||
         !(
           typeof data.error === 'string' ||
-          typeof data.text === 'string' ||
+          typeof data[TEXT] === 'string' ||
           typeof data.html === 'string' ||
           Array.isArray(data.files)
         )
@@ -104,7 +105,7 @@ export class RequestUtils {
   }
 
   public static onInterceptorError(messages: Messages, error: string, onFinish?: () => void) {
-    messages.addNewErrorMessage('service', error);
+    messages.addNewErrorMessage(SERVICE, error);
     onFinish?.();
   }
 

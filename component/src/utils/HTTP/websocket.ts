@@ -3,6 +3,7 @@ import {MessageUtils} from '../../views/chat/messages/utils/messageUtils';
 import {CustomHandler, IWebsocketHandler} from './customHandler';
 import {ErrorMessages} from '../errorMessages/errorMessages';
 import {Messages} from '../../views/chat/messages/messages';
+import {SERVICE, TEXT} from '../consts/messageConstants';
 import {ServiceIO} from '../../services/serviceIO';
 import {StreamConfig} from '../../types/stream';
 import {Response} from '../../types/response';
@@ -55,7 +56,7 @@ export class Websocket {
     io.activeChat._validationHandler?.();
     if (!Websocket.isElementPresentInDOM(io.activeChat)) return;
     io.websocket = 'pending';
-    if (!messages.isLastMessageError()) messages.addNewErrorMessage('service', 'Connection error');
+    if (!messages.isLastMessageError()) messages.addNewErrorMessage(SERVICE, 'Connection error');
     setTimeout(() => {
       Websocket.createConnection(io, messages);
     }, 5000);
@@ -88,7 +89,7 @@ export class Websocket {
     ws.onclose = () => {
       console.error('Connection closed');
       // this is used to prevent two error messages displayed when websocket throws error and close events at the same time
-      if (!messages.isLastMessageError()) messages.addNewErrorMessage('service', 'Connection error');
+      if (!messages.isLastMessageError()) messages.addNewErrorMessage(SERVICE, 'Connection error');
       if (io.stream) io.streamHandlers.onAbort?.();
       Websocket.createConnection(io, messages);
     };
@@ -100,12 +101,12 @@ export class Websocket {
     if (!ws || ws === 'pending') return;
     const requestDetails = {body, headers: io.connectSettings?.headers};
     const {body: interceptedBody, error} = await RequestUtils.processRequestInterceptor(io.activeChat, requestDetails);
-    if (error) return messages.addNewErrorMessage('service', error);
+    if (error) return messages.addNewErrorMessage(SERVICE, error);
     if (!Websocket.isWebSocket(ws)) return ws.newUserMessage.listener(interceptedBody);
     const processedBody = stringifyBody ? JSON.stringify(interceptedBody) : interceptedBody;
     if (ws.readyState === undefined || ws.readyState !== ws.OPEN) {
       console.error('Connection is not open');
-      if (!messages.isLastMessageError()) messages.addNewErrorMessage('service', 'Connection error');
+      if (!messages.isLastMessageError()) messages.addNewErrorMessage(SERVICE, 'Connection error');
     } else {
       ws.send(JSON.stringify(processedBody));
       io.completionsHandlers.onFinish();
@@ -132,7 +133,7 @@ export class Websocket {
     if (typeof simulation === 'string') {
       const role = result.role || MessageUtils.AI_ROLE;
       const stream = roleToStream[role];
-      if (result.text === simulation || result.html === simulation) {
+      if (result[TEXT] === simulation || result.html === simulation) {
         stream?.finaliseStreamedMessage();
         delete roleToStream[role];
       } else {

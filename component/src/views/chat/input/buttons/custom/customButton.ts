@@ -3,6 +3,7 @@ import {CLICK, DEFAULT} from '../../../../../utils/consts/inputConstants';
 import {DropupMenuStyles} from '../../../../../types/dropupStyles';
 import {CUSTOM_ICON_STRING} from '../../../../../icons/customIcon';
 import {StyleUtils} from '../../../../../utils/element/styleUtils';
+import {TEXT} from '../../../../../utils/consts/messageConstants';
 import {HTMLUtils} from '../../../messages/html/htmlUtils';
 import {ButtonAccessibility} from '../buttonAccessility';
 import {ButtonStyles} from '../../../../../types/button';
@@ -45,7 +46,7 @@ export class CustomButton extends InputButton<Styles> {
 
   // prettier-ignore
   constructor(customButton: CustomButtonT, index: number, focusInput?: () => void, menuStyles?: DropupMenuStyles) {
-    const dropupText = customButton?.styles?.button?.[DEFAULT]?.text?.content || `Custom ${index}`;
+    const dropupText = customButton?.styles?.button?.[DEFAULT]?.[TEXT]?.content || `Custom ${index}`;
     const svg = CUSTOM_ICON_STRING;
     const tooltip = TooltipUtils.tryCreateConfig(`Custom ${index}`, customButton?.tooltip);  
     super(CustomButton.createButtonElement(), svg, customButton?.position,
@@ -105,9 +106,9 @@ export class CustomButton extends InputButton<Styles> {
 
   private applyDropupContentStyles(styles?: CustomDropupItemStateStyles) {
     const childrenEls = Array.from(this.elementRef.children);
-    if (styles?.text) {
+    if (styles?.[TEXT]) {
       const textElement = childrenEls.find((element) => element.classList.contains(DropupItem.TEXT_CLASS)) as HTMLElement;
-      if (textElement) Object.assign(textElement.style, styles.text);
+      if (textElement) Object.assign(textElement.style, styles[TEXT]);
     }
     if (styles?.iconContainer) {
       const iconElement = childrenEls.find((element) => element.classList.contains(DropupItem.ICON_CLASS)) as HTMLElement;
@@ -121,7 +122,7 @@ export class CustomButton extends InputButton<Styles> {
     this.elementRef.innerHTML = '';
     const emptySVG = buttonStyles?.svg?.content === '';
     if (!emptySVG) this.elementRef.appendChild(DropupItem.createItemIcon(this.svg, this._menuStyles?.iconContainer));
-    this.elementRef.appendChild(DropupItem.createItemText(this.dropupText, this._menuStyles?.text));
+    this.elementRef.appendChild(DropupItem.createItemText(this.dropupText, this._menuStyles?.[TEXT]));
   }
 
   private assignDropupItemStyle(dropupStyles?: CustomDropupItemStateStyles, buttonStyles?: ButtonStyles) {
@@ -190,10 +191,10 @@ export class CustomButton extends InputButton<Styles> {
   private genStateInnerElements(iconId: string, state: keyof Styles, defaultElements: Element[], customStyles?: Styles) {
     let stateElements = this.createInnerElements(iconId, state, customStyles);
     const SVGContent = customStyles?.[state]?.svg?.content;
-    const textContent = customStyles?.[state]?.text?.content;
+    const textContent = customStyles?.[state]?.[TEXT]?.content;
     if (SVGContent === undefined || textContent === undefined) {
-      const {svg: defaultSVG, text: defaultText} = ButtonUtils.parseSVGTextElements(defaultElements);
-      const {svg: stateSVG, text: stateText} = ButtonUtils.parseSVGTextElements(stateElements);
+      const {svg: defaultSVG, [TEXT]: defaultText} = ButtonUtils.parseSVGTextElements(defaultElements);
+      const {svg: stateSVG, [TEXT]: stateText} = ButtonUtils.parseSVGTextElements(stateElements);
       const newElements: ButtonInnerElement[] = [];
       CustomButton.addToInnerElements(newElements, SVGContent, defaultSVG, stateSVG);
       CustomButton.addToInnerElements(newElements, textContent, defaultText, stateText);

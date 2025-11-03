@@ -1,4 +1,5 @@
 import {MessageToElements, MessageBodyElements, MessageBody} from '../../../../types/messagesInternal';
+import {TEXT} from '../../../../utils/consts/messageConstants';
 import {MessageFile} from '../../../../types/messageFile';
 import {MessageStyles} from '../../../../types/messages';
 import {MessageElements, Messages} from '../messages';
@@ -111,7 +112,7 @@ export class UpdateMessage {
       }
       // Important to remove after elements are changed as existing element indexes are used
       if (!messageBody.text && messageToEls[1].text) {
-        UpdateMessage.removeTextHTMLMessage(msg, messageToEls, 'text');
+        UpdateMessage.removeTextHTMLMessage(msg, messageToEls, TEXT);
       }
       if (!messageBody.html && messageToEls[1].html) {
         UpdateMessage.removeTextHTMLMessage(msg, messageToEls, 'html');

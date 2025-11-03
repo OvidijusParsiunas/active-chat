@@ -1,6 +1,7 @@
 import {SubmitButtonStyles} from '../../../../../types/submitButton';
 import {DEFAULT} from '../../../../../utils/consts/inputConstants';
 import {ObjectUtils} from '../../../../../utils/data/objectUtils';
+import {TEXT} from '../../../../../utils/consts/messageConstants';
 import {ButtonStyles} from '../../../../../types/button';
 import {SubmitButton} from './submitButton';
 
@@ -18,7 +19,7 @@ export class SubmitButtonStateStyle {
     if (!styles.submit) return;
     const newStyle = JSON.parse(JSON.stringify(styles[style] || {})) as ButtonStyles;
     ObjectUtils.overwritePropertyObjectFromAnother(newStyle, styles.submit, ['container', DEFAULT]);
-    ObjectUtils.overwritePropertyObjectFromAnother(newStyle, styles.submit, ['text', 'styles', DEFAULT]);
+    ObjectUtils.overwritePropertyObjectFromAnother(newStyle, styles.submit, [TEXT, 'styles', DEFAULT]);
     ObjectUtils.overwritePropertyObjectFromAnother(newStyle, styles.submit, ['svg', 'styles', DEFAULT]);
     (styles[style] as ButtonStyles) = newStyle;
   }
@@ -31,7 +32,7 @@ export class SubmitButtonStateStyle {
     ObjectUtils.setPropertyValueIfDoesNotExist(styles.disabled, ['svg', 'styles', DEFAULT, 'filter'],
       'brightness(0) saturate(100%) invert(70%) sepia(0%) saturate(5564%)' +
       ' hue-rotate(207deg) brightness(100%) contrast(97%)');
-    ObjectUtils.setPropertyValueIfDoesNotExist(styles.disabled, ['text', 'styles', DEFAULT, 'color'], 'grey');
+    ObjectUtils.setPropertyValueIfDoesNotExist(styles.disabled, [TEXT, 'styles', DEFAULT, 'color'], 'grey');
     SubmitButtonStateStyle.overwriteDefaultStyleWithSubmit(styles, 'disabled');
   }
 

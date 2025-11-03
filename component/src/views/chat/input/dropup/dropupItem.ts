@@ -4,6 +4,7 @@ import {CustomStyle, StatefulStyles} from '../../../../types/styles';
 import {ButtonInnerElements} from '../buttons/buttonInnerElements';
 import {DropupMenuStyles} from '../../../../types/dropupStyles';
 import {StyleUtils} from '../../../../utils/element/styleUtils';
+import {TEXT} from '../../../../utils/consts/messageConstants';
 import {CustomButton} from '../buttons/custom/customButton';
 import {InputButton} from '../buttons/inputButton';
 import {DropupMenu} from './dropupMenu';
@@ -48,10 +49,10 @@ export class DropupItem {
     const emptySVG = customStyles && Object.values(customStyles).find((style) => style.svg?.content === '');
     if (buttonInnerElement.classList.contains(ButtonInnerElements.INPUT_BUTTON_INNER_TEXT_CLASS)) {
       if (!emptySVG) item.appendChild(DropupItem.createItemIcon(svg, styles?.iconContainer));
-      item.appendChild(DropupItem.createItemText(buttonInnerElement.textContent as string, styles?.text));
+      item.appendChild(DropupItem.createItemText(buttonInnerElement.textContent as string, styles?.[TEXT]));
     } else {
       if (!emptySVG) item.appendChild(DropupItem.createItemIcon(elementRef.children[0], styles?.iconContainer));
-      item.appendChild(DropupItem.createItemText(dropupText, styles?.text));
+      item.appendChild(DropupItem.createItemText(dropupText, styles?.[TEXT]));
     }
   }
 

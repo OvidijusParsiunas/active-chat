@@ -13,6 +13,7 @@ import {ElementUtils} from '../../../utils/element/elementUtils';
 import {ValidationHandler} from './validation/validationHandler';
 import {RecordAudio} from './buttons/microphone/recordAudio';
 import {FireEvents} from '../../../utils/events/fireEvents';
+import {TEXT} from '../../../utils/consts/messageConstants';
 import {CustomButton} from './buttons/custom/customButton';
 import {SubmitButton} from './buttons/submit/submitButton';
 import {CameraButton} from './buttons/camera/cameraButton';
@@ -108,7 +109,7 @@ export class Input {
       setTimeout(() => {
         const uploadedFilesData = fileAtts.getAllFileData();
         const inputText = textInput.inputElementRef.innerText.trim() as string;
-        const content: {text?: string; files?: File[]} = {text: inputText};
+        const content: {text?: string; files?: File[]} = {[TEXT]: inputText};
         if (uploadedFilesData) content.files = uploadedFilesData.map((file) => file.file);
         FireEvents.onInput(activeChat, content, isUser);
       });

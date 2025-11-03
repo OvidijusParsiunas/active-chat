@@ -1,5 +1,6 @@
 import {ActiveTooltip, Tooltip} from '../../../../../types/tooltip';
 import {StyleUtils} from '../../../../../utils/element/styleUtils';
+import {TEXT} from '../../../../../utils/consts/messageConstants';
 
 export class TooltipUtils {
   private static readonly OVERFLOW_NEW_POSITION_PX = 4;
@@ -15,9 +16,9 @@ export class TooltipUtils {
 
   public static tryCreateConfig(defaultText: string, tooltip?: true | Tooltip): Tooltip | undefined {
     if (!tooltip) return undefined;
-    if (typeof tooltip === 'boolean') return {text: defaultText};
+    if (typeof tooltip === 'boolean') return {[TEXT]: defaultText};
     return {
-      text: tooltip.text || defaultText,
+      [TEXT]: tooltip[TEXT] || defaultText,
       timeout: tooltip.timeout || 0,
       style: tooltip.style,
     };
@@ -53,7 +54,7 @@ export class TooltipUtils {
       const containerElement = TooltipUtils.traverseParentUntilContainer(buttonElement);
       tooltipElement = containerElement.nextSibling as HTMLElement;
     }
-    if (config.text) tooltipElement.children[0].textContent = config.text;
+    if (config[TEXT]) tooltipElement.children[0].textContent = config[TEXT];
     const timeout = setTimeout(() => {
       tooltipElement.style.visibility = 'visible';
       TooltipUtils.setPosition(buttonElement, tooltipElement);
