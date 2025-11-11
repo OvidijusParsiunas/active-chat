@@ -10,6 +10,15 @@
   grid-template-columns: 100%;
 }
 
+.active-chat-downwards-mode {
+  display: grid;
+}
+
+.active-chat-upwards-mode {
+  display: flex;
+  flex-direction: column;
+}
+
 ::-webkit-scrollbar {
   width: 9px;
   height: 9px;

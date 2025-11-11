@@ -1,4 +1,4 @@
-import {LOADING_CLASS, DISABLED_CLASS, SUBMIT_CLASS} from '../../../../../utils/consts/inputConstants';
+import {LOADING_CLASS, DISABLED_CLASS, SUBMIT_CLASS} from '../../../../../utils/consts/classConstants';
 import {FileAttachmentsType} from '../../fileAttachments/fileAttachmentTypes/fileAttachmentsType';
 import {ValidationHandler} from '../../../../../types/validationHandler';
 import {FileAttachments} from '../../fileAttachments/fileAttachments';
