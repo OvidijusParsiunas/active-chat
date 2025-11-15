@@ -1,38 +1,28 @@
+import {AUDIO, CAMERA, FILES, GIFS, IMAGES, MICROPHONE, MIXED_FILES} from '../../utils/consts/messageConstants';
 import {RemarkableConfig} from '../../views/chat/messages/remarkable/remarkableConfig';
 import {FileServiceIO, ServiceFileTypes, ServiceIO} from '../serviceIO';
 import {FilesServiceConfig} from '../../types/fileServiceConfigs';
 import {FileAttachments} from '../../types/fileAttachments';
-import {Connect} from '../../types/connect';
 import {ActiveChat} from '../../activeChat';
 import {Remarkable} from 'remarkable';
 
 export class SetFileTypes {
-  // prettier-ignore
-  private static parseConfig(connectSettings: Connect, defFiles: FileAttachments, remark: Remarkable,
-      fileType?: boolean | FilesServiceConfig) {
+  private static parseConfig(defFiles: FileAttachments, remark: Remarkable, fileType?: boolean | FilesServiceConfig) {
     const fileConfig: FileServiceIO & {files: FileAttachments} = {files: defFiles};
     if (typeof fileType === 'object') {
       const {files, connect, button} = fileType;
       if (files) {
         if (files.infoModal) {
-          fileConfig.files.infoModal = files.infoModal;
+          fileConfig[FILES].infoModal = files.infoModal;
           if (files.infoModal?.textMarkDown) {
             fileConfig.infoModalTextMarkUp = remark.render(files.infoModal.textMarkDown);
           }
         }
-        if (files.acceptedFormats) fileConfig.files.acceptedFormats = files.acceptedFormats;
-        if (files.maxNumberOfFiles) fileConfig.files.maxNumberOfFiles = files.maxNumberOfFiles;
+        if (files.acceptedFormats) fileConfig[FILES].acceptedFormats = files.acceptedFormats;
+        if (files.maxNumberOfFiles) fileConfig[FILES].maxNumberOfFiles = files.maxNumberOfFiles;
       }
       fileConfig.button = button;
-      if (connect && (connect.headers || connect.method || connect.url || connect.credentials
-          || connectSettings.headers || connectSettings.method || connectSettings.url || connectSettings.credentials)) {
-        fileConfig.connect = {
-          url: connect?.url || connectSettings.url,
-          method: connect?.method || connectSettings.method,
-          headers: connect?.headers || connectSettings.headers,
-          credentials: connect?.credentials || connectSettings.credentials,
-        };
-      }
+      if (connect && Object.keys(connect).length > 0) fileConfig.connect = connect;
     }
     return fileConfig;
   }
@@ -40,80 +30,79 @@ export class SetFileTypes {
   private static processMixedFiles(serviceIO: ServiceIO, remark: Remarkable, mixedFiles: ActiveChat['mixedFiles']) {
     if (mixedFiles) {
       const defFormats = {acceptedFormats: ''};
-      serviceIO.fileTypes.mixedFiles = SetFileTypes.parseConfig(serviceIO.connectSettings, defFormats, remark, mixedFiles);
+      serviceIO.fileTypes.mixedFiles = SetFileTypes.parseConfig(defFormats, remark, mixedFiles);
     }
   }
 
   // needs to be set after audio to overwrite maxNumberOfFiles
   // prettier-ignore
   private static processMicrophone(
-    serviceIO: ServiceIO, remark: Remarkable, microphone: ActiveChat['microphone'], audio: ActiveChat['audio']) {
-  const files = serviceIO.fileTypes.audio?.files || {};
-  const defaultFormats = {acceptedFormats: 'audio/*', ...files};
-  if (!microphone) return;
-  if (navigator.mediaDevices.getUserMedia !== undefined) {
-    serviceIO.recordAudio = SetFileTypes.parseConfig(serviceIO.connectSettings, defaultFormats, remark, microphone);
-    // adding configuration that parseConfig does not add (don't want to overwrite as it may have processed properties)
-    if (typeof microphone === 'object') {
-      if (microphone.files) {
-        serviceIO.recordAudio.files ??= {}; // for typescript
-        serviceIO.recordAudio.files.format = microphone.files?.format;
-        // this.recordAudio.files.newFilePrefix = customService.microphone.files?.newFilePrefix;
-        serviceIO.recordAudio.files.maxDurationSeconds = microphone.files?.maxDurationSeconds;
-        if (serviceIO.fileTypes.audio?.files) {
-          serviceIO.fileTypes.audio.files.maxNumberOfFiles ??= microphone.files.maxNumberOfFiles;
+      serviceIO: ServiceIO, remark: Remarkable, microphone: ActiveChat['microphone'], audio: ActiveChat['audio']) {
+    const files = serviceIO.fileTypes[AUDIO]?.[FILES] || {};
+    const defaultFormats = {acceptedFormats: 'audio/*', ...files};
+    if (!microphone) return;
+    if (navigator.mediaDevices.getUserMedia !== undefined) {
+      serviceIO.recordAudio = SetFileTypes.parseConfig(defaultFormats, remark, microphone);
+      // adding configuration that parseConfig does not add (don't want to overwrite as it may have processed properties)
+      if (typeof microphone === 'object') {
+        if (microphone[FILES]) {
+          serviceIO.recordAudio[FILES] ??= {}; // for typescript
+          serviceIO.recordAudio[FILES].format = microphone[FILES]?.format;
+          // this.recordAudio[FILES].newFilePrefix = customService[MICROPHONE][FILES]?.newFilePrefix;
+          serviceIO.recordAudio[FILES].maxDurationSeconds = microphone[FILES]?.maxDurationSeconds;
+          if (serviceIO.fileTypes[AUDIO]?.[FILES]) {
+            serviceIO.fileTypes[AUDIO][FILES].maxNumberOfFiles ??= microphone[FILES].maxNumberOfFiles;
+          }
         }
       }
+      // if microphone is not available - fallback to normal audio upload
+    } else if (!audio) {
+      serviceIO.fileTypes[AUDIO] = SetFileTypes.parseConfig(defaultFormats, remark, microphone);
     }
-    // if microphone is not available - fallback to normal audio upload
-  } else if (!audio) {
-    serviceIO.fileTypes.audio = SetFileTypes.parseConfig(serviceIO.connectSettings, defaultFormats, remark, microphone);
   }
-}
 
   // prettier-ignore
   private static processAudioConfig(
       serviceIO: ServiceIO, remark: Remarkable, audio: ActiveChat['audio'], fileIO?: FileServiceIO) {
     if (!audio && !fileIO) return;
-    const files = fileIO?.files || {};
+    const files = fileIO?.[FILES] || {};
     const defaultFormats = {acceptedFormats: 'audio/*', ...files};
     // make sure to set these in the right services
-    serviceIO.fileTypes.audio = SetFileTypes.parseConfig(serviceIO.connectSettings, defaultFormats, remark, audio);
+    serviceIO.fileTypes[AUDIO] = SetFileTypes.parseConfig(defaultFormats, remark, audio);
   }
 
   // prettier-ignore
   private static processGifConfig(
       serviceIO: ServiceIO, remark: Remarkable, gifs: ActiveChat['gifs'], fileIO?: FileServiceIO) {
     if (!gifs && !fileIO) return;
-    const files = fileIO?.files || {};
+    const files = fileIO?.[FILES] || {};
     const defaultFormats = {acceptedFormats: 'image/gif', ...files};
     // make sure to set these in the right services
-    serviceIO.fileTypes.gifs = SetFileTypes.parseConfig(serviceIO.connectSettings, defaultFormats, remark, gifs);
+    serviceIO.fileTypes[GIFS] = SetFileTypes.parseConfig(defaultFormats, remark, gifs);
   }
 
   // needs to be set after images to overwrite maxNumberOfFiles
   // prettier-ignore
   private static processCamera(
       serviceIO: ServiceIO, remark: Remarkable, camera: ActiveChat['camera'], images?: ActiveChat['images']) {
-    const files = serviceIO.fileTypes.images?.files || {};
+    const files = serviceIO.fileTypes[IMAGES]?.[FILES] || {};
     const defaultFormats = {acceptedFormats: 'image/*', ...files};
     if (!camera) return;
     if (navigator.mediaDevices.getUserMedia !== undefined) {
       // check how maxNumberOfFiles is set here - if user has set in images - should use that instead
-      serviceIO.camera = SetFileTypes.parseConfig(serviceIO.connectSettings, defaultFormats, remark, camera);
+      serviceIO[CAMERA] = SetFileTypes.parseConfig(defaultFormats, remark, camera);
       if (typeof camera === 'object') {
-        serviceIO.camera.modalContainerStyle = camera.modalContainerStyle;
+        serviceIO[CAMERA].modalContainerStyle = camera.modalContainerStyle;
         // adding configuration that parseConfig does not add (don't want to overwrite as it may have processed properties)
-        if (camera.files) {
-          serviceIO.camera.files ??= {}; // for typescript
-          serviceIO.camera.files.format = camera.files?.format;
-          // this.camera.files.newFilePrefix = customService.camera.files?.newFilePrefix; // can implement in the future
-          serviceIO.camera.files.dimensions = camera.files?.dimensions;
+        if (camera[FILES]) {
+          serviceIO[CAMERA][FILES] ??= {}; // for typescript
+          serviceIO[CAMERA][FILES].format = camera[FILES]?.format;
+          serviceIO[CAMERA][FILES].dimensions = camera[FILES]?.dimensions;
         }
       }
       // if camera is not available - fallback to normal image upload
     } else if (!images) {
-      serviceIO.fileTypes.images = SetFileTypes.parseConfig(serviceIO.connectSettings, defaultFormats, remark, camera);
+      serviceIO.fileTypes[IMAGES] = SetFileTypes.parseConfig(defaultFormats, remark, camera);
     }
   }
 
@@ -121,30 +110,30 @@ export class SetFileTypes {
   private static processImagesConfig(
       serviceIO: ServiceIO, remark: Remarkable, images: ActiveChat['images'], fileIO?: FileServiceIO) {
     if (!images && !fileIO) return;
-    const files = fileIO?.files || {};
+    const files = fileIO?.[FILES] || {};
     const defaultFormats = {acceptedFormats: 'image/*', ...files};
     // make sure to set these in the right services
-    serviceIO.fileTypes.images = SetFileTypes.parseConfig(serviceIO.connectSettings, defaultFormats, remark, images);
+    serviceIO.fileTypes[IMAGES] = SetFileTypes.parseConfig(defaultFormats, remark, images);
   }
 
   // default for direct service
   private static populateDefaultFileIO(fileIO: FileServiceIO | undefined, acceptedFormats: string) {
     if (fileIO) {
-      fileIO.files ??= {};
-      fileIO.files.acceptedFormats ??= acceptedFormats;
-      fileIO.files.maxNumberOfFiles ??= 1;
+      fileIO[FILES] ??= {};
+      fileIO[FILES].acceptedFormats ??= acceptedFormats;
+      fileIO[FILES].maxNumberOfFiles ??= 1;
     }
   }
 
   public static set(activeChat: ActiveChat, serviceIO: ServiceIO, existingFileTypes?: ServiceFileTypes) {
-    SetFileTypes.populateDefaultFileIO(existingFileTypes?.audio, '.4a,.mp3,.webm,.mp4,.mpga,.wav,.mpeg,.m4a');
-    SetFileTypes.populateDefaultFileIO(existingFileTypes?.images, '.png,.jpg');
+    SetFileTypes.populateDefaultFileIO(existingFileTypes?.[AUDIO], '.4a,.mp3,.webm,.mp4,.mpga,.wav,.mpeg,.m4a');
+    SetFileTypes.populateDefaultFileIO(existingFileTypes?.[IMAGES], '.png,.jpg');
     const remarkable = RemarkableConfig.createNew(activeChat.remarkable);
-    SetFileTypes.processImagesConfig(serviceIO, remarkable, activeChat.images, existingFileTypes?.images);
-    SetFileTypes.processCamera(serviceIO, remarkable, activeChat.camera, activeChat.images);
-    SetFileTypes.processGifConfig(serviceIO, remarkable, activeChat.gifs, existingFileTypes?.gifs);
-    SetFileTypes.processAudioConfig(serviceIO, remarkable, activeChat.audio, existingFileTypes?.audio);
-    SetFileTypes.processMicrophone(serviceIO, remarkable, activeChat.microphone, activeChat.audio);
-    SetFileTypes.processMixedFiles(serviceIO, remarkable, activeChat.mixedFiles);
+    SetFileTypes.processImagesConfig(serviceIO, remarkable, activeChat[IMAGES], existingFileTypes?.[IMAGES]);
+    SetFileTypes.processCamera(serviceIO, remarkable, activeChat[CAMERA], activeChat[IMAGES]);
+    SetFileTypes.processGifConfig(serviceIO, remarkable, activeChat[GIFS], existingFileTypes?.[GIFS]);
+    SetFileTypes.processAudioConfig(serviceIO, remarkable, activeChat[AUDIO], existingFileTypes?.[AUDIO]);
+    SetFileTypes.processMicrophone(serviceIO, remarkable, activeChat[MICROPHONE], activeChat[AUDIO]);
+    SetFileTypes.processMixedFiles(serviceIO, remarkable, activeChat[MIXED_FILES]);
   }
 }
