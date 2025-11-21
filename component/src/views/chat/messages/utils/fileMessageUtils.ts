@@ -1,6 +1,5 @@
 import {MessageFile, MessageFileType} from '../../../../types/messageFile';
 import {MessageContent, MessageStyles} from '../../../../types/messages';
-import {ElementUtils} from '../../../../utils/element/elementUtils';
 import {MessagesBase} from '../messagesBase';
 import {MessageElements} from '../messages';
 
@@ -17,13 +16,10 @@ export class FileMessageUtils {
   }
 
   // prettier-ignore
-  public static addMessage(messages: MessagesBase, elements: MessageElements, styles: keyof MessageStyles,
-      role: string, isTop: boolean, scroll: boolean) {
+  public static addMessage(
+      messages: MessagesBase, elements: MessageElements, styles: keyof MessageStyles, role: string, isTop: boolean) {
     FileMessageUtils.setElementProps(messages, elements, styles, role);
-    if (!isTop) {
-      messages.appendOuterContainerElemet(elements.outerContainer);
-      if (!messages.focusMode && scroll) ElementUtils.scrollToBottom(messages.elementRef, false, elements.outerContainer);
-    }
+    if (!isTop) messages.appendOuterContainerElemet(elements.outerContainer);
   }
 
   private static wrapInLink(element: HTMLElement, url: string, name?: string) {
@@ -50,15 +46,15 @@ export class FileMessageUtils {
     return FileMessageUtils.wrapInLink(contentEl, url, name);
   }
 
-  private static waitToLoadThenScroll(messagesContainerEl: HTMLElement, targetElement: HTMLElement) {
+  private static waitToLoadThenScroll(asyncScroll: () => void) {
     setTimeout(() => {
-      ElementUtils.scrollToBottom(messagesContainerEl, false, targetElement);
+      asyncScroll();
     }, 60); // this timeout is used to allow the new image element dimensions to be rendered
   }
 
-  public static scrollDownOnImageLoad(url: string, messagesContainerEl: HTMLElement, targetElement: HTMLElement) {
+  public static scrollDownOnImageLoad(url: string, asyncScroll: () => void) {
     if (url.startsWith('data')) {
-      FileMessageUtils.waitToLoadThenScroll(targetElement, messagesContainerEl);
+      FileMessageUtils.waitToLoadThenScroll(asyncScroll);
     } else {
       // this is used to prevent an issue where we immediately scroll down before the image meta data has been
       // downloaded which is used to create the image element dimensions (before the image data is loaded)
@@ -70,10 +66,10 @@ export class FileMessageUtils {
         fetch(url, {mode: 'no-cors'})
           .catch(() => {})
           .finally(() => {
-            FileMessageUtils.waitToLoadThenScroll(targetElement, messagesContainerEl);
+            FileMessageUtils.waitToLoadThenScroll(asyncScroll);
           });
       } catch (_) {
-        ElementUtils.scrollToBottom(messagesContainerEl, false, targetElement);
+        asyncScroll();
       }
     }
   }

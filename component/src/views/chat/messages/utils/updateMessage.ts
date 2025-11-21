@@ -52,7 +52,7 @@ export class UpdateMessage {
   // finds beforeElement, creates new elements, remove old and adds new ones
   private static updateFileMessages(msg: MessagesBase, messageToEls: MessageToElements[0], newFiles: MessageFile[]) {
     const role = messageToEls[0].role;
-    const typeToElements = FileMessages.createMessages(msg, newFiles, role, !!messageToEls[1].text);
+    const typeToElements = FileMessages.createMessages(msg, newFiles, role, false);
     const nextElement = messageToEls[1].html;
     const prevElement = messageToEls[1].files?.[messageToEls[1].files?.length - 1] || messageToEls[1].text;
     const siblingElement = (nextElement || prevElement) as MessageElements;

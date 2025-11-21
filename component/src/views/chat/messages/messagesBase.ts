@@ -2,6 +2,7 @@ import {MessageElementsStyles, MessageRoleStyles, MessageStyles, UserContent} fr
 import {MessageContentI, MessageToElements, Overwrite} from '../../../types/messagesInternal';
 import {ProcessedTextToSpeechConfig} from './textToSpeech/textToSpeech';
 import {HTMLActiveChatElements} from './html/htmlActiveChatElements';
+import {TEXT, USER} from '../../../utils/consts/messageConstants';
 import {LoadingStyle} from '../../../utils/loading/loadingStyle';
 import {ElementUtils} from '../../../utils/element/elementUtils';
 import {RemarkableConfig} from './remarkable/remarkableConfig';
@@ -9,7 +10,6 @@ import {BrowserStorage} from './browserStorage/browserStorage';
 import {RemarkableOptions} from '../../../types/remarkable';
 import {FireEvents} from '../../../utils/events/fireEvents';
 import {MessageStyleUtils} from './utils/messageStyleUtils';
-import {TEXT} from '../../../utils/consts/messageConstants';
 import {LoadingHistory} from './history/loadingHistory';
 import {HTMLClassUtilities} from '../../../types/html';
 import {FocusModeUtils} from './utils/focusModeUtils';
@@ -46,6 +46,7 @@ export class MessagesBase {
   public static readonly TEXT_BUBBLE_CLASS = 'text-message';
   public static readonly INTRO_CLASS = 'active-chat-intro';
   public static readonly LAST_GROUP_MESSAGES_ACTIVE = 'active-chat-last-group-messages-active';
+  public readonly autoScrollAllowed: boolean = true;
 
   constructor(activeChat: ActiveChat) {
     this.elementRef = MessagesBase.createContainerElement();
@@ -63,6 +64,7 @@ export class MessagesBase {
       FocusModeUtils.setFade(this.elementRef, this.focusMode.fade);
     }
     this._customWrappers = activeChat.htmlWrappers;
+    if (typeof this.focusMode !== 'boolean' && this.focusMode?.streamAutoScroll === false) this.autoScrollAllowed = false;
     setTimeout(() => {
       this.submitUserMessage = activeChat.submitUserMessage; // wait for it to be available in input.ts
     });
@@ -98,25 +100,8 @@ export class MessagesBase {
   }
 
   protected createAndAppendNewMessageElement(text: string, role: string) {
-    if (this.focusMode) {
-      return this.appendNewMessageElementFocusMode(text, role);
-    }
-    return this.createAndAppendNewMessageElementDefault(text, role);
-  }
-
-  private appendNewMessageElementFocusMode(text: string, role: string) {
     const messageElements = this.createNewMessageElement(text, role);
-    this.appendOuterContainerElemet(messageElements.outerContainer, role);
-    if (role === 'user') {
-      const isAnimation = typeof this.focusMode !== 'boolean' && this.focusMode?.smoothScroll;
-      if (isAnimation) {
-        setTimeout(() => {
-          ElementUtils.scrollToBottom(this.elementRef, isAnimation); // in timeout for it to move to the loading bubble
-        });
-      } else {
-        ElementUtils.scrollToBottom(this.elementRef);
-      }
-    }
+    this.appendOuterContainerElemet(messageElements.outerContainer, this.focusMode ? role : undefined);
     return messageElements;
   }
 
@@ -128,25 +113,12 @@ export class MessagesBase {
     this._lastGroupMessagesElement = lastGroupMessageElement;
   }
 
-  private createAndAppendNewMessageElementDefault(text: string, role: string) {
-    const messageElements = this.createNewMessageElement(text, role);
-    const isCurrentlyAtBottom = ElementUtils.isScrollbarAtBottomOfElement(this.elementRef);
-    this.appendOuterContainerElemet(messageElements.outerContainer);
-    // timeout neeed when bubble font is large
-    setTimeout(() => {
-      if (role === 'user') {
-        ElementUtils.scrollToBottom(this.elementRef);
-      } else if (isCurrentlyAtBottom) {
-        ElementUtils.scrollToBottom(this.elementRef, false, messageElements.outerContainer);
-      }
-    });
-    return messageElements;
-  }
-
   public appendOuterContainerElemet(outerContainer: HTMLElement, role?: string) {
     if (this.focusMode && (role === 'user' || !this._lastGroupMessagesElement)) this.createNewGroupElementFocusMode();
     this._lastGroupMessagesElement?.appendChild(outerContainer);
-    this.elementRef.appendChild(this._lastGroupMessagesElement as HTMLElement);
+    if (this._lastGroupMessagesElement && (this.focusMode || !this.elementRef.contains(this._lastGroupMessagesElement))) {
+      this.elementRef.appendChild(this._lastGroupMessagesElement);
+    }
   }
 
   private createAndPrependNewMessageElement(text: string, role: string, isTop: boolean, loading = false) {
@@ -309,5 +281,17 @@ export class MessagesBase {
         this.renderText(msgToEls[1].text.bubbleElement, msgToEls[0].text, msgToEls[0].role);
       }
     });
+  }
+
+  public scrollToFirstElement(role: string, isScrollAtBottom: boolean, overwrite?: Overwrite) {
+    if (role === USER) {
+      const isAnimation = typeof this.focusMode !== 'boolean' && this.focusMode?.smoothScroll;
+      ElementUtils.scrollToBottom(this.elementRef, isAnimation);
+    } else if (isScrollAtBottom && this.autoScrollAllowed) {
+      const {text, html, files} = this.messageToElements[this.messageToElements.length - 1][1];
+      let outerContainer = text || html || files?.[0];
+      if (outerContainer === html && overwrite?.status) outerContainer = files?.[0];
+      ElementUtils.scrollToBottom(this.elementRef, false, outerContainer?.outerContainer);
+    }
   }
 }

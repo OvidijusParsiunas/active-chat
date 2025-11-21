@@ -1,6 +1,6 @@
-export const UPWARDS_MODE_CLASS = 'active-chat-upwards-mode';
-
 export const DOWNWARDS_MODE_CLASS = 'active-chat-downwards-mode';
+
+export const UPWARDS_MODE_CLASS = 'active-chat-upwards-mode';
 
 export const SUBMIT_CLASS = 'submit-button';
 

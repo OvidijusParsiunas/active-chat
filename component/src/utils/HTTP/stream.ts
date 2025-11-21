@@ -170,7 +170,7 @@ export class Stream {
     }
     if (result.files) {
       const finalEventData = await RequestUtils.basicResponseProcessing(messages, {files: result.files}, {io});
-      messages.addNewMessage({sendUpdate: false, ...finalEventData}, false);
+      messages.addNewMessage({sendUpdate: false, ...finalEventData});
       if (!result.html && !result[TEXT]) {
         const stream = new MessageStream(messages, io?.stream);
         stream.finaliseStreamedMessage();
