@@ -21,6 +21,7 @@ export class TextInputEl {
   // detect if using a dropup for text input composition, e.g. hiragana to kanji symbols
   private _isComposing: boolean = false;
   private _onInput: ((isUser: boolean) => void) | undefined;
+  private readonly _browserStorage?: BrowserStorage;
   submit?: () => void;
 
   constructor(activeChat: ActiveChat, serviceIO: ServiceIO, fileAts: FileAttachments, storage?: BrowserStorage) {
@@ -32,6 +33,7 @@ export class TextInputEl {
     this.elementRef.appendChild(this.inputElementRef);
     activeChat.setPlaceholderText = this.setPlaceholderText.bind(this);
     activeChat.setPlaceholderText(this._config.placeholder?.text || 'Ask me anything!');
+    this._browserStorage = storage;
     setTimeout(() => {
       // in a timeout as activeChat._validationHandler initialised later
       TextInputEvents.add(this.inputElementRef, fileAts, this._config.characterLimit, activeChat._validationHandler);
@@ -73,6 +75,7 @@ export class TextInputEl {
       this.inputElementRef.textContent = '';
       FocusUtils.focusEndOfInput(this.inputElementRef);
       this._onInput?.(false);
+      this._browserStorage?.addInputText('');
     }
     if (Browser.IS_CHROMIUM) window.scrollTo({top: scrollY});
   }

@@ -14,6 +14,7 @@ import {ErrorMessageOverrides} from '../../../types/error';
 import {LoadingToggleConfig} from '../../../types/loading';
 import {ResponseI} from '../../../types/responseInternal';
 import {FileMessageUtils} from './utils/fileMessageUtils';
+import {STYLE} from '../../../utils/consts/htmlConstants';
 import {TextToSpeech} from './textToSpeech/textToSpeech';
 import {LoadingHistory} from './history/loadingHistory';
 import {Demo, DemoResponse} from '../../../types/demo';
@@ -95,11 +96,19 @@ export class Messages extends MessagesBase {
 
   private setLoadingToggle(config?: LoadingToggleConfig) {
     const lastMessageEls = this.messageElementRefs[this.messageElementRefs.length - 1];
-    if (!config && MessagesBase.isLoadingMessage(lastMessageEls)) {
+    const isLoadingMessage = MessagesBase.isLoadingMessage(lastMessageEls);
+    if (!config && isLoadingMessage) {
       this.removeLastMessage();
       delete this._activeLoadingConfig;
     } else {
-      if (this._activeLoadingConfig) this.removeLastMessage();
+      if (this._activeLoadingConfig && isLoadingMessage) {
+        const targetWrapper = HTMLUtils.getTargetWrapper(lastMessageEls.bubbleElement);
+        if (targetWrapper) {
+          this._activeLoadingConfig = config || {};
+          return this.updateLoadingMessage(targetWrapper);
+        }
+        this.removeLastMessage();
+      }
       this._activeLoadingConfig = config || {};
       this.addLoadingMessage(true);
     }
@@ -343,6 +352,13 @@ export class Messages extends MessagesBase {
     this.avatar?.getAvatarContainer(messageElements.innerContainer)?.classList.add('loading-avatar-container');
     const allowScroll = !this.focusMode && ElementUtils.isScrollbarAtBottomOfElement(this.elementRef);
     if (allowScroll) ElementUtils.scrollToBottom(this.elementRef);
+  }
+
+  // this is a special method not to constantly refresh loading animations
+  private updateLoadingMessage(wrapper: HTMLElement) {
+    const style = this._activeLoadingConfig?.[STYLE];
+    const html = style?.[HTML];
+    wrapper.innerHTML = html || '';
   }
 
   private populateIntroPanel(childElement?: HTMLElement) {
