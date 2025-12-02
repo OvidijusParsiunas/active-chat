@@ -1,3 +1,4 @@
+import {MESSAGES_ID} from '../../../../utils/consts/messageConstants';
 import {LoadingStyle} from '../../../../utils/loading/loadingStyle';
 import {MessageElementsStyles} from '../../../../types/messages';
 import {MessageElements, Messages} from '../messages';
@@ -37,7 +38,9 @@ export class LoadingHistory {
       ? messages.messageStyles?.loading?.history?.full?.styles
       : messages.messageStyles?.loading?.history?.small?.styles;
     LoadingHistory.apply(messages, messageElements, styles);
-    messages.elementRef.prepend(messageElements.outerContainer);
+    const messagesElement =
+      isInitial && messages.elementRef.id === MESSAGES_ID ? messages.elementRef : messages.elementRef.parentElement;
+    messagesElement?.prepend(messageElements.outerContainer);
   }
 
   public static createDefaultElements(messages: Messages) {

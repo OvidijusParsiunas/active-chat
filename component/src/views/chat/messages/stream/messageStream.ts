@@ -54,7 +54,7 @@ export class MessageStream {
       this.updateBasedOnType(content, streamType, response?.overwrite);
     }
     if (response?._sessionId) this._sessionId = response?._sessionId;
-    if (isScrollbarAtBottomOfElement) ElementUtils.scrollToBottom(this._messages.elementRef);
+    if (isScrollbarAtBottomOfElement) ElementUtils.scrollToBottom(this._messages);
   }
 
   private setInitialState(streamType: 'text' | 'html', content: string, role?: string) {
@@ -74,6 +74,7 @@ export class MessageStream {
       this._message = {role: this._activeMessageRole, [streamType]: initContent};
       this._messages.messageToElements.push([this._message, {[streamType]: this._elements}]);
       if (customWrapper) this.setTargetWrapperIfNeeded(this._elements, content, this._streamType, customWrapper);
+      this._messages.hiddenMessages?.update();
     }
   }
 

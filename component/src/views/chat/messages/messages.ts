@@ -69,6 +69,7 @@ export class Messages extends MessagesBase {
     activeChat.getMessages = () => JSON.parse(JSON.stringify(this.messageToElements.map(([msg]) => msg)));
     activeChat.clearMessages = this.clearMessages.bind(this, serviceIO);
     activeChat.refreshMessages = this.refreshTextMessages.bind(this, activeChat.remarkable);
+    activeChat.scrollToBottom = ElementUtils.scrollToBottom.bind(this, this);
     activeChat.getMessages = () =>
       MessageUtils.deepCloneMessagesWithReferences(this.messageToElements.map(([msg]) => msg));
     activeChat.addMessage = (message: ResponseI, isUpdate?: boolean) => {
@@ -231,11 +232,30 @@ export class Messages extends MessagesBase {
     if (this.isValidMessageContent(message) && !isTop) {
       this.updateStateOnMessage(message, data.overwrite, data.sendUpdate, isHistory);
       // in timeout for it to move to the loading bubble and when bubble font is large
-      setTimeout(() => this.scrollToFirstElement(message.role, isScrollAtBottom, overwrite));
+      if (!overwrite.status) setTimeout(() => this.scrollToFirstElement(message.role, isScrollAtBottom));
       if (!isHistory) this.browserStorage?.addMessages(this.messageToElements.map(([msg]) => msg));
+      if (this.hiddenMessages && message.role !== USER) this.tryUpdateHiddenMessageCount(isHistory, data);
     }
     if (this._activeLoadingConfig) this.addLoadingMessage(false);
     return message;
+  }
+
+  private tryUpdateHiddenMessageCount(isHistory: boolean, data: ResponseI) {
+    // isTop, isHistory, data.sendUpdate
+    // load history
+    // true true true -> should be false
+    // history
+    // false true undefined -> should be false
+    // new response
+    // false false undefined -> should be true
+    // addMessage
+    // false true false -> should be true
+    // addMessage
+    // false false false -> should be true
+    if (!isHistory || data.sendUpdate !== undefined) {
+      // in timeout as above scrollToFirstElement is also in timeout
+      setTimeout(() => this.hiddenMessages?.update?.());
+    }
   }
 
   private isValidMessageContent(messageContent: MessageContentI) {
@@ -278,7 +298,7 @@ export class Messages extends MessagesBase {
     if (!isTop) this.appendOuterContainerElemet(outerContainer);
     if (this.textToSpeech) TextToSpeech.speak(text, this.textToSpeech);
     this._onError?.(text);
-    setTimeout(() => ElementUtils.scrollToBottom(this.elementRef)); // timeout neeed when bubble font is large
+    setTimeout(() => ElementUtils.scrollToBottom(this)); // timeout neeed when bubble font is large
   }
 
   private static checkPermittedErrorPrefixes(errorPrefixes: string[], message: string): string | undefined {
@@ -351,7 +371,7 @@ export class Messages extends MessagesBase {
     this.applyCustomStyles(messageElements, role, false, style?.styles);
     this.avatar?.getAvatarContainer(messageElements.innerContainer)?.classList.add('loading-avatar-container');
     const allowScroll = !this.focusMode && ElementUtils.isScrollbarAtBottomOfElement(this.elementRef);
-    if (allowScroll) ElementUtils.scrollToBottom(this.elementRef);
+    if (allowScroll) ElementUtils.scrollToBottom(this);
   }
 
   // this is a special method not to constantly refresh loading animations
@@ -431,6 +451,7 @@ export class Messages extends MessagesBase {
       this.addIntroductoryMessages();
     }
     this.browserStorage?.clear();
+    this.hiddenMessages?.clear();
     this._onClearMessages?.();
     delete serviceIO.sessionId;
   }

@@ -1,8 +1,9 @@
 import {MessageElementsStyles, MessageRoleStyles, MessageStyles, UserContent} from '../../../types/messages';
 import {MessageContentI, MessageToElements, Overwrite} from '../../../types/messagesInternal';
+import {CLASS_LIST, CREATE_ELEMENT} from '../../../utils/consts/htmlConstants';
+import {MESSAGES_ID, TEXT, USER} from '../../../utils/consts/messageConstants';
 import {ProcessedTextToSpeechConfig} from './textToSpeech/textToSpeech';
 import {HTMLActiveChatElements} from './html/htmlActiveChatElements';
-import {TEXT, USER} from '../../../utils/consts/messageConstants';
 import {LoadingStyle} from '../../../utils/loading/loadingStyle';
 import {ElementUtils} from '../../../utils/element/elementUtils';
 import {RemarkableConfig} from './remarkable/remarkableConfig';
@@ -17,6 +18,7 @@ import {IntroPanel} from '../introPanel/introPanel';
 import {HTMLWrappers} from '../../../types/stream';
 import {FocusMode} from '../../../types/focusMode';
 import {MessageUtils} from './utils/messageUtils';
+import {HiddenMessages} from './hiddenMessages';
 import {Response} from '../../../types/response';
 import {ActiveChat} from '../../../activeChat';
 import {MessageElements} from './messages';
@@ -47,6 +49,7 @@ export class MessagesBase {
   public static readonly INTRO_CLASS = 'active-chat-intro';
   public static readonly LAST_GROUP_MESSAGES_ACTIVE = 'active-chat-last-group-messages-active';
   public readonly autoScrollAllowed: boolean = true;
+  readonly hiddenMessages?: HiddenMessages;
 
   constructor(activeChat: ActiveChat) {
     this.elementRef = MessagesBase.createContainerElement();
@@ -58,8 +61,13 @@ export class MessagesBase {
     if (activeChat.names) this.name = new Name(activeChat.names);
     this._onMessage = FireEvents.onMessage.bind(this, activeChat);
     if (activeChat.htmlClassUtilities) this.htmlClassUtilities = activeChat.htmlClassUtilities;
+    if (activeChat.hiddenMessages) this.hiddenMessages = new HiddenMessages(this, activeChat.hiddenMessages);
     this.focusMode = activeChat.focusMode;
-    if (!this.focusMode) this._lastGroupMessagesElement = document.createElement('div');
+    if (!this.focusMode) {
+      this._lastGroupMessagesElement = CREATE_ELEMENT();
+      this.elementRef.appendChild(this._lastGroupMessagesElement);
+      if (activeChat.upwardsMode) this.elementRef = this._lastGroupMessagesElement;
+    }
     if (typeof this.focusMode !== 'boolean' && this.focusMode?.fade) {
       FocusModeUtils.setFade(this.elementRef, this.focusMode.fade);
     }
@@ -72,7 +80,7 @@ export class MessagesBase {
 
   private static createContainerElement() {
     const container = document.createElement('div');
-    container.id = 'messages';
+    container.id = MESSAGES_ID;
     return container;
   }
 
@@ -109,7 +117,12 @@ export class MessagesBase {
     this._lastGroupMessagesElement?.classList.remove(MessagesBase.LAST_GROUP_MESSAGES_ACTIVE);
     const lastGroupMessageElement = document.createElement('div');
     // first group should not have height 100% to not create a partial chat scroll bar
-    if (this._lastGroupMessagesElement) lastGroupMessageElement.classList.add(MessagesBase.LAST_GROUP_MESSAGES_ACTIVE);
+    if (
+      this.messageToElements.length > 1 ||
+      (this.messageToElements.length === 1 && this.messageToElements[0][0].role !== USER)
+    ) {
+      lastGroupMessageElement[CLASS_LIST].add(MessagesBase.LAST_GROUP_MESSAGES_ACTIVE);
+    }
     this._lastGroupMessagesElement = lastGroupMessageElement;
   }
 
@@ -283,15 +296,18 @@ export class MessagesBase {
     });
   }
 
-  public scrollToFirstElement(role: string, isScrollAtBottom: boolean, overwrite?: Overwrite) {
+  public getFirstMessageContentEl() {
+    const {text, html, files} = this.messageToElements[this.messageToElements.length - 1][1];
+    return text || html || files?.[0];
+  }
+
+  public scrollToFirstElement(role: string, isScrollAtBottom: boolean) {
     if (role === USER) {
       const isAnimation = typeof this.focusMode !== 'boolean' && this.focusMode?.smoothScroll;
-      ElementUtils.scrollToBottom(this.elementRef, isAnimation);
+      ElementUtils.scrollToBottom(this, isAnimation);
     } else if (isScrollAtBottom && this.autoScrollAllowed) {
-      const {text, html, files} = this.messageToElements[this.messageToElements.length - 1][1];
-      let outerContainer = text || html || files?.[0];
-      if (outerContainer === html && overwrite?.status) outerContainer = files?.[0];
-      ElementUtils.scrollToBottom(this.elementRef, false, outerContainer?.outerContainer);
+      const firstContentElement = this.getFirstMessageContentEl();
+      ElementUtils.scrollToBottom(this, false, firstContentElement?.outerContainer);
     }
   }
 }

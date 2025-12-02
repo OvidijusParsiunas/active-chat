@@ -10,11 +10,13 @@ export class ChatView {
   private static createElements(activeChat: ActiveChat, serviceIO: ServiceIO, panel?: HTMLElement) {
     const containerEl = document.createElement('div');
     containerEl.id = 'chat-view';
-    containerEl.classList.add(!activeChat.focusMode && activeChat.upwardsMode ? UPWARDS_MODE_CLASS : DOWNWARDS_MODE_CLASS);
+    const isUpwardsMode = !activeChat.focusMode && activeChat.upwardsMode;
+    containerEl.classList.add(isUpwardsMode ? UPWARDS_MODE_CLASS : DOWNWARDS_MODE_CLASS);
     const messages = new Messages(activeChat, serviceIO, panel);
     if (serviceIO.websocket) Websocket.createConnection(serviceIO, messages);
     const userInput = new Input(activeChat, messages, serviceIO, containerEl);
-    ElementUtils.addElements(containerEl, messages.elementRef, userInput.elementRef);
+    const messagesElement = isUpwardsMode ? messages.elementRef.parentElement : messages.elementRef;
+    ElementUtils.addElements(containerEl, messagesElement!, userInput.elementRef);
     return containerEl;
   }
 

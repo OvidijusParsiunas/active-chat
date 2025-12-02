@@ -13,6 +13,7 @@ import {GoogleFont} from './utils/webComponent/googleFont';
 import {TextToSpeechConfig} from './types/textToSpeech';
 import {SpeechToTextConfig} from './types/microphone';
 import {BrowserStorage} from './types/browserStorage';
+import {HiddenMessages} from './types/hiddenMessages';
 import {RemarkableOptions} from './types/remarkable';
 import {ErrorMessages, OnError} from './types/error';
 import {RequestBodyLimits} from './types/chatLimits';
@@ -148,6 +149,12 @@ export class ActiveChat extends InternalHTML {
 
   @Property('object')
   focusMode?: FocusMode;
+
+  @Property('boolean')
+  upwardsMode?: boolean;
+
+  @Property('object')
+  hiddenMessages?: boolean | HiddenMessages;
 
   getMessages: () => MessageContent[] = () => [];
 
