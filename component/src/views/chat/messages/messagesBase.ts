@@ -41,6 +41,7 @@ export class MessagesBase {
   protected _introPanel?: IntroPanel;
   private _remarkable: Remarkable;
   readonly _customWrappers?: HTMLWrappers;
+  readonly maxVisibleMessages: number = 4000;
   private _lastGroupMessagesElement?: HTMLElement;
   private readonly _applyHTMLToRemarkable?: boolean;
   private readonly _onMessage?: (message: MessageContentI, isHistory: boolean) => void;
@@ -73,6 +74,7 @@ export class MessagesBase {
     }
     this._customWrappers = activeChat.htmlWrappers;
     if (typeof this.focusMode !== 'boolean' && this.focusMode?.streamAutoScroll === false) this.autoScrollAllowed = false;
+    if (activeChat.maxVisibleMessages) this.maxVisibleMessages = activeChat.maxVisibleMessages;
     setTimeout(() => {
       this.submitUserMessage = activeChat.submitUserMessage; // wait for it to be available in input.ts
     });
@@ -155,6 +157,12 @@ export class MessagesBase {
   }
 
   public createNewMessageElement(text: string, role: string, isTop = false, loading = false) {
+    if (!loading && this.messageElementRefs.length >= this.maxVisibleMessages) {
+      // in timeout because messages are added after this function
+      // so on initial load first messages (e.g. files not added)
+      // or on initial dynamic history load adds first element
+      setTimeout(() => this.removeFirstMessage());
+    }
     if (!loading) this._introPanel?.hide();
     const lastMessageElements = this.messageElementRefs[this.messageElementRefs.length - 1];
     LoadingHistory.changeFullViewToSmall(this);
@@ -249,6 +257,12 @@ export class MessagesBase {
     messageElements.outerContainer.remove();
     const messageElementsIndex = this.messageElementRefs.findIndex((elRefs) => elRefs === messageElements);
     this.messageElementRefs.splice(messageElementsIndex, 1);
+  }
+
+  public removeFirstMessage() {
+    const firstMessage = this.messageElementRefs[0];
+    firstMessage.outerContainer.remove();
+    this.messageElementRefs.shift();
   }
 
   public removeLastMessage() {
