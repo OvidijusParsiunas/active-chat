@@ -64,7 +64,7 @@ export class Messages extends MessagesBase {
     this.addSetupMessageIfNeeded(activeChat);
     if (demo) this.prepareDemo(demo, activeChat.loadHistory); // before intro/history for load spinner
     this.addIntroductoryMessages(activeChat, serviceIO);
-    new History(activeChat, this, serviceIO);
+    const history = new History(activeChat, this, serviceIO);
     this._displayServiceErrorMessages = activeChat.errorMessages?.displayServiceErrorMessages;
     activeChat.getMessages = () => JSON.parse(JSON.stringify(this.messageToElements.map(([msg]) => msg)));
     activeChat.clearMessages = this.clearMessages.bind(this, serviceIO);
@@ -82,6 +82,10 @@ export class Messages extends MessagesBase {
         this.textToSpeech = processedConfig;
       });
     }
+    this.elementRef.onscroll = async () => {
+      if (activeChat.loadHistory) history.loadHistoryOnScroll(activeChat.loadHistory);
+      this.scrollButton?.updateScroll();
+    };
   }
 
   private static getDefaultDisplayLoadingMessage(activeChat: ActiveChat, serviceIO: ServiceIO) {
@@ -234,7 +238,7 @@ export class Messages extends MessagesBase {
       // in timeout for it to move to the loading bubble and when bubble font is large
       if (!overwrite.status) setTimeout(() => this.scrollToFirstElement(message.role, isScrollAtBottom));
       if (!isHistory) this.browserStorage?.addMessages(this.messageToElements.map(([msg]) => msg));
-      if (this.hiddenMessages && message.role !== USER) this.tryUpdateHiddenMessageCount(isHistory, data);
+      if (this.scrollButton && message.role !== USER) this.tryUpdateHiddenMessageCount(isHistory, data);
     }
     if (this._activeLoadingConfig) this.addLoadingMessage(false);
     return message;
@@ -254,7 +258,7 @@ export class Messages extends MessagesBase {
     // false false false -> should be true
     if (!isHistory || data.sendUpdate !== undefined) {
       // in timeout as above scrollToFirstElement is also in timeout
-      setTimeout(() => this.hiddenMessages?.update?.());
+      setTimeout(() => this.scrollButton?.updateHidden?.());
     }
   }
 
@@ -451,7 +455,7 @@ export class Messages extends MessagesBase {
       this.addIntroductoryMessages();
     }
     this.browserStorage?.clear();
-    this.hiddenMessages?.clear();
+    this.scrollButton?.clearHidden();
     this._onClearMessages?.();
     delete serviceIO.sessionId;
   }

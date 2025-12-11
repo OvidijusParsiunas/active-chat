@@ -18,9 +18,9 @@ import {IntroPanel} from '../introPanel/introPanel';
 import {HTMLWrappers} from '../../../types/stream';
 import {FocusMode} from '../../../types/focusMode';
 import {MessageUtils} from './utils/messageUtils';
-import {HiddenMessages} from './hiddenMessages';
 import {Response} from '../../../types/response';
 import {ActiveChat} from '../../../activeChat';
+import {ScrollButton} from './scrollButton';
 import {MessageElements} from './messages';
 import {HTMLUtils} from './html/htmlUtils';
 import {Remarkable} from 'remarkable';
@@ -50,7 +50,7 @@ export class MessagesBase {
   public static readonly INTRO_CLASS = 'active-chat-intro';
   public static readonly LAST_GROUP_MESSAGES_ACTIVE = 'active-chat-last-group-messages-active';
   public readonly autoScrollAllowed: boolean = true;
-  readonly hiddenMessages?: HiddenMessages;
+  readonly scrollButton?: ScrollButton;
 
   constructor(activeChat: ActiveChat) {
     this.elementRef = MessagesBase.createContainerElement();
@@ -62,7 +62,9 @@ export class MessagesBase {
     if (activeChat.names) this.name = new Name(activeChat.names);
     this._onMessage = FireEvents.onMessage.bind(this, activeChat);
     if (activeChat.htmlClassUtilities) this.htmlClassUtilities = activeChat.htmlClassUtilities;
-    if (activeChat.hiddenMessages) this.hiddenMessages = new HiddenMessages(this, activeChat.hiddenMessages);
+    if (activeChat.hiddenMessages || activeChat.scrollButton) {
+      this.scrollButton = new ScrollButton(this, activeChat.hiddenMessages, activeChat.scrollButton);
+    }
     this.focusMode = activeChat.focusMode;
     if (!this.focusMode) {
       this._lastGroupMessagesElement = CREATE_ELEMENT();

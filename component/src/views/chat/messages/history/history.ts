@@ -20,7 +20,6 @@ export class History {
   constructor(activeChat: ActiveChat, messages: Messages, serviceIO: ServiceIO) {
     this._messages = messages;
     if (serviceIO.fetchHistory) this.fetchHistory(serviceIO.fetchHistory); // direct service
-    if (activeChat.loadHistory) this.setupLoadHistoryOnScroll(activeChat.loadHistory); // custom service
     this.setupInitialHistory(activeChat);
   }
 
@@ -75,7 +74,7 @@ export class History {
     MessageUtils.resetAllRoleElements(messageElementRefs, avatar, name);
   }
 
-  private async setupLoadHistoryOnScroll(loadHistory: LoadHistory) {
+  public async loadHistoryOnScroll(loadHistory: LoadHistory) {
     this._messages.elementRef.onscroll = async () => {
       if (!this._isLoading && !this._isPaginationComplete && this._messages.elementRef.scrollTop === 0) {
         this._isLoading = true;

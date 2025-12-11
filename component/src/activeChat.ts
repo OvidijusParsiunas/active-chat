@@ -4,6 +4,7 @@ import {WebComponentStyleUtils} from './utils/webComponent/webComponentStyleUtil
 import {DisableSubmitButton, SubmitButtonStyles} from './types/submitButton';
 import {RequestInterceptor, ResponseInterceptor} from './types/interceptors';
 import {TooltipUtils} from './views/chat/input/buttons/tooltip/tooltipUtils';
+import {HiddenMessages, ScrollButton} from './types/scrollToBottom';
 import {FocusUtils} from './views/chat/input/textInput/focusUtils';
 import {SetupMessages} from './views/chat/messages/setupMessages';
 import {InternalHTML} from './utils/webComponent/internalHTML';
@@ -13,7 +14,6 @@ import {GoogleFont} from './utils/webComponent/googleFont';
 import {TextToSpeechConfig} from './types/textToSpeech';
 import {SpeechToTextConfig} from './types/microphone';
 import {BrowserStorage} from './types/browserStorage';
-import {HiddenMessages} from './types/hiddenMessages';
 import {RemarkableOptions} from './types/remarkable';
 import {ErrorMessages, OnError} from './types/error';
 import {RequestBodyLimits} from './types/chatLimits';
@@ -152,6 +152,9 @@ export class ActiveChat extends InternalHTML {
 
   @Property('boolean')
   upwardsMode?: boolean;
+
+  @Property('object')
+  scrollButton?: boolean | ScrollButton;
 
   @Property('object')
   hiddenMessages?: boolean | HiddenMessages;
