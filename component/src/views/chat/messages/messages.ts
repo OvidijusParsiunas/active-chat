@@ -85,6 +85,9 @@ export class Messages extends MessagesBase {
     this.elementRef.onscroll = async () => {
       if (activeChat.loadHistory) history.loadHistoryOnScroll(activeChat.loadHistory);
       this.scrollButton?.updateScroll();
+      if (this.browserStorage?.trackScrollHeight) {
+        this.browserStorage.addScrollHeight(this.elementRef.scrollTop);
+      }
     };
   }
 
