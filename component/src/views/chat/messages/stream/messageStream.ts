@@ -42,7 +42,6 @@ export class MessageStream {
     if (response?.text === undefined && response?.html === undefined) {
       return console.error(ErrorMessages.INVALID_STREAM_EVENT);
     }
-    if (response?.custom && this._message) this._message.custom = response.custom;
     const content = response?.text || response?.html || '';
     const isScrollbarAtBottomOfElement = ElementUtils.isScrollbarAtBottomOfElement(this._messages.elementRef);
     const streamType = response?.text !== undefined ? TEXT : 'html';
@@ -59,11 +58,16 @@ export class MessageStream {
       }
     }
     if (response?._sessionId) this._sessionId = response?._sessionId;
+    if (response?.custom && this._message) this._message.custom = response.custom;
     if (isScrollbarAtBottomOfElement) ElementUtils.scrollToBottom(this._messages);
   }
 
   private setInitialState(streamType: 'text' | 'html', content: string, role?: string) {
     this._streamType = streamType;
+    this._targetWrapper = undefined;
+    this._fileAdded = false;
+    this._partialText = '';
+    this._partialBubble = undefined;
     role ??= MessageUtils.AI_ROLE;
     const customWrapper = this._messages._customWrappers?.[role] || this._messages._customWrappers?.[DEFAULT];
     const initContent = customWrapper ? '' : content;

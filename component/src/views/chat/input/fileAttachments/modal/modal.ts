@@ -1,4 +1,5 @@
 import {KEYBOARD_KEY} from '../../../../../utils/buttons/keyboardKeys';
+import {ElementUtils} from '../../../../../utils/element/elementUtils';
 import {ButtonAccessibility} from '../../buttons/buttonAccessility';
 import {SVGIconUtils} from '../../../../../utils/svg/svgIconUtils';
 import {FileServiceIO} from '../../../../../services/serviceIO';
@@ -113,12 +114,12 @@ export class Modal {
   addCloseButton(text: string, isSVG: boolean, callback?: () => void) {
     const closeButton = isSVG ? Modal.createSVGButton(text) : Modal.createTextButton(text);
     this.addButtons(closeButton);
-    closeButton.onclick = () => {
+    ElementUtils.assignButtonEvents(closeButton, () => {
       this.close();
       setTimeout(() => {
         callback?.();
       }, 140); // the process to open the file window can interrupt the animation - hence closing before executing
-    };
+    });
     return closeButton;
   }
 

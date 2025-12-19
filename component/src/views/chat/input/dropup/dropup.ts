@@ -2,6 +2,7 @@ import {CLICK, OUTSIDE_START, OUTSIDE_END} from '../../../../utils/consts/inputC
 import {PositionToButtons} from '../buttons/styleAdjustments/inputButtonPositions';
 import {GenericInputButtonStyles} from '../../../../types/genericInputButton';
 import {DefinedButtonStateStyles} from '../../../../types/buttonInternal';
+import {KEYBOARD_KEY} from '../../../../utils/buttons/keyboardKeys';
 import {TooltipUtils} from '../buttons/tooltip/tooltipUtils';
 import {DropupStyles} from '../../../../types/dropupStyles';
 import {PLUS_ICON_STRING} from '../../../../icons/plusIcon';
@@ -45,6 +46,16 @@ export class Dropup extends InputButton<Styles> {
 
   private addClickEvent() {
     this.elementRef.onclick = this._menu.toggle.bind(this._menu);
+    this.elementRef.onkeydown = (event: KeyboardEvent) => {
+      if (event.key === KEYBOARD_KEY.ENTER) {
+        setTimeout(() => {
+          this._menu.toggle();
+          const firstItem = this._menu.elementRef.children[0] as HTMLElement;
+          firstItem.focus();
+          firstItem.dispatchEvent(new MouseEvent('mouseenter'));
+        });
+      }
+    };
   }
 
   private static createButtonContainer() {

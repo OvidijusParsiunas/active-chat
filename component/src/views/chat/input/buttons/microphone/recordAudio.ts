@@ -1,5 +1,6 @@
 import {AudioFileAttachmentType} from '../../fileAttachments/fileAttachmentTypes/audioFileAttachmentType';
 import {MicrophoneFilesServiceConfig} from '../../../../../types/fileServiceConfigs';
+import {ElementUtils} from '../../../../../utils/element/elementUtils';
 import {NewFileName} from '../../fileAttachments/newFileName';
 import {AudioFormat} from '../../../../../types/microphone';
 import {MicrophoneButton} from './microphoneButton';
@@ -18,7 +19,7 @@ export class RecordAudio extends MicrophoneButton {
     this._audioType = audioType;
     this._extension = recordAudioConfig.files?.format || 'mp3';
     this._maxDurationSeconds = recordAudioConfig.files?.maxDurationSeconds;
-    this.elementRef.onclick = this.buttonClick.bind(this);
+    ElementUtils.assignButtonEvents(this.elementRef, this.buttonClick.bind(this));
     // this._newFilePrefix = recordAudioConfig.files?.newFilePrefix; // can implement in the future
   }
 

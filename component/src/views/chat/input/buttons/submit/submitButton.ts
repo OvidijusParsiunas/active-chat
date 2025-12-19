@@ -1,6 +1,7 @@
 import {LOADING_CLASS, DISABLED_CLASS, SUBMIT_CLASS} from '../../../../../utils/consts/classConstants';
 import {FileAttachmentsType} from '../../fileAttachments/fileAttachmentTypes/fileAttachmentsType';
 import {ValidationHandler} from '../../../../../types/validationHandler';
+import {ElementUtils} from '../../../../../utils/element/elementUtils';
 import {FileAttachments} from '../../fileAttachments/fileAttachments';
 import {FocusModeUtils} from '../../../messages/utils/focusModeUtils';
 import {SubmitButtonStyles} from '../../../../../types/submitButton';
@@ -228,7 +229,7 @@ export class SubmitButton extends InputButton<Styles> {
     ButtonAccessibility.removeAriaAttributes(this.elementRef);
     this.changeElementsByState(this._innerElements.stop);
     this.reapplyStateStyle('stop', ['loading', 'submit']);
-    this.elementRef.onclick = this.stopStream.bind(this);
+    ElementUtils.assignButtonEvents(this.elementRef, this.stopStream.bind(this));
     this.status.loadingActive = false;
   }
 
@@ -240,7 +241,7 @@ export class SubmitButton extends InputButton<Styles> {
     ButtonAccessibility.addAriaBusy(this.elementRef);
     this.elementRef.classList.add(LOADING_CLASS);
     this.reapplyStateStyle('loading', ['submit']);
-    this.elementRef.onclick = () => {};
+    ElementUtils.assignButtonEvents(this.elementRef, () => {});
     this.status.requestInProgress = true;
     this.status.loadingActive = true;
   }
@@ -253,14 +254,14 @@ export class SubmitButton extends InputButton<Styles> {
     this.elementRef.classList.add(SUBMIT_CLASS);
     this.changeElementsByState(this._innerElements.submit);
     SubmitButtonStateStyle.resetSubmit(this, this.status.loadingActive);
-    this.elementRef.onclick = () => {
+    ElementUtils.assignButtonEvents(this.elementRef, () => {
       this.submitFromInput();
       if (this._microphoneButton?.isActive) {
         SpeechToText.toggleSpeechAfterSubmit(this._microphoneButton.elementRef, !!this._stopSTTAfterSubmit);
       }
       // Ensure focus is restored even when triggered via button click
       setTimeout(() => FocusUtils.focusEndOfInput(this._textInput.inputElementRef));
-    };
+    });
   }
 
   // called every time when user triggers an input via ValidationHandler - hence use class to check if not already present
@@ -274,7 +275,7 @@ export class SubmitButton extends InputButton<Styles> {
       ButtonAccessibility.addAriaDisabled(this.elementRef);
       this.changeElementsByState(this._innerElements.disabled);
       this.reapplyStateStyle('disabled', ['submit']);
-      this.elementRef.onclick = () => {};
+      ElementUtils.assignButtonEvents(this.elementRef, () => {});
     }
   }
 
