@@ -50,7 +50,7 @@ export class MessageStream {
     } else if (this._streamType !== streamType) {
       return console.error(ErrorMessages.INVALID_STREAM_EVENT_MIX);
     } else {
-      if (response?.role !== this._activeMessageRole) {
+      if (response?.role && response?.role !== this._activeMessageRole) {
         this.finaliseStreamedMessage(false);
         this.setInitialState(streamType, content, response?.role);
       } else {
