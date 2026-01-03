@@ -1,8 +1,9 @@
+import {AI, ERROR, FILES, HTML, TEXT} from '../../../../utils/consts/messageConstants';
+import {CLASS_LIST, CREATE_ELEMENT} from '../../../../utils/consts/htmlConstants';
 import {ErrorMessages} from '../../../../utils/errorMessages/errorMessages';
 import {ElementUtils} from '../../../../utils/element/elementUtils';
 import {MessageContentI} from '../../../../types/messagesInternal';
 import {DEFAULT} from '../../../../utils/consts/inputConstants';
-import {TEXT} from '../../../../utils/consts/messageConstants';
 import {TextToSpeech} from '../textToSpeech/textToSpeech';
 import {MessageFile} from '../../../../types/messageFile';
 import {MessageElements, Messages} from '../messages';
@@ -15,7 +16,7 @@ import {HTMLUtils} from '../html/htmlUtils';
 
 export class MessageStream {
   static readonly MESSAGE_CLASS = 'streamed-message';
-  private static readonly PARTIAL_RENDER_TEXT_MARK = '\n\n';
+  private static readonly PARTIAL_RENDER_MARK = '\n\n';
   private readonly _partialRender?: boolean;
   private readonly _messages: MessagesBase;
   private _fileAdded = false;
@@ -25,7 +26,7 @@ export class MessageStream {
   private _activeMessageRole?: string;
   private _message?: MessageContentI;
   private _endStreamAfterOperation?: boolean;
-  private _partialText: string = '';
+  private _partialContent: string = '';
   private _partialBubble?: HTMLDivElement;
   private _targetWrapper?: HTMLElement;
   private _sessionId?: string;
@@ -39,16 +40,16 @@ export class MessageStream {
 
   public upsertStreamedMessage(response?: Response) {
     if (this._hasStreamEnded) return;
-    if (response?.text === undefined && response?.html === undefined) {
-      return console.error(ErrorMessages.INVALID_STREAM_EVENT);
+    if (response?.[TEXT] === undefined && response?.[HTML] === undefined) {
+      return console[ERROR](ErrorMessages.INVALID_STREAM_EVENT);
     }
-    const content = response?.text || response?.html || '';
+    const content = response?.[TEXT] || response?.[HTML] || '';
     const isScrollbarAtBottomOfElement = ElementUtils.isScrollbarAtBottomOfElement(this._messages.elementRef);
-    const streamType = response?.text !== undefined ? TEXT : 'html';
+    const streamType = response?.[TEXT] !== undefined ? TEXT : HTML;
     if (!this._elements && !this._message) {
       this.setInitialState(streamType, content, response?.role);
     } else if (this._streamType !== streamType) {
-      return console.error(ErrorMessages.INVALID_STREAM_EVENT_MIX);
+      return console[ERROR](ErrorMessages.INVALID_STREAM_EVENT_MIX);
     } else {
       if (response?.role && response?.role !== this._activeMessageRole) {
         this.finaliseStreamedMessage(false);
@@ -66,9 +67,9 @@ export class MessageStream {
     this._streamType = streamType;
     this._targetWrapper = undefined;
     this._fileAdded = false;
-    this._partialText = '';
+    this._partialContent = '';
     this._partialBubble = undefined;
-    role ??= MessageUtils.AI_ROLE;
+    role ??= AI;
     const customWrapper = this._messages._customWrappers?.[role] || this._messages._customWrappers?.[DEFAULT];
     const initContent = customWrapper ? '' : content;
     // does not overwrite previous message for simplicity as otherwise users would need to return first response with
@@ -78,7 +79,7 @@ export class MessageStream {
         ? this._messages.addNewTextMessage(initContent, role)
         : HTMLMessages.add(this._messages, initContent, role);
     if (this._elements) {
-      this._elements.bubbleElement.classList.add(MessageStream.MESSAGE_CLASS);
+      this._elements.bubbleElement[CLASS_LIST].add(MessageStream.MESSAGE_CLASS);
       this._activeMessageRole = role;
       this._message = {role: this._activeMessageRole, [streamType]: initContent};
       this._messages.messageToElements.push([this._message, {[streamType]: this._elements}]);
@@ -104,15 +105,23 @@ export class MessageStream {
 
   private updateText(text: string, bubbleElement: HTMLElement, overwrite: boolean) {
     if (!this._message) return;
-    this._message.text = overwrite ? text : this._message.text + text;
+    this._message[TEXT] = overwrite ? text : this._message[TEXT] + text;
     if (this._partialRender && this.isNewPartialRenderParagraph(bubbleElement, overwrite)) {
       this.partialRenderNewParagraph(bubbleElement);
     }
     if (this._partialBubble) {
-      this.partialRenderBubbleUpdate(text);
+      this.updatePartialRenderBubble(text);
     } else {
-      this._messages.renderText(bubbleElement, this._message.text);
+      this._messages.renderText(bubbleElement, this._message[TEXT]!);
     }
+  }
+
+  private containsPartialRenderMark(content: string): boolean {
+    const markIndex = content.indexOf(MessageStream.PARTIAL_RENDER_MARK);
+    if (markIndex === -1) return false;
+    // Check if this is part of a markdown horizontal rule pattern - "a \n\n---\n\n a"
+    const textAfterMark = content.substring(markIndex + MessageStream.PARTIAL_RENDER_MARK.length);
+    return !textAfterMark.startsWith('---');
   }
 
   private isNewPartialRenderParagraph(bubbleElement: HTMLElement, isOverwrite: boolean) {
@@ -120,42 +129,46 @@ export class MessageStream {
       bubbleElement.innerHTML = '';
       return true;
     }
+    const key = this._streamType as 'text' | 'html';
     if (!this._partialBubble) {
-      return this._message?.text && this.shouldCreateNewParagraph(this._message.text);
+      const content = this._message?.[key];
+      return !!content && this.containsPartialRenderMark(content);
     }
-    return this._partialText && this.shouldCreateNewParagraph(this._partialText);
-  }
-
-  private shouldCreateNewParagraph(text: string): boolean {
-    const markIndex = text.indexOf(MessageStream.PARTIAL_RENDER_TEXT_MARK);
-    if (markIndex === -1) return false;
-    // Check if this is part of a markdown horizontal rule pattern - "a \n\n---\n\n a"
-    const textAfterMark = text.substring(markIndex + MessageStream.PARTIAL_RENDER_TEXT_MARK.length);
-    return !textAfterMark.startsWith('---');
+    return !!this._partialContent && this.containsPartialRenderMark(this._partialContent);
   }
 
   private partialRenderNewParagraph(bubbleElement: HTMLElement) {
-    this._partialText = '';
-    this._partialBubble = document.createElement('div');
-    this._partialBubble.classList.add('partial-render-message');
+    this._partialContent = '';
+    this._partialBubble = CREATE_ELEMENT() as HTMLDivElement;
+    this._partialBubble[CLASS_LIST].add('partial-render-message');
     bubbleElement.appendChild(this._partialBubble);
   }
 
-  private partialRenderBubbleUpdate(text: string) {
-    this._partialText += text;
-    this._messages.renderText(this._partialBubble as HTMLDivElement, this._partialText);
+  private updatePartialRenderBubble(content: string) {
+    this._partialContent += content;
+    if (this._streamType === TEXT) {
+      this._messages.renderText(this._partialBubble as HTMLDivElement, this._partialContent);
+    } else {
+      (this._partialBubble as HTMLDivElement).innerHTML = this._partialContent;
+    }
   }
 
   private updateHTML(html: string, bubbleElement: HTMLElement, isOverwrite: boolean) {
     if (!this._message) return;
-    if (isOverwrite) {
-      this._message.html = html;
-      bubbleElement.innerHTML = html;
+    this._message[HTML] = isOverwrite ? html : (this._message[HTML] || '') + html;
+    if (this._partialRender && this.isNewPartialRenderParagraph(bubbleElement, isOverwrite)) {
+      this.partialRenderNewParagraph(bubbleElement);
+    }
+    if (this._partialBubble) {
+      this.updatePartialRenderBubble(html);
     } else {
-      const wrapper = document.createElement('span');
-      wrapper.innerHTML = html;
-      bubbleElement.appendChild(wrapper);
-      this._message.html = bubbleElement?.innerHTML || '';
+      if (isOverwrite) {
+        bubbleElement.innerHTML = html;
+      } else {
+        const wrapper = CREATE_ELEMENT('span');
+        wrapper.innerHTML = html;
+        bubbleElement.appendChild(wrapper);
+      }
     }
   }
 
@@ -163,13 +176,13 @@ export class MessageStream {
     if (this._endStreamAfterOperation || !this._message) return;
     if (this._fileAdded && !this._elements) return;
     if (!this._elements) throw Error(ErrorMessages.NO_VALID_STREAM_EVENTS_SENT);
-    if (!this._elements.bubbleElement?.classList.contains(MessageStream.MESSAGE_CLASS)) return;
+    if (!this._elements.bubbleElement?.[CLASS_LIST].contains(MessageStream.MESSAGE_CLASS)) return;
     if (this._streamType === TEXT) {
-      if (this._messages.textToSpeech) TextToSpeech.speak(this._message.text || '', this._messages.textToSpeech);
-    } else if (this._streamType === 'html') {
+      if (this._messages.textToSpeech) TextToSpeech.speak(this._message[TEXT] || '', this._messages.textToSpeech);
+    } else if (this._streamType === HTML) {
       if (this._elements) HTMLUtils.apply(this._messages, this._elements.outerContainer);
     }
-    this._elements.bubbleElement.classList.remove(MessageStream.MESSAGE_CLASS);
+    this._elements.bubbleElement[CLASS_LIST].remove(MessageStream.MESSAGE_CLASS);
     if (this._message) {
       if (this._sessionId) this._message._sessionId = this._sessionId;
       this._messages.sendClientUpdate(MessagesBase.createMessageContent(this._message), false);
@@ -190,6 +203,6 @@ export class MessageStream {
     if (text) this.updateBasedOnType(text, TEXT, true);
     this._endStreamAfterOperation = false;
     this.finaliseStreamedMessage();
-    if (files) messages.addNewMessage({files}); // adding later to trigger event later
+    if (files) messages.addNewMessage({[FILES]: files}); // adding later to trigger event later
   }
 }
